@@ -161,7 +161,7 @@ class ViewProjectDetailsComponent extends Component
                     'id' => $phase->id,
                     'name' => $phase->name,
                     'start_date' => $phase->start_date,
-                    'due_date' => $phase->due_date,
+                    'due_date' => $phase->end_date,
                     'details' => $phase->description,
                 ];
             });
@@ -174,7 +174,7 @@ class ViewProjectDetailsComponent extends Component
                     'type' => 'milestone',
                     'id' => $milestone->id,
                     'name' => $milestone->name,
-                    'start_date' => $milestone->start_date,
+                    'start_date' => $milestone->due_date,
                     'due_date' => $milestone->due_date,
                     'details' => $milestone->description,
                 ];
