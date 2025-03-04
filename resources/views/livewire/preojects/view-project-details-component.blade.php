@@ -76,9 +76,9 @@
                 - add contractors details <br>
             </div>
         @elseif ($activeTab == 'PlansTab')
-            <div>
+            <div class="p-6">
                 <div>
-                    <!-- Header Section -->
+                    {{-- <!-- Header Section -->
                     <div class="text-lg font-semibold mb-4">Phase & Milestones</div>
 
                     <!-- Buttons to Show Forms -->
@@ -90,7 +90,22 @@
                             class="px-4 py-2 bg-green-500 text-white rounded">
                             Add Milestone
                         </button>
-                    </div>
+                    </div> --}}
+                    <x-section-title>
+                        <x-slot name="title">Phases & Milestones</x-slot>
+                        <x-slot name="description">Mange Project Phases & Milestones</x-slot>
+                        <x-slot name="aside">
+                            <div class="flex gap-4 mb-4">
+                                <button wire:click="$toggle('showPhaseForm')" class="px-4 py-2 bg-blue-500 text-white rounded">
+                                    Add Phase
+                                </button>
+                                <button wire:click="$toggle('showMilestoneForm')"
+                                    class="px-4 py-2 bg-green-500 text-white rounded">
+                                    Add Milestone
+                                </button>
+                            </div>
+                        </x-slot>
+                    </x-section-title>
 
                     <!-- Forms (Hidden Initially) -->
                     <div class="my-4 grid grid-cols-1 md:grid-cols-2 gap-4">
