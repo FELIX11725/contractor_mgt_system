@@ -96,7 +96,8 @@
                         <x-slot name="description">Mange Project Phases & Milestones</x-slot>
                         <x-slot name="aside">
                             <div class="flex gap-4 mb-4">
-                                <button wire:click="$toggle('showPhaseForm')" class="px-4 py-2 bg-blue-500 text-white rounded">
+                                <button wire:click="$toggle('showPhaseForm')"
+                                    class="px-4 py-2 bg-blue-500 text-white rounded">
                                     Add Phase
                                 </button>
                                 <button wire:click="$toggle('showMilestoneForm')"
@@ -113,12 +114,30 @@
                         @if ($showPhaseForm)
                             <div class="p-4 border rounded shadow bg-white">
                                 <h3 class="text-md font-bold mb-2">New Phase</h3>
-                                <input type="text" wire:model="phase_name" class="w-full p-2 border rounded"
-                                    placeholder="Phase Name">
-                                <button wire:click="createPhase"
-                                    class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Save Phase</button>
+
+                                <!-- Form Starts Here -->
+                                <form wire:submit.prevent="createPhase">
+                                    <!-- Phase Name Input -->
+                                    <input type="text" wire:model="phase_name" class="w-full p-2 border rounded mb-2"
+                                        placeholder="Phase Name">
+
+                                    <!-- Start Date Input -->
+                                    <input type="date" wire:model="start_date" class="w-full p-2 border rounded mb-2"
+                                        placeholder="Start Date">
+
+                                    <!-- End Date Input -->
+                                    <input type="date" wire:model="end_date" class="w-full p-2 border rounded mb-2"
+                                        placeholder="End Date">
+
+                                    <!-- Save Button -->
+                                    <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
+                                        Save Phase
+                                    </button>
+                                </form>
+                                <!-- Form Ends Here -->
                             </div>
                         @endif
+
 
                         <!-- Add Milestone Form -->
                         @if ($showMilestoneForm)
@@ -132,29 +151,95 @@
                         @endif
                     </div>
 
-                    <!-- Displaying Phases & Milestones -->
-                    <div class="mt-6">
-                        <h2 class="text-lg font-bold mb-2">Project Timeline</h2>
-
-                        @foreach ($phases as $phase)
-                            <div class="p-4 border-l-4 border-blue-500 bg-gray-100 rounded shadow mb-4">
-                                <h3 class="text-md font-semibold">{{ $phase->name }}</h3>
-                                <p class="text-sm text-gray-600">Start: {{ $phase->start_date }} | End:
-                                    {{ $phase->end_date }}</p>
-
-                                <!-- Milestones under this Phase -->
-                                <div class="ml-4 mt-2">
-                                    @foreach ($phase->milestones as $milestone)
-                                        <div class="p-2 border rounded bg-white shadow-sm mb-2">
-                                            <span class="font-medium">{{ $milestone->milestone_name }}</span>
-                                            <p class="text-sm text-gray-500">{{ $milestone->due_date }}</p>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                    <ol class="relative border-s border-gray-200 dark:border-gray-700">
+                        @foreach($timelineItems as $item)
+                            <li class="mb-10 ms-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                                    <svg class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                    </svg>
+                                </span>
+                                <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+                                    {{ $item['name'] }}
+                                    @if($item['type'] === 'phase')
+                                        <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Phase</span>
+                                    @else
+                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
+                                    @endif
+                                </h3>
+                                <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                                    Start: {{ \Carbon\Carbon::parse($item['start_date'])->format('M d, Y') }} - Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
+                                </time>
+                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }}</p>
+                            </li>
                         @endforeach
-                    </div>
+                    </ol>
+                    
                 </div>
+
+                @push('styles')
+                    <style>
+                        .timeline-container {
+                            position: relative;
+                            width: 100%;
+                            padding: 20px;
+                        }
+
+                        .timeline-phase {
+                            position: relative;
+                            margin-bottom: 20px;
+                            padding: 10px;
+                            background-color: #f4f4f4;
+                            border-radius: 5px;
+                        }
+
+                        .timeline-phase-title {
+                            font-weight: bold;
+                            font-size: 1.2rem;
+                        }
+
+                        .timeline-phase-bar {
+                            height: 4px;
+                            background-color: #4CAF50;
+                            position: absolute;
+                            top: 20px;
+                        }
+
+                        .timeline-milestone {
+                            position: relative;
+                            margin-top: 10px;
+                        }
+
+                        .timeline-milestone-title {
+                            font-size: 1rem;
+                            color: #333;
+                        }
+
+                        .timeline-milestone-dot {
+                            position: absolute;
+                            top: 15px;
+                            width: 15px;
+                            height: 15px;
+                            background-color: #FF5722;
+                            border-radius: 50%;
+                            transform: translateX(-50%);
+                        }
+
+                        /* Independent Milestones Section */
+                        .timeline-independent-milestones {
+                            margin-top: 30px;
+                            padding: 15px;
+                            background-color: #fffbe6;
+                            border-radius: 5px;
+                        }
+
+                        .timeline-independent-milestones h3 {
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            margin-bottom: 10px;
+                        }
+                    </style>
+                @endpush
 
             </div>
         @elseif ($activeTab == 'BudjetTab')
