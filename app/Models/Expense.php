@@ -22,8 +22,4 @@ class Expense extends Model
     {
         return $this->belongsTo(Budget::class);
     }
-    public function projectPlan()
-    {
-        return $this->belongsTo(ProjectPlan::class);
-    }
 }

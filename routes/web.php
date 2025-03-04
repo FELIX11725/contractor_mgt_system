@@ -18,6 +18,11 @@ use App\Http\Controllers\ManageMilestones\AddMilestoneController;
 use App\Http\Controllers\ManageContractors\AddContractorController;
 use App\Http\Controllers\ManageContractors\ComplianceRecordsController;
 
+use App\Livewire\Expenses\ExpenseCategoriesComponent;
+use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
+
+use App\Livewire\Preojects\ViewProjectDetailsComponent;
+
 Route::redirect('/', 'login');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
@@ -28,6 +33,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // projects
     Route::prefix('projects-managment')->group(function () {
         Route::get('/projects', [ProjectsController::class, 'index'])->name('projects');
+        Route::get('/projects/{project}', ViewProjectDetailsComponent::class)->name('projects.show');
         Route::get('/addproject', [AddProjectController::class, 'index'])->name('addproject');
         Route::get('/projectplans',[ProjectplansController::class, 'index'])->name('projectplans');
         Route::get('/viewplans',[ViewplansController::class, 'index'])->name('viewplans');
@@ -51,8 +57,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
     //expenses
     Route::prefix('expenses')->group(function () {
-        Route::get('/expensetypes',[ExpensetypeController::class, 'index'])->name('expensetypes');
+        Route::get('/expensetypes', [ExpensetypeController::class, 'index'])->name('expensetypes');
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('expenses');
+        Route::get('/expense-categories', ExpenseCategoriesComponent::class)->name('expenses.manage-categories');
+        Route::get('/expense-categories/{category}', ExpenseCategoryDetailsComponent::class)->name('expenses.categories.view');
     });
     //budgets
     Route::prefix('budgets')->group(function (){
