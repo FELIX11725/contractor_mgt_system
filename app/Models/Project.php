@@ -5,61 +5,79 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+
     protected $table = 'projects';
-    
 
-    
-   protected $fillable = ['project_name', 'location', 'project_type_id', 'project_description', 'start_date', 'end_date', 'project_status'];
-    
-  //has many project types
-   public function project_type()
-   {
-       return $this->belongsTo(ProjectType::class, 'project_type_id');
-   }
+    protected $fillable = [
+        'project_name',
+        'location',
+        'project_type_id',
+        'project_description',
+        'start_date',
+        'end_date',
+        'project_status'
+    ];
 
-   public function milestones()
-   {
-       return $this->hasManyThrough(Projectmilestone::class, ProjectPlan::class, 'project_id', 'project_plan_id');
-   }
-   
-   public function phases()
-   {
-       return $this->hasManyThrough(Phase::class, ProjectPlan::class, 'project_id', 'project_plan_id');
-   }
-
-   public function contracts(): HasMany
-   {
-       return $this->hasMany(Contract::class, 'project_id');
-   }
-   
- 
-
-
-    //project has one projectplan
-    public function projectplan()
+    /**
+     * Project belongs to a Project Type.
+     */
+    public function project_type(): BelongsTo
     {
-        return $this->hasOne(ProjectPlan::class);
+        return $this->belongsTo(ProjectType::class, 'project_type_id');
     }
 
-    public function budgets()
+    /**
+     * Project has many phases.
+     */
+    public function phases(): HasMany
     {
-        return $this->hasMany(Budget::class,'project_plan_id');
+        return $this->hasMany(Phase::class);
     }
 
-    // Relationship to Expenses
-    public function expenses()
+    /**
+     * Project has many milestones.
+     */
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    /**
+     * Project has many contracts.
+     */
+    public function contracts(): HasMany
+    {
+        return $this->hasMany(Contract::class, 'project_id');
+    }
+
+    /**
+     * Project has one project plan.
+     */
+    public function projectPlan(): HasOne
+    {
+        return $this->hasOne(ProjectPlan::class, 'project_id');
+    }
+
+    /**
+     * Project has many budgets.
+     */
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class, 'project_id');
+    }
+
+    /**
+     * Project has many expenses.
+     */
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
-    
-   
-   
-   
-    
 }

@@ -1,3 +1,3 @@
 <x-app-layout>
-   <livewire:components.projects/>
+   <livewire:components.projects />
 </x-app-layout>

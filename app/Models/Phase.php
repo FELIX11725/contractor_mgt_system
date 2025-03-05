@@ -9,10 +9,54 @@ class Phase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['project_plan_id', 'name','phase_status'];
+    protected $fillable = [
+        'project_id',
+        'name',
+        'description',
+        'start_date',
+        'end_date',
+        'phase_status',
+    ];
 
-    public function projectPlan()
-{
-    return $this->belongsTo(Projectplan::class, 'project_plan_id'); //  Specify the foreign key if it is not 'project_plan_id'
-}
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->phase_status)) {
+                $model->phase_status = 'pending';  // Default value if not set
+            }
+        });
+    }
+    /**
+     * Get the status of the phase.
+     */
+    public function getStatusAttribute()
+    {
+        return ucfirst($this->attributes['phase_status']);  // Example: Capitalize the first letter of the status
+    }
+
+    /**
+     * Set the status of the phase.
+     */
+    public function setStatusAttribute($value)
+    {
+        $this->attributes['phase_status'] = strtolower($value);  // Example: Store status in lowercase
+    }
+
+    /**
+     * Get the project this phase belongs to.
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Get the milestones related to this phase.
+     */
+    public function milestones()
+    {
+        return $this->hasMany(Milestone::class);
+    }
 }
