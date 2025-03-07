@@ -25,7 +25,7 @@
             </div>
             <div>
                 <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Status:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->project_status }}</p>
+                <p class="font-normal text-gray-700 dark:text-gray-400"><x-status :status="$project->project_status" /></p>
             </div>
             <div>
                 <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Start Date:</h5>
@@ -55,6 +55,10 @@
             <div wire:click="$set('activeTab' , 'ExpensesTab')"
                 class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ExpensesTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
                 Expenses
+            </div>
+            <div wire:click="$set('activeTab' , 'ProjectProgressTab')"
+                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ProjectProgressTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
+                Project Progress
             </div>
         </div>
     </div>
@@ -141,18 +145,61 @@
 
                         <!-- Add Milestone Form -->
                         @if ($showMilestoneForm)
-                            <div class="p-4 border rounded shadow bg-white">
-                                <h3 class="text-md font-bold mb-2">New Milestone</h3>
-                                <input type="text" wire:model="milestone_name" class="w-full p-2 border rounded"
-                                    placeholder="Milestone Name">
-                                <button wire:click="createMilestone"
-                                    class="mt-2 px-4 py-2 bg-green-500 text-white rounded">Save Milestone</button>
+                        <div class="p-4 border rounded shadow bg-white">
+                            <h3 class="text-md font-bold mb-2">New Milestone</h3>
+                            
+                            <!-- Milestone Name Input -->
+                            <input type="text" wire:model="milestone_name" class="w-full p-2 border rounded mb-2" placeholder="Milestone Name">
+                            
+                            <!-- Milestone Type Selection -->
+                            <div class="mb-2">
+                                <label class="block text-sm font-medium text-gray-700">Add Milestone To:</label>
+                                <select wire:model="milestoneType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                    <option value="project">Project</option>
+                                    <option value="phase">Phase</option>
+                                </select>
                             </div>
-                        @endif
+                            
+                            <!-- Phase Selection (Conditional) -->
+                            @if ($milestoneType === 'phase')
+                                <div class="mb-2">
+                                    <label class="block text-sm font-medium text-gray-700">Select Phase:</label>
+                                    <select wire:model="phase_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                                        <option value="">Select Phase</option>
+                                        @foreach ($project->phases as $phase)
+                                            <option value="{{ $phase->id }}">{{ $phase->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @endif
+                            
+                            <!-- Save Button -->
+                            <button wire:click="createMilestone" class="mt-2 px-4 py-2 bg-green-500 text-white rounded">Save Milestone</button>
+                        </div>
+                    @endif
                     </div>
 
                     <ol class="relative border-s border-gray-200 dark:border-gray-700">
+                        <!-- Project -->
+                        <li class="mb-10 ms-6">
+                            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                                <svg class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                </svg>
+                            </span>
+                            <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+                                {{ $project->project_name }}
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Project</span>
+                            </h3>
+                            <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                                Start: {{ \Carbon\Carbon::parse($project->start_date)->format('M d, Y') }} - End: {{ \Carbon\Carbon::parse($project->end_date)->format('M d, Y') }}
+                            </time>
+                        </li>
+                    
+                        <!-- Phases and Milestones -->
                         @foreach($timelineItems as $item)
+                        @if($item['type'] === 'phase')
+                            <!-- Phase -->
                             <li class="mb-10 ms-6">
                                 <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                                     <svg class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -161,18 +208,51 @@
                                 </span>
                                 <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
                                     {{ $item['name'] }}
-                                    @if($item['type'] === 'phase')
-                                        <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Phase</span>
-                                    @else
-                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
-                                    @endif
+                                    <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Phase</span>
                                 </h3>
                                 <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
                                     Start: {{ \Carbon\Carbon::parse($item['start_date'])->format('M d, Y') }} - Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
                                 </time>
                                 <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }}</p>
                             </li>
-                        @endforeach
+                    
+                            <!-- Milestones under this phase -->
+                            @foreach($item['milestones'] as $milestone)
+                                <li class="mb-10 ms-12">
+                                    <span class="absolute flex items-center justify-center w-6 h-6 bg-green-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-green-900">
+                                        <svg class="w-2.5 h-2.5 text-green-800 dark:text-green-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                        </svg>
+                                    </span>
+                                    <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+                                        {{ $milestone['name'] }}
+                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
+                                    </h3>
+                                    <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                                        Due: {{ \Carbon\Carbon::parse($milestone['due_date'])->format('M d, Y') }}
+                                    </time>
+                                    <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $milestone['details'] }}</p>
+                                </li>
+                            @endforeach
+                        @elseif($item['type'] === 'milestone' && empty($item['phase_id']))
+                            <!-- Milestones under the project -->
+                            <li class="mb-10 ms-6">
+                                <span class="absolute flex items-center justify-center w-6 h-6 bg-green-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-green-900">
+                                    <svg class="w-2.5 h-2.5 text-green-800 dark:text-green-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                    </svg>
+                                </span>
+                                <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+                                    {{ $item['name'] }}
+                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
+                                </h3>
+                                <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+                                    Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
+                                </time>
+                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }}</p>
+                            </li>
+                        @endif
+                    @endforeach
                     </ol>
                     
                 </div>
@@ -268,9 +348,9 @@
                                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                                 wire:model.defer="budgetPhaseId">
                                                 <option value="">Select Phase</option>
-                                                {{-- @foreach ($project->phases as $phase)
+                                                @foreach ($project->phases as $phase)
                                                     <option value="{{ $phase->id }}">{{ $phase->name }}</option>
-                                                @endforeach --}}
+                                                @endforeach
                                             </select>
                                             <x-input-error for="budgetPhaseId" class="mt-2" />
                                         </div>
@@ -312,6 +392,52 @@
             <div>
                 <!-- Expenses tab content -->
                 Expenses tab component
+            </div>
+            @elseif ($activeTab == 'ProjectProgressTab')
+            <div>
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Project Progress</h2>
+        
+                    <!-- Progress Bars for Phases -->
+                    @foreach ($phases as $phase)
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $phase['name'] }}</h3>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ ucfirst($phase['phase_status']) }} ({{ $phase['progress'] }}%)
+                                </span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
+                                <div
+                                    class="h-3 rounded-full {{
+                                        $phase['progress'] >= 100 ? 'bg-green-500' :
+                                        ($phase['progress'] >= 50 ? 'bg-blue-500' :
+                                        ($phase['progress'] >= 30 ? 'bg-yellow-500' : 'bg-red-500'))
+                                    }}"
+                                    style="width: {{ $phase['progress'] }}%; transition: width 0.5s ease;"
+                                ></div>
+                            </div>
+                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                Start Date: {{ \Carbon\Carbon::parse($phase['start_date'])->format('M d, Y') }} 
+                                {{-- End Date: {{ \Carbon\Carbon::parse($phase['end_date'])->format('M d, Y') }} --}}
+                            </div>
+                        </div>
+                    @endforeach
+        
+                    <!-- Overall Project Progress -->
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
+                        <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+                            <div
+                                class="h-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500"
+                                style="width: {{ $overallProgress }}%; transition: width 0.5s ease;"
+                            ></div>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                            Overall Progress: {{ $overallProgress }}%
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
     </div>

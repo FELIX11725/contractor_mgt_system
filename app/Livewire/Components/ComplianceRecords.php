@@ -118,8 +118,7 @@ class ComplianceRecords extends Component
         if ($compliancerecord && Storage::disk('public')->exists($compliancerecord->document_path)) {
             return response()->download(storage_path('app/public/' . $compliancerecord->document_path));
         }
-
-        // Handle the case where the file doesn't exist.  You could flash a message, redirect, etc.
+        
         return redirect()->back()->with('error', 'File not found.');  
     }
 
