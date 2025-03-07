@@ -24,7 +24,7 @@ class AddMilestone extends Component
     {
         $this->validate([
             'milestone_name' => 'required',
-            'project_id' => 'required|exists:projects,id', // Validate project_id
+            'project_id' => 'required|exists:projects,id', 
             'due_date' => 'required|date',
             'description' => 'required|string|min:10',
         ]);
