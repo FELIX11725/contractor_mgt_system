@@ -61,10 +61,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('expenses');
         Route::get('/expense-categories', ExpenseCategoriesComponent::class)->name('expenses.manage-categories');
         Route::get('/expense-categories/{category}', ExpenseCategoryDetailsComponent::class)->name('expenses.categories.view');
+        Route::get('/expensetypes/{categoryId}', [ExpenseTypeController::class, 'show'])->name('expensetypes');
     });
     //budgets
     Route::prefix('budgets')->group(function (){
         Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets');
         Route::get('/viewbudgets',[ViewbudgetController::class, 'index'])->name('viewbudgets');
+        Route::get('/budgets/{budget}/details', [BudgetController::class, 'showDetails'])->name('budgets.details');
     });
 });

@@ -13,13 +13,8 @@ return new class extends Migration
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->references('id')->on('projects')->nullable();
-            $table->foreignId('budget_id')->references('id')->on('budgets')->nullable();
-            $table->foreignId('project_plan_id')->references('id')->on('projectplans')->nullable();
+            $table->foreignId('budget_items_id')->references('id')->on('budget_items')->nullable();
             $table->decimal('amount_paid', 10, 2);
-            $table->string('payment_method');
-            $table->date('payment_date');
-            $table->string('expense_status');
             $table->softDeletes(); 
             $table->timestamps();
         });

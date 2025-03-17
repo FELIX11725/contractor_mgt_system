@@ -28,9 +28,10 @@ class ViewProjectDetailsComponent extends Component
     public $phase_id;
 
     public function mount($project)
-    {
-        $this->project = Project::findOrFail($project);
-    }
+{
+    $this->project = Project::findOrFail($project);
+    $this->budgets = $this->fetchBudgets(); 
+}
 
     public function closeNewBudgetModal()
     {
@@ -39,30 +40,61 @@ class ViewProjectDetailsComponent extends Component
 
     public function saveBudget()
     {
+        // dd($this->budget);
+        // Validate the input fields
         $this->validate([
             'budgetName' => "required",
             'budgetDescription' => "nullable",
             'budgetPhaseId' => "required|exists:phases,id",
         ]);
-
-        $phase = Phase::findOrFail($this->budgetPhaseId);
-
+    
+        // Create the budget
         Budget::create([
-            'name' => $this->budgetName ?? null,
-            'description' => $this->budgetDescription ?? null,
-            'phase_id' => $this->budgetPhaseId,
-            'project_plan_id' => $phase->project_plan_id,
+            'budget_name' => $this->budgetName ?? null, // Match the column name in the `budgets` table
+            'description' => $this->budgetDescription ?? null, // Match the column name in the `budgets` table
+            'phase_id' => $this->budgetPhaseId, // Match the column name in the `budgets` table
         ]);
-
+    
+        // Show success message
         flash()->addSuccess("Budget saved");
-
+    
+        // Reset the form fields
         $this->reset([
             'budgetName',
-            "budgetPhaseId",
-            "budgetDescription",
-            "newBudgetModal_isOpen",
+            'budgetPhaseId',
+            'budgetDescription',
+            'newBudgetModal_isOpen',
         ]);
+    
+        // Refresh the budgets list
+        $this->budgets = $this->fetchBudgets();
     }
+
+    public function fetchBudgets()
+    {
+        // Get all phase IDs associated with the project
+        $phaseIds = $this->project->phases->pluck('id');
+    
+        // Fetch budgets where phase_id is in the list of phase IDs
+        return Budget::whereIn('phase_id', $phaseIds)
+                     ->with('phase')
+                     ->get();
+    }
+public function viewBudgetDetails($budgetId)
+{
+    // Logic to view budget details
+    $this->budgetId = $budgetId;
+    // You can open a modal or navigate to a different view here
+}
+
+public function approveBudget($budgetId)
+{
+    // Logic to approve the budget
+    $budget = Budget::findOrFail($budgetId);
+    $budget->update(['status' => 'approved']);
+    flash()->addSuccess("Budget approved successfully");
+    $this->budgets = $this->fetchBudgets(); // Refresh the budgets list
+}
 
     public $showPhaseForm = false;
     public $showMilestoneForm = false;
@@ -155,64 +187,68 @@ class ViewProjectDetailsComponent extends Component
         return $totalPhases > 0 ? round(($completedPhases / $totalPhases) * 100) : 0;
     }
 
-    public function render()
-    {
-        // Get phases and milestones, then merge them into a single collection
-        $phases = Phase::with('milestones')
-            ->where('project_id', $this->project->id)
-            ->orderBy('start_date')
-            ->get()
-            ->map(function ($phase) {
-                return [
-                    'type' => 'phase',
-                    'id' => $phase->id,
-                    'name' => $phase->name,
-                    'start_date' => $phase->start_date,
-                    'due_date' => $phase->end_date,
-                    'details' => $phase->description,
-                    'phase_status' => $phase->phase_status,
-                    'progress' => $this->calculatePhaseProgress($phase->phase_status),
-                    'milestones' => $phase->milestones->map(function ($milestone) {
-                        return [
-                            'type' => 'milestone',
-                            'id' => $milestone->id,
-                            'name' => $milestone->name,
-                            'due_date' => $milestone->due_date,
-                            'details' => $milestone->description,
-                            'phase_id' => $milestone->phase_id, // Ensure phase_id is included
-                        ];
-                    }),
-                ];
-            });
-    
-        $milestones = Milestone::where('project_id', $this->project->id)
-            ->whereNull('phase_id')
-            ->orderBy('due_date')
-            ->get()
-            ->map(function ($milestone) {
-                return [
-                    'type' => 'milestone',
-                    'id' => $milestone->id,
-                    'name' => $milestone->name,
-                    'due_date' => $milestone->due_date,
-                    'details' => $milestone->description,
-                    'phase_id' => null, // Ensure phase_id is explicitly set to null
-                ];
-            });
-    
-        // Merge phases and milestones, order by start date and due date
-        $timelineItems = $phases->merge($milestones)
-            ->sortBy(function ($item) {
-                return [$item['start_date'] ?? $item['due_date'], $item['due_date'] ?? $item['start_date']];
-            });
-    
-        // Calculate overall project progress
-        $overallProgress = $this->calculateOverallProgress();
-    
-        return view('livewire.preojects.view-project-details-component', [
-            'timelineItems' => $timelineItems,
-            'overallProgress' => $overallProgress,
-            'phases' => $phases,
-        ]);
-    }
+   public function render()
+{
+    // Fetch budgets
+    $this->budgets = $this->fetchBudgets();
+
+    // Get phases and milestones, then merge them into a single collection
+    $phases = Phase::with('milestones')
+        ->where('project_id', $this->project->id)
+        ->orderBy('start_date')
+        ->get()
+        ->map(function ($phase) {
+            return [
+                'type' => 'phase',
+                'id' => $phase->id,
+                'name' => $phase->name,
+                'start_date' => $phase->start_date,
+                'due_date' => $phase->end_date,
+                'details' => $phase->description,
+                'phase_status' => $phase->phase_status,
+                'progress' => $this->calculatePhaseProgress($phase->phase_status),
+                'milestones' => $phase->milestones->map(function ($milestone) {
+                    return [
+                        'type' => 'milestone',
+                        'id' => $milestone->id,
+                        'name' => $milestone->name,
+                        'due_date' => $milestone->due_date,
+                        'details' => $milestone->description,
+                        'phase_id' => $milestone->phase_id, 
+                    ];
+                }),
+            ];
+        });
+
+    $milestones = Milestone::where('project_id', $this->project->id)
+        ->whereNull('phase_id')
+        ->orderBy('due_date')
+        ->get()
+        ->map(function ($milestone) {
+            return [
+                'type' => 'milestone',
+                'id' => $milestone->id,
+                'name' => $milestone->name,
+                'due_date' => $milestone->due_date,
+                'details' => $milestone->description,
+                'phase_id' => null,
+            ];
+        });
+
+    // Merge phases and milestones, order by start date and due date
+    $timelineItems = $phases->merge($milestones)
+        ->sortBy(function ($item) {
+            return [$item['start_date'] ?? $item['due_date'], $item['due_date'] ?? $item['start_date']];
+        });
+
+    // Calculate overall project progress
+    $overallProgress = $this->calculateOverallProgress();
+
+    return view('livewire.preojects.view-project-details-component', [
+        'timelineItems' => $timelineItems,
+        'overallProgress' => $overallProgress,
+        'phases' => $phases,
+        'budgets' => $this->budgets,
+    ]);
+}
 }

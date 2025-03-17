@@ -1,13 +1,43 @@
+<x-app-layout>
 <div class="p-4">
-    <section class="container px-4 mx-auto">
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-medium text-gray-800 dark:text-white">Budgets</h2>
+    <div class="px-5 pt-5 pb-0 w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div>
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Budget Name:
+                {{ $budget->budget_name }}</h5>
+        </div>
+        <div class="p-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            <div>
+                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project:</h5>
+                {{-- <p class="font-normal text-gray-700 dark:text-gray-400">{{ $budget->project->project_name }}</p>  --}}
+            </div>
+
+            <div>
+                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Phase:</h5>
+                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $budget->phase->name }}</p>
+            </div>
+            <div>
+                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Description:</h5>
+                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $budget->description }}</p>
+            </div>
+
+        </div>
+    </div>  {{-- End of top card --}}
+
+     {{-- Expense Items Table --}}
+    <div class="mt-4 p-5 w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+      <h3 class="text-lg font-semibold mb-4">Budget Items</h3>
+      <section class="container px-4 mx-auto">
+
+        <div class="flex items-center gap-x-3">
+            {{-- <h2 class="text-lg font-medium text-gray-800 dark:text-white">Team members</h2> --}}
         
-            <x-button wire:click="openNewCategoryModal" class="text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-                New Budget
-            </x-button>
+            <button class="ml-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-blue-400 dark:hover:bg-gray-700">
+                New Category
+            </button>
         </div>
         
+       
     
         <div class="flex flex-col mt-6">
             <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -141,54 +171,11 @@
                 </svg>
             </a>
         </div>
-
-        <x-dialog-modal wire:model="showNewCategoryModal">
-            <x-slot name="title">New Expense Category</x-slot>
-            <x-slot name="content">
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
-                    <input type="text" wire:model="newCategoryName" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="description" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
-                    <textarea wire:model="newCategoryDescription" id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label for="code" class="block text-sm font-medium text-gray-700">Code (Optional)</label>
-                    <input type="text" wire:model="newCategoryCode" id="code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
-            </x-slot>
-            <x-slot name="footer">
-                <button wire:click="closeNewCategoryModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                <button wire:click="saveNewCategory" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Save</button>
-            </x-slot>
-        </x-dialog-modal>
-    
-        <!-- Edit Category Modal -->
-        <x-dialog-modal wire:model="showEditModal">
-            <x-slot name="title">Edit Expense Category</x-slot>
-            <x-slot name="content">
-                <div class="mb-4">
-                    <label for="editName" class="block text-sm font-medium text-gray-700">Category Name <span class="text-red-500">*</span></label>
-                    <input type="text" wire:model="editCategoryName" id="editName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
-                <div class="mb-4">
-                    <label for="editDescription" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
-                    <textarea wire:model="editCategoryDescription" id="editDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label for="editCode" class="block text-sm font-medium text-gray-700">Code (Optional)</label>
-                    <input type="text" wire:model="editCategoryCode" id="editCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                </div>
-            </x-slot>
-            <x-slot name="footer">
-                <button wire:click="closeEditModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
-                <button wire:click="updateCategory" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Save</button>
-            </x-slot>
-        </x-dialog-modal>
-
-
     </section>
+
+     
+
+    </div>
+
 </div>
-
-
+</x-app-layout>

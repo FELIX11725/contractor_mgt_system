@@ -10,7 +10,7 @@ class Budget extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['project_plan_id','project_plan_item_name', 'expense_item', 'estimated_amount'];
+    protected $fillable = ['phase_id','budget_name', 'description', 'estimated_amount', 'milestone_id','approved'];
     protected $table = 'budgets';
    
     public function projectPlans()
@@ -18,9 +18,15 @@ class Budget extends Model
     return $this->belongsTo(ProjectPlan::class, 'project_plan_id');
 }
 //expense
-public function expenses()
+// Budget.php (Model)
+public function phase()
 {
-    return $this->hasOne(Expense::class);
+    return $this->belongsTo(Phase::class);
+}
+
+public function milestone()
+{
+    return $this->belongsTo(Milestone::class);
 }
 public function project()
 {
