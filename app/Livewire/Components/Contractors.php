@@ -128,7 +128,7 @@ class Contractors extends Component
 
     public function delete($contractorId, FlasherInterface $flasher)
     {
-        $contractor =Contractor::findOrFail($contractorId);
+        $contractor = Contractor::findOrFail($contractorId);
         if($contractor->contracts()->exists()){
             $flasher->addError('Cannot delete contractor with existing contracts.');
             return;  

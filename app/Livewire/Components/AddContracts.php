@@ -19,7 +19,6 @@ class AddContracts extends Component
     public $contract_type_id;
     public $total_amount;
     public $description;
-    // public $payment_terms;
 
     public $contractTypes = [];
     public $showContractTypeForm = false;

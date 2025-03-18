@@ -2,17 +2,18 @@
 
 namespace App\Livewire\Preojects;
 
-use Livewire\Component;
-use App\Models\Project;
-use App\Models\Budget;
 use App\Models\Phase;
+use App\Models\Budget;
+use App\Models\Project;
+use Livewire\Component;
 use App\Models\Milestone;
+use App\Models\Projectmilestone;
 
 class ViewProjectDetailsComponent extends Component
 {
     public $project;
     public $activeTab = "PlansTab";
-
+   
     public $budgetName;
     public $budgetDescription;
     public $budgetEstimatedAmount;
@@ -21,7 +22,7 @@ class ViewProjectDetailsComponent extends Component
     public $budgetId;
     public $budgets;
     public $showBudgetForm = false;
-
+    public $milestoneType = 'project'; // 'project' or 'phase'
     public $newBudgetModal_isOpen = false;
 
     public $phase_id;
@@ -29,8 +30,6 @@ class ViewProjectDetailsComponent extends Component
     public function mount($project)
     {
         $this->project = Project::findOrFail($project);
-
-        // $this->loadBudgets();
     }
 
     public function closeNewBudgetModal()
@@ -40,7 +39,6 @@ class ViewProjectDetailsComponent extends Component
 
     public function saveBudget()
     {
-
         $this->validate([
             'budgetName' => "required",
             'budgetDescription' => "nullable",
@@ -74,14 +72,12 @@ class ViewProjectDetailsComponent extends Component
 
     public function createPhase()
     {
-        // Validate inputs
         $this->validate([
             'phase_name' => 'required|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',  // Ensure end date is after or equal to start date
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        // Create new Phase
         Phase::create([
             'name' => $this->phase_name,
             'start_date' => $this->start_date,
@@ -90,63 +86,74 @@ class ViewProjectDetailsComponent extends Component
             'project_id' => $this->project->id
         ]);
 
-        // Reset form fields
         $this->reset(['phase_name', 'start_date', 'end_date']);
-
-        // Optionally, hide the form
         $this->showPhaseForm = false;
     }
 
     public function createMilestone()
     {
+        $this->validate([
+            'milestone_name' => 'required|string|max:255',
+            'milestoneType' => 'required|in:project,phase',
+            'phase_id' => 'required_if:milestoneType,phase|exists:phases,id',
+        ]);
+    
         Milestone::create([
             'milestone_name' => $this->milestone_name,
             'due_date' => now()->addDays(7),
             'project_id' => $this->project->id,
-            'phase_id' => $this->phase_id ?? null,
+            'phase_id' => $this->milestoneType === 'phase' ? $this->phase_id : null,
         ]);
-        $this->milestone_name = "";
+    
+        $this->reset(['milestone_name', 'milestoneType', 'phase_id']);
         $this->showMilestoneForm = false;
     }
 
-
     public function calculateTimelineWidth($startDate, $endDate)
     {
-        // Make sure to parse the dates correctly using Carbon
         $start = \Carbon\Carbon::parse($startDate);
         $end = \Carbon\Carbon::parse($endDate);
-
-        // Calculate the number of days the phase lasts
         $totalDays = $end->diffInDays($start);
 
-        // Calculate the total project duration to scale the width correctly
         $projectStart = \Carbon\Carbon::parse($this->project->start_date);
         $projectEnd = \Carbon\Carbon::parse($this->project->end_date);
         $projectDuration = $projectStart->diffInDays($projectEnd);
 
-        // Return the width as a percentage of the total project duration
         return ($totalDays / $projectDuration) * 100;
     }
 
     public function calculateMilestonePosition($milestoneDate)
     {
-        // Make sure to parse the milestone date using Carbon
         $milestone = \Carbon\Carbon::parse($milestoneDate);
-
-        // Calculate the position of the milestone relative to the project start date
         $projectStart = \Carbon\Carbon::parse($this->project->start_date);
         $daysSinceStart = $milestone->diffInDays($projectStart);
 
-        // Calculate the total project duration
         $projectEnd = \Carbon\Carbon::parse($this->project->end_date);
         $projectDuration = $projectStart->diffInDays($projectEnd);
 
-        // Return the milestone's position as a percentage along the project timeline
         return ($daysSinceStart / $projectDuration) * 100;
     }
 
+    public function calculatePhaseProgress($phaseStatus)
+    {
+        // Map phase_status to progress percentage
+        return match ($phaseStatus) {
+            'completed' => 100,
+            'active' => 50,
+            'pending' => 0,
+            default => 0,
+        };
+    }
 
+    public function calculateOverallProgress()
+    {
+        // Calculate overall progress based on phase statuses
+        $phases = Phase::where('project_id', $this->project->id)->get();
+        $totalPhases = $phases->count();
+        $completedPhases = $phases->where('phase_status', 'completed')->count();
 
+        return $totalPhases > 0 ? round(($completedPhases / $totalPhases) * 100) : 0;
+    }
 
     public function render()
     {
@@ -163,10 +170,23 @@ class ViewProjectDetailsComponent extends Component
                     'start_date' => $phase->start_date,
                     'due_date' => $phase->end_date,
                     'details' => $phase->description,
+                    'phase_status' => $phase->phase_status,
+                    'progress' => $this->calculatePhaseProgress($phase->phase_status),
+                    'milestones' => $phase->milestones->map(function ($milestone) {
+                        return [
+                            'type' => 'milestone',
+                            'id' => $milestone->id,
+                            'name' => $milestone->name,
+                            'due_date' => $milestone->due_date,
+                            'details' => $milestone->description,
+                            'phase_id' => $milestone->phase_id, // Ensure phase_id is included
+                        ];
+                    }),
                 ];
             });
-
+    
         $milestones = Milestone::where('project_id', $this->project->id)
+            ->whereNull('phase_id')
             ->orderBy('due_date')
             ->get()
             ->map(function ($milestone) {
@@ -174,20 +194,25 @@ class ViewProjectDetailsComponent extends Component
                     'type' => 'milestone',
                     'id' => $milestone->id,
                     'name' => $milestone->name,
-                    'start_date' => $milestone->due_date,
                     'due_date' => $milestone->due_date,
                     'details' => $milestone->description,
+                    'phase_id' => null, // Ensure phase_id is explicitly set to null
                 ];
             });
-
+    
         // Merge phases and milestones, order by start date and due date
         $timelineItems = $phases->merge($milestones)
             ->sortBy(function ($item) {
-                return [$item['start_date'], $item['due_date']];
+                return [$item['start_date'] ?? $item['due_date'], $item['due_date'] ?? $item['start_date']];
             });
-
+    
+        // Calculate overall project progress
+        $overallProgress = $this->calculateOverallProgress();
+    
         return view('livewire.preojects.view-project-details-component', [
             'timelineItems' => $timelineItems,
+            'overallProgress' => $overallProgress,
+            'phases' => $phases,
         ]);
     }
 }
