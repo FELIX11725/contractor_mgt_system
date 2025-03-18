@@ -51,7 +51,10 @@ class Phase extends Model
     {
         return $this->belongsTo(Project::class);
     }
-
+    public function budgets()
+{
+    return $this->hasMany(Budget::class);
+}
     /**
      * Get the milestones related to this phase.
      */

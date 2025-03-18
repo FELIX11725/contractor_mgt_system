@@ -2,94 +2,108 @@
 
 namespace App\Livewire\Components;
 
-use App\Models\Budget;
-use App\Models\Expense;
-use App\Models\Project;
+use App\Models\ExpenseCategory;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Flasher\Prime\FlasherInterface;
 
 class Expenses extends Component
 {
     use WithPagination;
 
-    public $showPayModal = false;
-    public $modalBudgetId;
-    public $modalAmountPaid;
-    public $selectedProjectId = null;
-    public $budgets;
-    public $projects;
+    public $showNewCategoryModal = false;
+    public $showEditModal = false;
+
+    // Fields for creating a new category
+    public $newCategoryName;
+    public $newCategoryDescription;
+    public $newCategoryCode;
+
+    // Fields for editing an existing category
+    public $editCategoryId;
+    public $editCategoryName;
+    public $editCategoryDescription;
+    public $editCategoryCode;
+
     protected $paginationTheme = 'bootstrap';
 
     public function render()
     {
-        if ($this->selectedProjectId) {
-            $this->budgets = Budget::with(['project', 'expenses'])
-                ->whereHas('project', function ($query) {
-                    $query->where('project_id', $this->selectedProjectId);
-                })->get();
-        } elseif ($this->selectedProjectId === null) {
-            $this->budgets = Budget::with(['project', 'expenses'])->get(); 
-        }
-        return view('livewire.components.expenses');
+        $expenseCategories = ExpenseCategory::paginate(10);
+        return view('livewire.components.expenses', ['expenseCategories' => $expenseCategories]);
     }
 
-    public function updatedSelectedProjectId()
+    // Open the modal for creating a new category
+    public function openNewCategoryModal()
     {
-        $this->budgets = collect(); 
-        $this->resetPage(); 
+        $this->showNewCategoryModal = true;
     }
 
-
-    public function mount()
+    // Close the modal for creating a new category and reset fields
+    public function closeNewCategoryModal()
     {
-        $this->projects = Project::all();
-        $this->budgets = collect(); 
+        $this->showNewCategoryModal = false;
+        $this->reset(['newCategoryName', 'newCategoryDescription', 'newCategoryCode']);
     }
 
-    public function openPayModal($budgetId)
-    {
-        $this->modalBudgetId = $budgetId;
-        $this->showPayModal = true;
-    }
-
-
-public function getFilteredBudgetsProperty()
-{
-    // If a project is selected, filter budgets by project ID
-    if ($this->selectedProjectId) {
-        return $this->budgets->where('project.id', $this->selectedProjectId);
-    }
-
-    // If no project is selected, return all budgets
-    return $this->budgets;
-}
-
-    public function submitModalAmountPaid(FlasherInterface $flasher)
+    // Save a new category
+    public function saveNewCategory()
     {
         $this->validate([
-            'modalAmountPaid' => 'required|numeric|min:0',
+            'newCategoryName' => 'required|string|max:255',
+            'newCategoryDescription' => 'nullable|string',
+            'newCategoryCode' => 'nullable|string|max:50',
         ]);
 
-        $budget = Budget::findOrFail($this->modalBudgetId);
-        $expense = $budget->expense ?? new Expense();
+        ExpenseCategory::create([
+            'name' => $this->newCategoryName,
+            'description' => $this->newCategoryDescription,
+            'code' => $this->newCategoryCode,
+            'user_id' => auth()->id(),
+        ]);
 
-        $expense->budget_id = $budget->id;
-        $expense->project_id = $budget->projectPlans->project_id;
-        $expense->project_plan_id = $budget->project_plan_id;
-        $expense->amount_paid = $this->modalAmountPaid;
-        $expense->payment_method = 'cash';
-        $expense->payment_date = now();
-        $expense->expense_status = 'not approved';
-        $expense->save();
-        
-        $budget->save();
-
-        $this->showPayModal = false;
-        $flasher->addSuccess('Amount paid updated successfully.');
-
-        $this->render();
-
-        
+        $this->closeNewCategoryModal();
     }
+
+    // Open the modal for editing an existing category
+    public function openEditModal($id)
+    {
+        $category = ExpenseCategory::findOrFail($id);
+        $this->editCategoryId = $category->id;
+        $this->editCategoryName = $category->name;
+        $this->editCategoryDescription = $category->description;
+        $this->editCategoryCode = $category->code;
+        $this->showEditModal = true;
+    }
+    public function viewDetails($categoryId)
+{
+    return redirect()->route('expensetypes', ['categoryId' => $categoryId]);
+}
+
+    // Close the modal for editing an existing category and reset fields
+    public function closeEditModal()
+    {
+        $this->showEditModal = false;
+        $this->reset(['editCategoryId', 'editCategoryName', 'editCategoryDescription', 'editCategoryCode']);
+    }
+
+    // Update an existing category
+    public function updateCategory()
+    {
+        $this->validate([
+            'editCategoryName' => 'required|string|max:255',
+            'editCategoryDescription' => 'nullable|string',
+            'editCategoryCode' => 'nullable|string|max:50',
+        ]);
+
+        $category = ExpenseCategory::findOrFail($this->editCategoryId);
+        $category->update([
+            'name' => $this->editCategoryName,
+            'description' => $this->editCategoryDescription,
+            'user_id' => auth()->id(),
+        ]);
+
+        $this->closeEditModal();
+    }
+
+
 }

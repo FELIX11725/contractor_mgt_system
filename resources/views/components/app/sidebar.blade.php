@@ -452,17 +452,17 @@
                                         href="{{ route('expenses') }}">
                                         <span
                                             class="text-sm font-medium duration-200 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100">
-                                            Manage Expenses</span>
+                                      Expense Categories</span>
                                     </a>
                                 </li>
-                                <li class="mb-1 last:mb-0">
+                                {{-- <li class="mb-1 last:mb-0">
                                     <a class="block text-gray-500/90 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition truncate @if (Route::is('expensetypes')) {{ '!text-violet-500' }} @endif"
                                         href="{{ route('expensetypes') }}">
                                         <span
                                             class="text-sm font-medium duration-200 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100">Add
                                             expense</span>
                                     </a>
-                                </li>
+                                </li> --}}
                             </ul>
                         </div>
                     </li>

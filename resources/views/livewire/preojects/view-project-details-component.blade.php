@@ -52,10 +52,10 @@
                 class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'BudjetTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
                 Budget
             </div>
-            <div wire:click="$set('activeTab' , 'ExpensesTab')"
+            {{-- <div wire:click="$set('activeTab' , 'ExpensesTab')"
                 class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ExpensesTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
                 Expenses
-            </div>
+            </div> --}}
             <div wire:click="$set('activeTab' , 'ProjectProgressTab')"
                 class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ProjectProgressTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
                 Project Progress
@@ -122,14 +122,19 @@
                                 <!-- Form Starts Here -->
                                 <form wire:submit.prevent="createPhase">
                                     <!-- Phase Name Input -->
+                                    {{-- add label --}}
+                                    <label for="phase_name" class="block text-sm font-medium text-gray-700">Phase Name</label>
                                     <input type="text" wire:model="phase_name" class="w-full p-2 border rounded mb-2"
                                         placeholder="Phase Name">
 
                                     <!-- Start Date Input -->
+                                    {{-- add lebel --}}
+                                    <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
                                     <input type="date" wire:model="start_date" class="w-full p-2 border rounded mb-2"
                                         placeholder="Start Date">
 
                                     <!-- End Date Input -->
+                                    <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
                                     <input type="date" wire:model="end_date" class="w-full p-2 border rounded mb-2"
                                         placeholder="End Date">
 
@@ -213,7 +218,7 @@
                                 <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
                                     Start: {{ \Carbon\Carbon::parse($item['start_date'])->format('M d, Y') }} - Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
                                 </time>
-                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }}</p>
+                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }} </p>
                             </li>
                     
                             <!-- Milestones under this phase -->
@@ -225,6 +230,12 @@
                                         </svg>
                                     </span>
                                     <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
+                                        {{ $item['name'] }} -
+
+                                        @if($item['type'] === 'milestone')
+                                        {{ $item['name'] }}
+                                        @endif
+
                                         {{ $milestone['name'] }}
                                         <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
                                     </h3>
@@ -323,76 +334,113 @@
 
             </div>
         @elseif ($activeTab == 'BudjetTab')
+        <div>
+            <!-- Budget tab content -->
             <div>
-                <!-- Budget tab content -->
                 <div>
-                    <div>
-                        Manage Budgets
+                    Manage Budgets
+                </div>
+                <div>
+                    <x-button wire:click="$set('newBudgetModal_isOpen', true)">New Budget</x-button>
+        
+                    <x-dialog-modal wire:model="newBudgetModal_isOpen">
+                        <x-slot name="title"></x-slot>
+                        <x-slot name="content">
+                            <x-form-section>
+                                <x-slot name="submit">saveBudget</x-slot>
+                                <x-slot name="title">New Budget</x-slot>
+                                <x-slot name="description">Fill in the details for the new budget.</x-slot>
+        
+                                <x-slot name="form">
+                                    <!-- Select Phase -->
+                                    <div class="col-span-6 sm:col-span-4">
+                                        <x-label for="budgetPhaseId" value="Phase" /> 
+                                        <select id="budgetPhaseId"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                            wire:model.defer="budgetPhaseId">
+                                            <option value="">Select Phase</option>
+                                            @foreach ($project->phases as $phase)
+                                                <option value="{{ $phase->id }}">{{ $phase->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error for="budgetPhaseId" class="mt-2" />
+                                    </div>
+        
+                                    <!-- Budget Name -->
+                                    <div class="col-span-6 sm:col-span-4">
+                                        <x-label for="budgetName" value="Budget Name / Title" />
+                                        <x-input id="budgetName" type="text" class="mt-1 block w-full"
+                                            wire:model.defer="budgetName" required />
+                                        <x-input-error for="budgetName" class="mt-2" />
+                                    </div>
+        
+                                    <!-- Budget Description -->
+                                    <div class="col-span-6 sm:col-span-4">
+                                        <x-label for="budgetDescription" value="Description" />
+                                        <textarea id="budgetDescription" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                            wire:model.defer="budgetDescription" rows="3"></textarea>
+                                        <x-input-error for="budgetDescription" class="mt-2" />
+                                    </div>
+                                </x-slot>
+                            </x-form-section>
+                        </x-slot>
+        
+                        <x-slot name="footer">
+                            <x-button wire:click="closeNewBudgetModal">Close</x-button>
+                            <x-button class="ml-2" wire:click="saveBudget">Save Budget</x-button>
+                        </x-slot>
+                    </x-dialog-modal>
+                </div>
+        
+                <!-- Budgets Table -->
+                <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-5">
+                        <div class="rounded-lg bg-white p-8 lg:col-span-3 lg:p-12">
+                            <div class="rounded-lg border border-gray-200">
+                                <div class="overflow-x-auto rounded-t-lg">
+                                    <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+                                        <thead class="ltr:text-left rtl:text-right">
+                                            <tr>
+                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Budget Name</th>
+                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Phase</th>
+                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Actions</th>
+                                            </tr>
+                                        </thead>
+        
+                                        <tbody class="divide-y divide-gray-200">
+                                            @foreach ($budgets as $budget)
+                                                <tr>
+                                                    <td class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">{{ $budget->budget_name }}</td>
+                                                    <td class="px-4 py-2 whitespace-nowrap text-gray-700">
+                                                        {{ $budget->phase ? $budget->phase->name : 'N/A' }}
+                                                    </td>
+                                                    <td class="px-4 py-2 whitespace-nowrap text-gray-700">
+                                                        <button class="px-4 py-2 bg-blue-500 text-white rounded" wire:click="viewBudgetDetails({{ $budget->id }})"> <a href="{{ route('budgets.details', $budget) }}" class="px-4 py-2 bg-blue-500 text-white rounded">Details</a></button>
+                                                        <button class="px-4 py-2 bg-green-500 text-white rounded" wire:click="approveBudget({{ $budget->id }})">Approve</button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+        
+                                <!-- Pagination -->
+                                <div class="rounded-b-lg border-t border-gray-200 px-4 py-2">
+                                    <ol class="flex justify-end gap-1 text-xs font-medium">
+                                        <!-- Pagination links here -->
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <x-button wire:click="$set('newBudgetModal_isOpen', true)">New Budget</x-button>
-
-                        <x-dialog-modal wire:model="newBudgetModal_isOpen">
-                            <x-slot name="title">New Budget</x-slot>
-                            <x-slot name="content">
-                                <x-form-section>
-                                    <x-slot name="submit">saveBudget</x-slot>
-                                    <x-slot name="title">New Budget</x-slot>
-                                    <x-slot name="description">Fill in the details for the new budget.</x-slot>
-
-                                    <x-slot name="form">
-                                        <!-- Select Phase -->
-                                        <div class="col-span-6 sm:col-span-4">
-                                            <x-label for="budgetPhaseId" value="Phase" />
-                                            <select id="budgetPhaseId"
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                                wire:model.defer="budgetPhaseId">
-                                                <option value="">Select Phase</option>
-                                                @foreach ($project->phases as $phase)
-                                                    <option value="{{ $phase->id }}">{{ $phase->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <x-input-error for="budgetPhaseId" class="mt-2" />
-                                        </div>
-
-                                        <!-- Budget Name -->
-                                        <div class="col-span-6 sm:col-span-4">
-                                            <x-label for="budgetName" value="Budget Name / Title" />
-                                            <x-input id="budgetName" type="text" class="mt-1 block w-full"
-                                                wire:model.defer="budgetName" required />
-                                            <x-input-error for="budgetName" class="mt-2" />
-                                        </div>
-
-                                        <!-- Budget Description -->
-                                        <div class="col-span-6 sm:col-span-4">
-                                            <x-label for="budgetDescription" value="Description" />
-                                            <textarea id="budgetDescription" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                                wire:model.defer="budgetDescription" rows="3"></textarea>
-                                            <x-input-error for="budgetDescription" class="mt-2" />
-                                        </div>
-
-
-                                    </x-slot>
-                                </x-form-section>
-                            </x-slot>
-
-                            <x-slot name="footer">
-                                <x-button wire:click="closeNewBudgetModal">Close</x-button>
-                                <x-button class="ml-2" wire:click="saveBudget">Save Budget</x-button>
-                            </x-slot>
-                        </x-dialog-modal>
-                    </div>
-
-
-
-
                 </div>
             </div>
-        @elseif ($activeTab == 'ExpensesTab')
+        </div>
+        {{-- @elseif ($activeTab == 'ExpensesTab')
             <div>
                 <!-- Expenses tab content -->
                 Expenses tab component
-            </div>
+            </div> --}}
             @elseif ($activeTab == 'ProjectProgressTab')
             <div>
                 <div class="p-6">
