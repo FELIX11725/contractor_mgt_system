@@ -10,7 +10,7 @@ class BudgetItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['budget_id', 'expense_category_item_id', 'estimated_amount'];
+    protected $fillable = ['budget_id', 'expense_category_item_id', 'estimated_amount','quantity','rate'];
 
     public function budget()
     {

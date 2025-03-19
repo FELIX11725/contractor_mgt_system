@@ -51,7 +51,7 @@ class Budgets extends Component
     public function render()
     {
         $budgets = Budget::whereHas('phase', function ($query) {  // Use whereHas
-            $query->where('project_id', $this->project->id);  // Access project_id through phase
+            $query->where('project_id', $this->project->id);  
         })->with('phase')->get();
     
         return view('livewire.components.budgets', compact('budgets'));

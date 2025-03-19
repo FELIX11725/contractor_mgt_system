@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Livewire\Budget\BudgetDetailsComponent;
+use App\Livewire\Expenses\ExpenseCategoriesComponent;
+use App\Livewire\Preojects\ViewProjectDetailsComponent;
 use App\Http\Controllers\ManagePlans\ViewplansController;
+use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
 use App\Http\Controllers\BudgetManagement\BudgetController;
 use App\Http\Controllers\ManageExpenses\ExpensesController;
 use App\Http\Controllers\ManagePlans\ProjectplansController;
@@ -13,15 +17,12 @@ use App\Http\Controllers\ProjectManagement\ProjectsController;
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
 use App\Http\Controllers\ManageContracts\AddContractController;
 use App\Http\Controllers\ProjectManagement\AddProjectController;
+
 use App\Http\Controllers\ManageContractors\ContractorsController;
 use App\Http\Controllers\ManageMilestones\AddMilestoneController;
+
 use App\Http\Controllers\ManageContractors\AddContractorController;
 use App\Http\Controllers\ManageContractors\ComplianceRecordsController;
-
-use App\Livewire\Expenses\ExpenseCategoriesComponent;
-use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
-
-use App\Livewire\Preojects\ViewProjectDetailsComponent;
 
 Route::redirect('/', 'login');
 
@@ -67,6 +68,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::prefix('budgets')->group(function (){
         Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets');
         Route::get('/viewbudgets',[ViewbudgetController::class, 'index'])->name('viewbudgets');
-        Route::get('/budgets/{budget}/details', [BudgetController::class, 'showDetails'])->name('budgets.details');
+        Route::get('/budgets/{budget}/details', BudgetDetailsComponent::class )->name('budgets.details');
     });
 });
