@@ -13,7 +13,7 @@ class ViewProjectDetailsComponent extends Component
 {
     public $project;
     public $activeTab = "PlansTab";
-   
+    
     public $budgetName;
     public $budgetDescription;
     public $budgetEstimatedAmount;
@@ -24,6 +24,7 @@ class ViewProjectDetailsComponent extends Component
     public $showBudgetForm = false;
     public $milestoneType = 'project'; // 'project' or 'phase'
     public $newBudgetModal_isOpen = false;
+    public $showMilestoneForm = false;
 
     public $phase_id;
 
@@ -96,11 +97,31 @@ public function approveBudget($budgetId)
     $this->budgets = $this->fetchBudgets(); // Refresh the budgets list
 }
 
-    public $showPhaseForm = false;
-    public $showMilestoneForm = false;
-
     public $phase_name, $end_date, $start_date;
     public $milestone_name;
+    public $showPhaseForm = false;
+
+    public function openPhaseModal()
+{
+    $this->showPhaseForm = true;
+}
+
+public function closePhaseModal()
+{
+    $this->showPhaseForm = false;
+    $this->reset(['phase_name', 'start_date', 'end_date']); // Reset form fields
+}
+
+    public function openMilestoneModal()
+{
+    $this->showMilestoneForm = true;
+}
+
+public function closeMilestoneModal()
+{
+    $this->showMilestoneForm = false;
+    $this->reset(['milestone_name', 'milestoneType', 'phase_id']); // Reset form fields
+}
 
     public function createPhase()
     {
@@ -118,8 +139,8 @@ public function approveBudget($budgetId)
             'project_id' => $this->project->id
         ]);
 
-        $this->reset(['phase_name', 'start_date', 'end_date']);
-        $this->showPhaseForm = false;
+        $this->closePhaseModal(); // Close the modal after saving
+    flash()->addSuccess('Phase created successfully!');
     }
 
     public function createMilestone()
@@ -137,8 +158,8 @@ public function approveBudget($budgetId)
             'phase_id' => $this->milestoneType === 'phase' ? $this->phase_id : null,
         ]);
     
-        $this->reset(['milestone_name', 'milestoneType', 'phase_id']);
-        $this->showMilestoneForm = false;
+        $this->closeMilestoneModal();
+        flash()->addSuccess('Milestone created successfully!');
     }
 
     public function calculateTimelineWidth($startDate, $endDate)

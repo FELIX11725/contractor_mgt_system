@@ -1,84 +1,108 @@
 <div class="p-4">
     {{-- Top card with project details --}}
-    <div
-        class="px-5 pt-5 pb-0 w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-        <div>
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Project Name:
-                {{ $project->project_name }}</h5>
+    <div class="px-6 py-6 w-full bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+        <!-- Project Title -->
+        <div class="flex flex-wrap justify-between items-center border-b pb-4">
+            <h5 class="text-3xl font-bold text-gray-900 dark:text-white">
+                Project Name: <span class="text-blue-600 dark:text-blue-400">{{ $project->project_name }}</span>
+            </h5>
         </div>
-        <div class="p-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Code:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->project_code }}</p>
+    
+        <!-- Project Details -->
+        <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Project Code:</h5>
+                <p class="text-gray-600 dark:text-gray-400">{{ $project->project_code }}</p>
             </div>
-            {{-- <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Description:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->project_description }}</p>
-            </div> --}}
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Location:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->location }}</p>
+    
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Location:</h5>
+                <p class="text-gray-600 dark:text-gray-400">{{ $project->location }}</p>
             </div>
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Type:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->project_type?->name }}</p>
+    
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Type:</h5>
+                <p class="text-gray-600 dark:text-gray-400">{{ $project->project_type?->name }}</p>
             </div>
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Status:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400"><x-status :status="$project->project_status" /></p>
+    
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Status:</h5>
+                <p class="text-gray-600 dark:text-gray-400"><x-status :status="$project->project_status" /></p>
             </div>
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Start Date:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->start_date }}</p>
+    
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">Start Date:</h5>
+                <p class="text-gray-600 dark:text-gray-400">{{ $project->start_date }}</p>
             </div>
-            <div>
-                <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">End Date:</h5>
-                <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->end_date }}</p>
+    
+            <div class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg shadow">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-300">End Date:</h5>
+                <p class="text-gray-600 dark:text-gray-400">{{ $project->end_date }}</p>
             </div>
         </div>
-
-        <hr>
-        {{-- Row with the nav tabs --}}
-        <div class="flex space-x-4 mb-4">
-            <div wire:click="$set('activeTab' , 'ProfileTab')"
-                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ProfileTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
-                Profile
-            </div>
-            <div wire:click="$set('activeTab' , 'PlansTab')"
-                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'PlansTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
-                Phase & Milestones
-            </div>
-            <div wire:click="$set('activeTab' , 'BudjetTab')"
-                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'BudjetTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
-                Budget
-            </div>
-            {{-- <div wire:click="$set('activeTab' , 'ExpensesTab')"
-                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ExpensesTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
-                Expenses
-            </div> --}}
-            <div wire:click="$set('activeTab' , 'ProjectProgressTab')"
-                class="cursor-pointer py-2 px-4 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 {{ $activeTab == 'ProjectProgressTab' ? 'bg-gray-300 dark:bg-gray-600' : 'bg-gray-100 dark:bg-gray-900' }}">
-                Project Progress
-            </div>
+    
+        <hr class="my-6 border-gray-300 dark:border-gray-600">
+    
+        <!-- Tab Navigation -->
+        <div class="flex flex-wrap gap-3">
+            @php
+                $tabs = [
+                    'ProfileTab' => 'Profile',
+                    'PlansTab' => 'Phase & Milestones',
+                    'BudjetTab' => 'Budget',
+                    'ProjectProgressTab' => 'Project Progress',
+                ];
+            @endphp
+    
+            @foreach ($tabs as $key => $label)
+                <div wire:click="$set('activeTab', '{{ $key }}')"
+                    class="cursor-pointer px-5 py-2 text-lg font-semibold rounded-lg transition 
+                    {{ $activeTab == $key ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300' }} 
+                    hover:bg-blue-500 hover:text-white dark:hover:bg-blue-500">
+                    {{ $label }}
+                </div>
+            @endforeach
         </div>
     </div>
+    
 
     {{-- Main page data based on activeTab --}}
     <div
         class="mt-4 p-5 w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
         @if ($activeTab == 'ProfileTab')
-            <div>
-                <!-- Profiles tab content -->
-                Profiles tab component <br>
-                ------------------------------ <br>
-                <div class="mb-4">
-                    <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">Project Description:</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">{{ $project->project_description }}</p>
-                </div>
-                -add any information that doesnt fit or look nice being in the top banner<br>
-                - add edit <br>
-                - add contractors details <br>
+        <div class="mt-4 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Project Profile</h2>
+            
+            <!-- Project Description -->
+            <div class="mb-6 p-6 bg-gray-50 rounded-lg dark:bg-gray-700">
+                <h5 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Project Description</h5>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {{ $project->project_description }}
+                </p>
             </div>
+    
+            <!-- Additional Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Contractors Details -->
+                <div class="p-6 bg-gray-50 rounded-lg dark:bg-gray-700">
+                    <h5 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Contractors</h5>
+                    <p class="text-gray-700 dark:text-gray-300">Add contractors details here.</p>
+                    <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">
+                        Edit Contractors
+                    </button>
+                </div>
+    
+                <!-- Edit Project Information -->
+                <div class="p-6 bg-gray-50 rounded-lg dark:bg-gray-700">
+                    <h5 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">Edit Project</h5>
+                    <p class="text-gray-700 dark:text-gray-300">Update project details here.</p>
+                    <button class="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300">
+                        Edit Project
+                    </button>
+                </div>
+            </div>
+        </div>
+    
         @elseif ($activeTab == 'PlansTab')
             <div class="p-6">
                 <div>
@@ -100,13 +124,11 @@
                         <x-slot name="description">Mange Project Phases & Milestones</x-slot>
                         <x-slot name="aside">
                             <div class="flex gap-4 mb-4">
-                                <button wire:click="$toggle('showPhaseForm')"
-                                    class="px-4 py-2 bg-blue-500 text-white rounded">
-                                    Add Phase
+                                <button wire:click="openPhaseModal" class="px-4 py-2 bg-blue-500 text-white rounded">
+                                    Add New Phase
                                 </button>
-                                <button wire:click="$toggle('showMilestoneForm')"
-                                    class="px-4 py-2 bg-green-500 text-white rounded">
-                                    Add Milestone
+                                <button wire:click="openMilestoneModal" class="px-4 py-2 bg-green-500 text-white rounded">
+                                    Add New Milestone
                                 </button>
                             </div>
                         </x-slot>
@@ -115,73 +137,80 @@
                     <!-- Forms (Hidden Initially) -->
                     <div class="my-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Add Phase Form -->
-                        @if ($showPhaseForm)
-                            <div class="p-4 border rounded shadow bg-white">
-                                <h3 class="text-md font-bold mb-2">New Phase</h3>
+                       <!-- Phase Modal -->
+<x-dialog-modal wire:model="showPhaseForm">
+    <x-slot name="title">New Phase</x-slot>
+    <x-slot name="content">
+        <!-- Form Starts Here -->
+        <form wire:submit.prevent="createPhase">
+            <!-- Phase Name Input -->
+            <div class="mb-4">
+                <label for="phase_name" class="block text-sm font-medium text-gray-700">Phase Name <span class="text-red-500">*</span></label>
+                <input type="text" wire:model="phase_name" id="phase_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Phase Name">
+            </div>
 
-                                <!-- Form Starts Here -->
-                                <form wire:submit.prevent="createPhase">
-                                    <!-- Phase Name Input -->
-                                    {{-- add label --}}
-                                    <label for="phase_name" class="block text-sm font-medium text-gray-700">Phase Name</label>
-                                    <input type="text" wire:model="phase_name" class="w-full p-2 border rounded mb-2"
-                                        placeholder="Phase Name">
+            <!-- Start Date Input -->
+            <div class="mb-4">
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date <span class="text-red-500">*</span></label>
+                <input type="date" wire:model="start_date" id="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            </div>
 
-                                    <!-- Start Date Input -->
-                                    {{-- add lebel --}}
-                                    <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date</label>
-                                    <input type="date" wire:model="start_date" class="w-full p-2 border rounded mb-2"
-                                        placeholder="Start Date">
-
-                                    <!-- End Date Input -->
-                                    <label for="end_date" class="block text-sm font-medium text-gray-700">End Date</label>
-                                    <input type="date" wire:model="end_date" class="w-full p-2 border rounded mb-2"
-                                        placeholder="End Date">
-
-                                    <!-- Save Button -->
-                                    <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">
-                                        Save Phase
-                                    </button>
-                                </form>
-                                <!-- Form Ends Here -->
-                            </div>
-                        @endif
-
+            <!-- End Date Input -->
+            <div class="mb-4">
+                <label for="end_date" class="block text-sm font-medium text-gray-700">End Date <span class="text-red-500">*</span></label>
+                <input type="date" wire:model="end_date" id="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            </div>
+        </form>
+        <!-- Form Ends Here -->
+    </x-slot>
+    <x-slot name="footer">
+        <!-- Cancel Button -->
+        <button wire:click="closePhaseModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4">Cancel</button>
+        <!-- Save Button -->
+        <button wire:click="createPhase" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Save Phase</button>
+    </x-slot>
+</x-dialog-modal>
 
                         <!-- Add Milestone Form -->
-                        @if ($showMilestoneForm)
-                        <div class="p-4 border rounded shadow bg-white">
-                            <h3 class="text-md font-bold mb-2">New Milestone</h3>
-                            
-                            <!-- Milestone Name Input -->
-                            <input type="text" wire:model="milestone_name" class="w-full p-2 border rounded mb-2" placeholder="Milestone Name">
-                            
-                            <!-- Milestone Type Selection -->
-                            <div class="mb-2">
-                                <label class="block text-sm font-medium text-gray-700">Add Milestone To:</label>
-                                <select wire:model="milestoneType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    <option value="project">Project</option>
-                                    <option value="phase">Phase</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Phase Selection (Conditional) -->
-                            @if ($milestoneType === 'phase')
-                                <div class="mb-2">
-                                    <label class="block text-sm font-medium text-gray-700">Select Phase:</label>
-                                    <select wire:model="phase_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                        <option value="">Select Phase</option>
-                                        @foreach ($project->phases as $phase)
-                                            <option value="{{ $phase->id }}">{{ $phase->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
-                            
-                            <!-- Save Button -->
-                            <button wire:click="createMilestone" class="mt-2 px-4 py-2 bg-green-500 text-white rounded">Save Milestone</button>
-                        </div>
-                    @endif
+                       <!-- Milestone Modal -->
+<x-dialog-modal wire:model="showMilestoneForm">
+    <x-slot name="title">New Milestone</x-slot>
+    <x-slot name="content">
+        <!-- Milestone Name Input -->
+        <div class="mb-4">
+            <label for="milestone_name" class="block text-sm font-medium text-gray-700">Milestone Name <span class="text-red-500">*</span></label>
+            <input type="text" wire:model="milestone_name" id="milestone_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Milestone Name">
+        </div>
+
+        <!-- Milestone Type Selection -->
+        <div class="mb-4">
+            <label for="milestoneType" class="block text-sm font-medium text-gray-700">Add Milestone To: <span class="text-red-500">*</span></label>
+            <select wire:model.live="milestoneType" id="milestoneType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <option value="project">Project</option>
+                <option value="phase">Phase</option>
+            </select>
+        </div>
+
+        <!-- Phase Selection (Conditional) -->
+        @if ($milestoneType === 'phase')
+            <div class="mb-4">
+                <label for="phase_id" class="block text-sm font-medium text-gray-700">Select Phase: <span class="text-red-500">*</span></label>
+                <select wire:model="phase_id" id="phase_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <option value="">Select Phase</option>
+                    @foreach ($project->phases as $phase)
+                        <option value="{{ $phase->id }}">{{ $phase->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        @endif
+    </x-slot>
+    <x-slot name="footer">
+        <!-- Cancel Button -->
+        <button wire:click="closeMilestoneModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4">Cancel</button>
+        <!-- Save Button -->
+        <button wire:click="createMilestone" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Save Milestone</button>
+    </x-slot>
+</x-dialog-modal>
                     </div>
 
                     <ol class="relative border-s border-gray-200 dark:border-gray-700">
@@ -333,115 +362,88 @@
                 @endpush
 
             </div>
-        @elseif ($activeTab == 'BudjetTab')
-        <div>
-            <!-- Budget tab content -->
-            <div>
-                <div>
-                    Manage Budgets
-                </div>
-                <div>
-                    <x-button wire:click="$set('newBudgetModal_isOpen', true)">New Budget</x-button>
+            @elseif ($activeTab == 'BudjetTab')
+            <div class="mt-4 p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Budget Management</h2>
         
-                    <x-dialog-modal wire:model="newBudgetModal_isOpen">
-                        <x-slot name="title"></x-slot>
-                        <x-slot name="content">
-                            <x-form-section>
-                                <x-slot name="submit">saveBudget</x-slot>
-                                <x-slot name="title">New Budget</x-slot>
-                                <x-slot name="description">Fill in the details for the new budget.</x-slot>
-        
-                                <x-slot name="form">
-                                    <!-- Select Phase -->
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-label for="budgetPhaseId" value="Phase" /> 
-                                        <select id="budgetPhaseId"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                            wire:model.defer="budgetPhaseId">
-                                            <option value="">Select Phase</option>
-                                            @foreach ($project->phases as $phase)
-                                                <option value="{{ $phase->id }}">{{ $phase->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <x-input-error for="budgetPhaseId" class="mt-2" />
-                                    </div>
-        
-                                    <!-- Budget Name -->
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-label for="budgetName" value="Budget Name / Title" />
-                                        <x-input id="budgetName" type="text" class="mt-1 block w-full"
-                                            wire:model.defer="budgetName" required />
-                                        <x-input-error for="budgetName" class="mt-2" />
-                                    </div>
-        
-                                    <!-- Budget Description -->
-                                    <div class="col-span-6 sm:col-span-4">
-                                        <x-label for="budgetDescription" value="Description" />
-                                        <textarea id="budgetDescription" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                                            wire:model.defer="budgetDescription" rows="3"></textarea>
-                                        <x-input-error for="budgetDescription" class="mt-2" />
-                                    </div>
-                                </x-slot>
-                            </x-form-section>
-                        </x-slot>
-        
-                        <x-slot name="footer">
-                            <x-button wire:click="closeNewBudgetModal">Close</x-button>
-                            <x-button class="ml-2" wire:click="saveBudget">Save Budget</x-button>
-                        </x-slot>
-                    </x-dialog-modal>
-                </div>
+                <!-- New Budget Button -->
+                <button wire:click="$set('newBudgetModal_isOpen', true)" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 mb-6">
+                    New Budget
+                </button>
+                <x-dialog-modal wire:model="newBudgetModal_isOpen">
+                    <x-slot name="title"></x-slot>
+                    <x-slot name="content">
+                        <x-form-section>
+                            <x-slot name="submit">saveBudget</x-slot>
+                            <x-slot name="title">New Budget</x-slot>
+                            <x-slot name="description">Fill in the details for the new budget.</x-slot>
+    
+                            <x-slot name="form">
+                                <!-- Select Phase -->
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-label for="budgetPhaseId" value="Phase" /> 
+                                    <select id="budgetPhaseId"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        wire:model.defer="budgetPhaseId">
+                                        <option value="">Select Phase</option>
+                                        @foreach ($project->phases as $phase)
+                                            <option value="{{ $phase->id }}">{{ $phase->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-input-error for="budgetPhaseId" class="mt-2" />
+                                </div>
+    
+                                <!-- Budget Name -->
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-label for="budgetName" value="Budget Name / Title" />
+                                    <x-input id="budgetName" type="text" class="mt-1 block w-full"
+                                        wire:model.defer="budgetName" required />
+                                    <x-input-error for="budgetName" class="mt-2" />
+                                </div>
+    
+                                <!-- Budget Description -->
+                                <div class="col-span-6 sm:col-span-4">
+                                    <x-label for="budgetDescription" value="Description" />
+                                    <textarea id="budgetDescription" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        wire:model.defer="budgetDescription" rows="3"></textarea>
+                                    <x-input-error for="budgetDescription" class="mt-2" />
+                                </div>
+                            </x-slot>
+                        </x-form-section>
+                    </x-slot>
+    
+                    <x-slot name="footer">
+                        <x-button wire:click="closeNewBudgetModal">Close</x-button>
+                        <x-button class="ml-2" wire:click="saveBudget">Save Budget</x-button>
+                    </x-slot>
+                </x-dialog-modal>
         
                 <!-- Budgets Table -->
-                <div class="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-5">
-                        <div class="rounded-lg bg-white p-8 lg:col-span-3 lg:p-12">
-                            <div class="rounded-lg border border-gray-200">
-                                <div class="overflow-x-auto rounded-t-lg">
-                                    <table class="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-                                        <thead class="ltr:text-left rtl:text-right">
-                                            <tr>
-                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Budget Name</th>
-                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Phase</th>
-                                                <th class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">Actions</th>
-                                            </tr>
-                                        </thead>
-        
-                                        <tbody class="divide-y divide-gray-200">
-                                            @foreach ($budgets as $budget)
-                                                <tr>
-                                                    <td class="px-4 py-2 font-medium whitespace-nowrap text-gray-900">{{ $budget->budget_name }}</td>
-                                                    <td class="px-4 py-2 whitespace-nowrap text-gray-700">
-                                                        {{ $budget->phase ? $budget->phase->name : 'N/A' }}
-                                                    </td>
-                                                    <td class="px-4 py-2 whitespace-nowrap text-gray-700">
-                                                        <button class="px-4 py-2 bg-blue-500 text-white rounded" wire:click="viewBudgetDetails({{ $budget->id }})"> <a href="{{ route('budgets.details', $budget) }}" class="px-4 py-2 bg-blue-500 text-white rounded">Details</a></button>
-                                                        <button class="px-4 py-2 bg-green-500 text-white rounded" wire:click="approveBudget({{ $budget->id }})">Approve</button>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-        
-                                <!-- Pagination -->
-                                <div class="rounded-b-lg border-t border-gray-200 px-4 py-2">
-                                    <ol class="flex justify-end gap-1 text-xs font-medium">
-                                        <!-- Pagination links here -->
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="overflow-x-auto rounded-lg shadow">
+                    <table class="min-w-full bg-white dark:bg-gray-700">
+                        <thead class="bg-gray-100 dark:bg-gray-600">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Budget Name</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Phase</th>
+                                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-white">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                            @foreach ($budgets as $budget)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-300">
+                                    <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $budget->budget_name }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{{ $budget->phase ? $budget->phase->name : 'N/A' }}</td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <a href="{{ route('budgets.details', $budget) }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300">Details</a>
+                                        <button wire:click="approveBudget({{ $budget->id }})" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 ml-2">Approve</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-        {{-- @elseif ($activeTab == 'ExpensesTab')
-            <div>
-                <!-- Expenses tab content -->
-                Expenses tab component
-            </div> --}}
-            @elseif ($activeTab == 'ProjectProgressTab')
+        @elseif ($activeTab == 'ProjectProgressTab')
             <div>
                 <div class="p-6">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Project Progress</h2>
