@@ -106,15 +106,14 @@
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name <span class="text-red-500">*</span></label>
                 <input type="text" wire:model="newCategoryName" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+                <x-input-error for="newCategoryName" class="mt-2" />
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
                 <textarea wire:model="newCategoryDescription" id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300"></textarea>
+                <x-input-error for="newCategoryDescription" class="mt-2" />
             </div>
-            <div class="mb-4">
-                <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code (Optional)</label>
-                <input type="text" wire:model="newCategoryCode" id="code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
-            </div>
+         
         </x-slot>
         <x-slot name="footer">
             <button wire:click="closeNewCategoryModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 transition duration-300">Cancel</button>
@@ -129,10 +128,12 @@
             <div class="mb-4">
                 <label for="editName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category Name <span class="text-red-500">*</span></label>
                 <input type="text" wire:model="editCategoryName" id="editName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+                <x-input-error for="editCategoryName" class="mt-2" />
             </div>
             <div class="mb-4">
                 <label for="editDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
                 <textarea wire:model="editCategoryDescription" id="editDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300"></textarea>
+                <x-input-error for="editCategoryDescription" class="mt-2" />
             </div>
             <div class="mb-4">
                 <label for="editCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code (Optional)</label>

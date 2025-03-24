@@ -121,25 +121,52 @@ public function closeMilestoneModal()
     $this->reset(['milestone_name', 'milestoneType', 'phase_id']); // Reset form fields
 }
 
-    public function createPhase()
-    {
-        $this->validate([
-            'phase_name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+public function createPhase()
+{
+    $this->validate([
+        'phase_name' => 'required|string|max:255',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+    ]);
+
+    // Create the phase
+    $phase = Phase::create([
+        'name' => $this->phase_name,
+        'start_date' => $this->start_date,
+        'end_date' => $this->end_date,
+        'phase_status' => 'pending',  
+        'project_id' => $this->project->id
+    ]);
+
+    // Check if the project already has the default milestones
+    $existingMilestones = Milestone::where('project_id', $this->project->id)
+        ->whereIn('milestone_name', ['Start Project', 'End Project'])
+        ->count();
+
+    // If the default milestones don't exist, create them
+    if ($existingMilestones == 0) {
+        Milestone::create([
+            'project_id' => $this->project->id,
+            'milestone_name' => 'Start Project',
+            'due_date' => $this->start_date,
+            'description' => 'Start of the project',
+            'milestone_status' => 'pending',
         ]);
 
-        Phase::create([
-            'name' => $this->phase_name,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            'phase_status' => 'pending',  // Default status
-            'project_id' => $this->project->id
+        Milestone::create([
+            'project_id' => $this->project->id,
+            'milestone_name' => 'End Project',
+            'due_date' => $this->end_date,
+            'description' => 'End of the project',
+            'milestone_status' => 'pending',
         ]);
-
-        $this->closePhaseModal(); // Close the modal after saving
-    flash()->addSuccess('Phase created successfully!');
     }
+
+    $this->closePhaseModal(); // Close the modal after saving
+    flash()->addSuccess('Phase created successfully!');
+}
+
+
 
     public function createMilestone()
     {
@@ -185,89 +212,58 @@ public function closeMilestoneModal()
         return ($daysSinceStart / $projectDuration) * 100;
     }
 
-    public function calculatePhaseProgress($phaseStatus)
-    {
-        // Map phase_status to progress percentage
-        return match ($phaseStatus) {
-            'completed' => 100,
-            'active' => 50,
-            'pending' => 0,
-            default => 0,
-        };
-    }
+   public function calculateMilestoneProgress($milestoneStatus)
+{
+    // Map milestone_status to progress percentage
+    return match ($milestoneStatus) {
+        'completed' => 100,
+        'in_progress' => 50,
+        'pending' => 0,
+        default => 0,
+    };
+}
 
-    public function calculateOverallProgress()
-    {
-        // Calculate overall progress based on phase statuses
-        $phases = Phase::where('project_id', $this->project->id)->get();
-        $totalPhases = $phases->count();
-        $completedPhases = $phases->where('phase_status', 'completed')->count();
+public function calculateOverallProgress()
+{
+    // Calculate overall progress based on milestones instead of phases
+    $milestones = Milestone::where('project_id', $this->project->id)->get();
+    $totalMilestones = $milestones->count();
+    $completedMilestones = $milestones->where('status', 'completed')->count();
 
-        return $totalPhases > 0 ? round(($completedPhases / $totalPhases) * 100) : 0;
-    }
+    return $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
+}
 
-   public function render()
+public function render()
 {
     // Fetch budgets
     $this->budgets = $this->fetchBudgets();
 
-    // Get phases and milestones, then merge them into a single collection
-    $phases = Phase::with('milestones')
-        ->where('project_id', $this->project->id)
-        ->orderBy('start_date')
-        ->get()
-        ->map(function ($phase) {
-            return [
-                'type' => 'phase',
-                'id' => $phase->id,
-                'name' => $phase->name,
-                'start_date' => $phase->start_date,
-                'due_date' => $phase->end_date,
-                'details' => $phase->description,
-                'phase_status' => $phase->phase_status,
-                'progress' => $this->calculatePhaseProgress($phase->phase_status),
-                'milestones' => $phase->milestones->map(function ($milestone) {
-                    return [
-                        'type' => 'milestone',
-                        'id' => $milestone->id,
-                        'name' => $milestone->name,
-                        'due_date' => $milestone->due_date,
-                        'details' => $milestone->description,
-                        'phase_id' => $milestone->phase_id, 
-                    ];
-                }),
-            ];
-        });
-
+    // Get milestones only (excluding phases)
     $milestones = Milestone::where('project_id', $this->project->id)
-        ->whereNull('phase_id')
         ->orderBy('due_date')
         ->get()
         ->map(function ($milestone) {
             return [
                 'type' => 'milestone',
                 'id' => $milestone->id,
-                'name' => $milestone->name,
+                'name' => $milestone->milestone_name, // Corrected property name
                 'due_date' => $milestone->due_date,
                 'details' => $milestone->description,
-                'phase_id' => null,
+                'progress' => $this->calculateMilestoneProgress($milestone->milestone_status), // Ensure correct status field
             ];
         });
 
-    // Merge phases and milestones, order by start date and due date
-    $timelineItems = $phases->merge($milestones)
-        ->sortBy(function ($item) {
-            return [$item['start_date'] ?? $item['due_date'], $item['due_date'] ?? $item['start_date']];
-        });
+    // Sort milestones by due date
+    $timelineItems = $milestones->sortBy('due_date');
 
-    // Calculate overall project progress
+    // Calculate overall project progress based on milestones
     $overallProgress = $this->calculateOverallProgress();
 
     return view('livewire.preojects.view-project-details-component', [
         'timelineItems' => $timelineItems,
         'overallProgress' => $overallProgress,
-        'phases' => $phases,
         'budgets' => $this->budgets,
+        'milestones' => $milestones, // Add this line
     ]);
 }
 }
