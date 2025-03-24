@@ -11,7 +11,7 @@ class ExpenseApproval extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['expense_id', 'user_id', 'action', 'comment'];
+    protected $fillable = ['expense_id', 'user_id', 'action', 'is_approved','comment'];
 
     public function expense()
     {

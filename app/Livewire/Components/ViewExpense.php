@@ -82,6 +82,8 @@ class ViewExpense extends Component
             })
             ->when($this->search !== "", function ($query) {
                 return $query->where($this->searchColumn, 'like', '%' . $this->search . '%');
+            })->whereHas('approvals', function ($query) {
+                $query->where('is_approved', true);
             })
             ->orderBy($this->sort_by, $this->sort_dir)
             ->get();
@@ -98,6 +100,9 @@ class ViewExpense extends Component
             })
             ->when($this->search !== "", function ($query) {
                 return $query->where($this->searchColumn, 'like', '%' . $this->search . '%');
+            })
+            ->whereHas('approvals', function ($query) {
+                $query->where('is_approved', true);
             })
             ->orderBy($this->sort_by, $this->sort_dir)
             ->paginate($this->perPage);

@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Components;
 
-use Livewire\Component;
 use App\Models\Expense;
-use App\Models\ExpenseCategoryItem;
+use App\Models\Project;
+use Livewire\Component;
 use App\Models\BudgetItem;
+use Illuminate\Support\Facades\DB;
+use App\Models\ExpenseCategoryItem;
 use Illuminate\Support\Facades\Validator;
 
 class AddExpense extends Component
@@ -17,6 +19,9 @@ class AddExpense extends Component
     public $description;
     public $expenses = [];
 
+    public $projects = [], $budgets = [];
+    public $project, $budget, $budgetProject;
+
     // Fetch financial categories for the dropdown
     public $financialCategories;
 
@@ -24,6 +29,16 @@ class AddExpense extends Component
     {
         // Load financial categories when the component is initialized
         $this->financialCategories = ExpenseCategoryItem::all();
+        $this->date_of_pay = date("Y-m-d");
+        $this->projects = Project::with('budgets')->get();
+    }
+
+    public function updatedProject()
+    {
+        if ($this->project) {
+            $this->budgetProject = Project::with('budgets')->find($this->project);
+            $this->budgets = $this->budgetProject->budgets;
+        }
     }
 
     // Add an expense to the list
@@ -37,23 +52,22 @@ class AddExpense extends Component
         ]);
 
         // Find the corresponding budget item for the selected category
-        $budgetItem = BudgetItem::where('expense_category_item_id', $this->category_id)->first();
+        // $budgetItem = BudgetItem::where('expense_category_item_id', $this->category_id)->first();
 
-        if ($budgetItem) {
-            // Add the expense to the list with the budget_items_id
-            $this->expenses[] = [
-                'budget_items_id' => $budgetItem->id,
-                'category_id' => $this->category_id,
-                'amount' => $this->amount,
-                'description' => $this->description,
-            ];
+        // if ($budgetItem) {
+        // Add the expense to the list with the budget_items_id
+        $this->expenses[] = [
+            'category_id' => $this->category_id,
+            'amount' => $this->amount,
+            'description' => $this->description,
+        ];
 
-            // Clear the input fields
-            $this->reset(['category_id', 'amount', 'description']);
-        } else {
-            // Handle the case where no budget item is found for the selected category
-            session()->flash('error', 'No budget item found for the selected category.');
-        }
+        // Clear the input fields
+        $this->reset(['category_id', 'amount', 'description']);
+        // } else {
+        //     // Handle the case where no budget item is found for the selected category
+        //     session()->flash('error', 'No budget item found for the selected category.');
+        // }
     }
 
     // Save all expenses to the database
@@ -62,29 +76,42 @@ class AddExpense extends Component
         // Validate the date of payment
         $this->validate([
             'date_of_pay' => 'required|date',
+            'project' => "required|exists:projects,id",
+            'budget' => "required|exists:budgets,id",
         ]);
 
+
+        DB::transaction(function () {
+            foreach ($this->expenses as $expense) {
+
+                $budgetItem = BudgetItem::where('expense_category_item_id', $expense['category_id'])
+                    ->where('budget_id', $this->budget)
+                    ->first();
+
+                Expense::create([
+                    'budget_items_id' => $budgetItem->id,
+                    'amount_paid' => $expense['amount'],
+                    'date_of_pay' => $this->date_of_pay,
+                    'description' => $expense['description'],
+                ]);
+            }
+        });
         // Save each expense to the database
-        foreach ($this->expenses as $expense) {
-            Expense::create([
-                'budget_items_id' => $expense['budget_items_id'],
-                'amount_paid' => $expense['amount'],
-                'date_of_pay' => $this->date_of_pay,
-                'description' => $expense['description'],
-            ]);
-        }
+
 
         // Clear the expenses list and reset the form
-        $this->reset(['expenses', 'date_of_pay']);
+        $this->reset(['expenses', 'project', 'budget']);
 
+        $this->date_of_pay = date("Y-m-d");
         // Show a success message
-        session()->flash('success', 'Expenses saved successfully!');
+        flash()->addSuccess('Expenses saved successfully!');
     }
 
     // Close the modal or reset the form
     public function closeNewExpenseModal()
     {
         $this->reset(['date_of_pay', 'category_id', 'amount', 'description', 'expenses']);
+        $this->date_of_pay = date("Y-m-d");
     }
 
     public function render()

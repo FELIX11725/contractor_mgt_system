@@ -10,7 +10,7 @@ class BudgetItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['budget_id', 'expense_category_item_id', 'estimated_amount','quantity','rate'];
+    protected $fillable = ['budget_id', 'expense_category_item_id', 'estimated_amount', 'quantity', 'rate'];
 
     public function budget()
     {
@@ -20,5 +20,19 @@ class BudgetItem extends Model
     public function expenseCategoryItem()
     {
         return $this->belongsTo(ExpenseCategoryItem::class);
+    }
+
+    // expenses
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class, 'budget_items_id');
+    }
+
+    // Approved Expenses
+    public function approvedExpenses()
+    {
+        return $this->hasMany(Expense::class, 'budget_items_id')->whereHas('approvals', function ($query) {
+            $query->where('is_approved', true);
+        });
     }
 }
