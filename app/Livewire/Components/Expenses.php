@@ -61,6 +61,8 @@ class Expenses extends Component
             'user_id' => auth()->id(),
         ]);
 
+        flash()->addSuccess('Expense Added');
+
         $this->closeNewCategoryModal();
     }
 

@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('budget_items_id')->references('id')->on('budget_items')->nullable();
-            $table->decimal('amount_paid', 10, 2);
-            $table->date('date_of_pay'); 
-            $table->text('description')->nullable();
-            $table->softDeletes(); 
+            $table->string('name'); // e.g., Cheque, Mobile Money
+            $table->string('slug')->unique(); 
+            $table->string('prefix')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('payment_methods');
     }
 };
