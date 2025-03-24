@@ -1,135 +1,147 @@
-<div>
-    <section class="container px-6 mx-auto">
-        <div class="flex items-center justify-between pt-10">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Expenses</h2>
-            <div>
-                <label for="projectFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Project:</label>
-                <select
-                    id="projectFilter"
-                    wire:model="selectedProjectId"
-                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                >
-                    <option value="">All Projects</option>
-                    @foreach($budgets->unique('project.id')->pluck('project') as $project)
-                        @if($project) {{-- Check if project is not null --}}
-                            <option value="{{ $project->id }}">{{ $project->project_name }}</option>
-                        @endif
-                    @endforeach
-                </select>
+<div class="p-4">
+    <div class="px-5 pt-5 pb-0 w-full bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg">
+        <div class="p-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 pl-20">
+            <div class="flex items-center">
+                <!-- Folder Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="40" height="40" stroke-width="2" class="text-white"> 
+                    <path d="M4 4h6v6h-6z"></path> 
+                    <path d="M14 4h6v6h-6z"></path> 
+                    <path d="M4 14h6v6h-6z"></path> 
+                    <path d="M17 17m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path> 
+                </svg> 
+                <h3 class="text-2xl font-semibold text-white ml-3">
+                    Expense Categories
+                </h3>
             </div>
         </div>
+    </div>
 
-        <div class="flex flex-col mt-6">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-4 align-middle md:px-6 lg:px-8">
-                    <div class="overflow-hidden border border-gray-300 dark:border-gray-700 rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-100 dark:bg-gray-800">
-                                <tr>
-                                    <th class="py-4 px-6 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Project</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Milestones/Phases</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Expense Item</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Estimated Amount</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Amount Paid</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Difference</th>
-                                    <th class="px-6 py-4 text-sm font-semibold text-left text-gray-600 dark:text-gray-300">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-                                @php
-                                    $totalEstimated = 0;
-                                    $totalPaid = 0;
-                                @endphp
+    {{-- Expense Items Table --}}
+       {{-- Expense Items Table --}}
+       <div class="mt-4 p-5 w-full bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+        <section class="container px-4 mx-auto">
+            <!-- New Category Button -->
+            <div class="flex items-center gap-x-3 mb-6">
+                <x-button wire:click="openNewCategoryModal" class="text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition duration-300">
+                    New Category
+                </x-button>
+            </div>
 
-                                @foreach($budgets->groupBy('project.id') as $projectId => $projectBudgets)
-                                    @php $project = $projectBudgets->first()->project; @endphp
-                                    <tr class="bg-gray-50 dark:bg-gray-800">
-                                        <td class="py-4 px-6 font-medium text-gray-700 dark:text-gray-200" rowspan="{{ $projectBudgets->groupBy('project_plan_item_name')->count() + 1 }}">
-                                            {{ $project->project_name ?? 'No Project Assigned' }}
+            <!-- Table -->
+            <div class="flex flex-col mt-6">
+                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                        <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg shadow">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th scope="col" class="py-3.5 px-4 text-sm font-semibold text-left rtl:text-right text-gray-700 dark:text-gray-300">
+                                            <div class="flex items-center gap-x-3">
+                                                <span>Name</span>
+                                            </div>
+                                        </th>
+                                        <th scope="col" class="px-4 py-3.5 text-sm font-semibold text-left rtl:text-right text-gray-700 dark:text-gray-300">Description</th>
+                                        <th scope="col" class="px-4 py-3.5 text-sm font-semibold text-left rtl:text-right text-gray-700 dark:text-gray-300">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-800">
+                                    @foreach($expenseCategories as $category)
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300">
+                                        <td class="px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                            {{ $category->name }}
+                                        </td>
+                                        <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ $category->description }}</td>
+                                        <td class="px-4 py-4 text-sm whitespace-nowrap">
+                                            <div class="flex items-center gap-x-4">
+                                                <x-button wire:click="openEditModal({{ $category->id }})" class="text-white-500 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-500 transition duration-300">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                    </svg>
+                                                    Edit
+                                                </x-button>
+                                                <button wire:click="viewDetails({{ $category->id }})" 
+                                                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 focus:outline-none">
+                                                    Details
+                                                </button>                                                
+                                            </div>
                                         </td>
                                     </tr>
-                                    @foreach ($projectBudgets->groupBy('project_plan_item_name') as $milestone => $milestoneBudgets)
-                                        <tr>
-                                            <td class="py-4 px-6 text-gray-700 dark:text-gray-300">{{ $milestone ?? 'N/A' }}</td>
-                                            <td class="py-4 px-6">
-                                                <ul>
-                                                    @foreach ($milestoneBudgets as $budget)
-                                                        <li class="mb-1">{{ $budget->expense_item ?? 'N/A' }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </td>
-                                            <td class="py-4 px-6">
-                                                <ul>
-                                                    @foreach ($milestoneBudgets as $budget)
-                                                        <li class="mb-1">
-                                                            {{ number_format($budget->estimated_amount, 0, ".", ",") ?? 'N/A' }}
-                                                        </li>
-                                                        @php $totalEstimated += $budget->estimated_amount; @endphp
-                                                    @endforeach
-                                                </ul>
-                                            </td>
-                                            <td class="py-4 px-6">
-                                                <ul>
-                                                    @foreach($milestoneBudgets as $budget)
-                                                        @php $amountPaid = $budget->expenses->amount_paid ?? 0; @endphp
-                                                        <li class="mb-1">
-                                                            {{ number_format($amountPaid, 0, ".", ",") }}
-                                                        </li>
-                                                        @php $totalPaid += $amountPaid; @endphp
-                                                    @endforeach
-                                                </ul>
-                                            </td>
-                                            <td class="py-4 px-6">
-                                                <ul>
-                                                    @foreach ($milestoneBudgets as $budget)
-                                                        <li class="mb-1">
-                                                            {{ number_format(abs($budget->estimated_amount - ($budget->expenses->amount_paid ?? 0)), 0, ".", ",") }}
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            </td>
-                                            <td class="py-4 px-6">
-                                                <ul>
-                                                    @foreach($milestoneBudgets as $budget)
-                                                        @php $amountPaid = $budget->expenses->amount_paid ?? 0; @endphp
-                                                        @if($amountPaid == 0) {{-- Show "Pay" button only if amount paid is 0 --}}
-                                                            <li class="mb-1">
-                                                                <button wire:click="openPayModal({{ $budget->id }})" class="px-3 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
-                                                                    Pay
-                                                                </button>
-                                                            </li>
-                                                        @endif
-                                                    @endforeach
-                                                </ul>
-                                            </td>
-                                        </tr>
                                     @endforeach
-                                @endforeach
-
-                                {{-- Totals Row --}}
-                                <tr class="bg-gray-200 dark:bg-gray-700 font-semibold">
-                                    <td colspan="3" class="py-4 px-6 text-right text-gray-800 dark:text-gray-300">Total:</td>
-                                    <td class="py-4 px-6">{{ number_format($totalEstimated, 0, ".", ",") }}</td>
-                                    <td class="py-4 px-6">{{ number_format($totalPaid, 0, ".", ",") }}</td>
-                                    <td class="py-4 px-6">{{ number_format($totalEstimated - $totalPaid, 0, ".", ",") }}</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <x-modal wire:model="showPayModal">
-            <x-slot name="title">Enter Amount Paid</x-slot>
-            <x-slot name="content">
-                <input type="number" wire:model.defer="modalAmountPaid" class="w-full px-3 py-2 border rounded">
-            </x-slot>
-            <x-slot name="footer">
-                <x-secondary-button wire:click="$set('showPayModal', false)">Cancel</x-secondary-button>
-                <x-button wire:click="submitModalAmountPaid">Submit</x-button>
-            </x-slot>
-        </x-modal>
-    </section>
+            <!-- Pagination -->
+            <div class="flex items-center justify-between mt-6">
+                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 rtl:-scale-x-100">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                    </svg>
+                    <span>Previous</span>
+                </a>
+                <div class="items-center hidden lg:flex gap-x-3">
+                    @for ($i = 1; $i <= $expenseCategories->lastPage(); $i++)
+                        <a href="#" wire:click="gotoPage({{ $i }})" class="px-2 py-1 text-sm {{ $i == $expenseCategories->currentPage() ? 'text-blue-500 bg-blue-100/60' : 'text-gray-500' }} rounded-md dark:hover:bg-gray-800 dark:text-gray-300 hover:bg-gray-100">{{ $i }}</a>
+                    @endfor
+                </div>
+                <a href="#" class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800">
+                    <span>Next</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 rtl:-scale-x-100">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- New Category Modal -->
+       <!-- New Category Modal -->
+       <x-dialog-modal wire:model="showNewCategoryModal">
+        <x-slot name="title">New Expense Category</x-slot>
+        <x-slot name="content">
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name <span class="text-red-500">*</span></label>
+                <input type="text" wire:model="newCategoryName" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
+                <textarea wire:model="newCategoryDescription" id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code (Optional)</label>
+                <input type="text" wire:model="newCategoryCode" id="code" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <button wire:click="closeNewCategoryModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 transition duration-300">Cancel</button>
+            <button wire:click="saveNewCategory" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300">Save</button>
+        </x-slot>
+    </x-dialog-modal>
+
+    <!-- Edit Category Modal -->
+    <x-dialog-modal wire:model="showEditModal">
+        <x-slot name="title">Edit Expense Category</x-slot>
+        <x-slot name="content">
+            <div class="mb-4">
+                <label for="editName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category Name <span class="text-red-500">*</span></label>
+                <input type="text" wire:model="editCategoryName" id="editName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+            </div>
+            <div class="mb-4">
+                <label for="editDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
+                <textarea wire:model="editCategoryDescription" id="editDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="editCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code (Optional)</label>
+                <input type="text" wire:model="editCategoryCode" id="editCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <button wire:click="closeEditModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 transition duration-300">Cancel</button>
+            <button wire:click="updateCategory" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300">Save</button>
+        </x-slot>
+    </x-dialog-modal>
 </div>

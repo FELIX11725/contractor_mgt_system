@@ -1,13 +1,13 @@
-<header class="sticky top-0 before:absolute before:inset-0 before:backdrop-blur-md max-lg:before:bg-gray-800/90 dark:max-lg:before:bg-gray-900/90 before:-z-10 z-30 {{ $variant === 'v2' || $variant === 'v3' ? 'before:bg-black after:absolute after:h-px after:inset-x-0 after:top-full after:bg-gray-600 dark:after:bg-gray-800/60 after:-z-10' : 'max-lg:shadow-sm lg:before:bg-gray-800/90 dark:lg:before:bg-gray-900/90' }} {{ $variant === 'v2' ? 'dark:before:bg-gray-800' : '' }} {{ $variant === 'v3' ? 'dark:before:bg-gray-900' : '' }}">
+<header class="sticky top-0 bg-white dark:bg-[#182235] border-b border-slate-200 dark:border-slate-700 z-30">
     <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 {{ $variant === 'v2' || $variant === 'v3' ? '' : 'lg:border-b border-gray-600 dark:border-gray-700/60' }}">
+        <div class="flex items-center justify-between h-16 -mb-px">
 
             <!-- Header: Left side -->
             <div class="flex">
                 
                 <!-- Hamburger button -->
                 <button
-                    class="text-white hover:text-gray-300 dark:hover:text-gray-400 lg:hidden"
+                    class="text-slate-500 hover:text-slate-600 lg:hidden"
                     @click.stop="sidebarOpen = !sidebarOpen"
                     aria-controls="sidebar"
                     :aria-expanded="sidebarOpen"
@@ -25,35 +25,26 @@
             <!-- Header: Right side -->
             <div class="flex items-center space-x-3">
 
-                <!-- Search Button with Modal (replace icon) -->
-                <x-modal-search>
-                    <svg class="w-6 h-6 fill-current text-gray-300 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 2a9 9 0 1 0 9 9 9.01 9.01 0 0 0-9-9zm0 16a7 7 0 1 1 7-7 7.008 7.008 0 0 1-7 7zm3.74-6.28a7.5 7.5 0 0 1-6.28-3.74l5.94 5.94a1 1 0 1 0 1.42-1.42z"/></svg>
-                </x-modal-search>
+                <!-- Search Button with Modal -->
+                {{-- <x-modal-search /> --}}
 
-                <!-- Notifications button (replace icon) -->
-                <x-dropdown-notifications align="right">
-                    <svg class="w-6 h-6 fill-current text-gray-300 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 24c1.1 0 1.99-.9 1.99-2H10.01C10.01 23.1 10.9 24 12 24zm6-6V9c0-3.31-2.69-6-6-6-2.69 0-5 1.71-5.83 4.06C5.2 7.29 4 9.61 4 12v6l-2 2v1h16v-1l-2-2z"/></svg>
-                </x-dropdown-notifications>
+                <!-- Notifications button -->
+                {{-- <x-dropdown-notifications align="right" /> --}}
 
-                <!-- Info button (replace icon) -->
-                <x-dropdown-help align="right">
-                    <svg class="w-6 h-6 fill-current text-gray-300 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 7h-2v2h2V7zm0 4h-2v6h2v-6zm-1 10c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z"/></svg>
-                </x-dropdown-help>
+                <!-- Info button -->
+                <x-dropdown-help align="right" />
 
                 <!-- Dark mode toggle -->
-                <x-theme-toggle />
+                <x-theme-toggle />                
 
                 <!-- Divider -->
-                <hr class="w-px h-6 bg-gray-600 dark:bg-gray-800/60 border-none" />
+                <hr class="w-px h-6 bg-slate-200 dark:bg-slate-700 border-none" />
 
-                <!-- User button (replace icon) -->
-                <x-dropdown-profile align="right">
-                    <svg class="w-6 h-6 fill-current text-gray-300 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.33-8 4v2h16v-2c0-2.67-5.33-4-8-4z"/></svg>
-                </x-dropdown-profile>
+                <!-- User button -->
+                <x-dropdown-profile align="right" />
 
             </div>
 
         </div>
     </div>
 </header>
-

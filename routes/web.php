@@ -2,26 +2,30 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Livewire\Budget\BudgetDetailsComponent;
+use App\Livewire\Expenses\ExpenseCategoriesComponent;
+use App\Livewire\Preojects\ViewProjectDetailsComponent;
 use App\Http\Controllers\ManagePlans\ViewplansController;
+use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
 use App\Http\Controllers\BudgetManagement\BudgetController;
 use App\Http\Controllers\ManageExpenses\ExpensesController;
 use App\Http\Controllers\ManagePlans\ProjectplansController;
 use App\Http\Controllers\ManageContracts\ContractsController;
+use App\Http\Controllers\ManageExpenses\AddExpenseController;
 use App\Http\Controllers\ManageExpenses\ExpensetypeController;
+use App\Http\Controllers\ManageExpenses\ViewExpenseController;
 use App\Http\Controllers\ManageMilestones\MilestoneController;
 use App\Http\Controllers\ProjectManagement\ProjectsController;
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
+
 use App\Http\Controllers\ManageContracts\AddContractController;
 use App\Http\Controllers\ProjectManagement\AddProjectController;
+
 use App\Http\Controllers\ManageContractors\ContractorsController;
+use App\Http\Controllers\ManageExpenses\ApproveExpenseController;
 use App\Http\Controllers\ManageMilestones\AddMilestoneController;
 use App\Http\Controllers\ManageContractors\AddContractorController;
 use App\Http\Controllers\ManageContractors\ComplianceRecordsController;
-
-use App\Livewire\Expenses\ExpenseCategoriesComponent;
-use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
-
-use App\Livewire\Preojects\ViewProjectDetailsComponent;
 
 Route::redirect('/', 'login');
 
@@ -61,10 +65,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('expenses');
         Route::get('/expense-categories', ExpenseCategoriesComponent::class)->name('expenses.manage-categories');
         Route::get('/expense-categories/{category}', ExpenseCategoryDetailsComponent::class)->name('expenses.categories.view');
+        Route::get('/expensetypes/{categoryId}', [ExpenseTypeController::class, 'show'])->name('expensetypes');
+        Route::get('/add-expense', [AddExpenseController::class, 'index'])->name('add-expense');
+        Route::get('/view-expense', [ViewExpenseController::class, 'index'])->name('view-expense');
+        Route::get('/approve-expense', [ApproveExpenseController::class, 'index'])->name('approve-expense');
     });
     //budgets
     Route::prefix('budgets')->group(function (){
         Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets');
         Route::get('/viewbudgets',[ViewbudgetController::class, 'index'])->name('viewbudgets');
+        Route::get('/budgets/{budget}/details', BudgetDetailsComponent::class )->name('budgets.details');
     });
 });
