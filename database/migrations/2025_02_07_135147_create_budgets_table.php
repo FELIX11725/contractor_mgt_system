@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('budget_name');
             $table->text('description');
             $table->decimal('estimated_amount', 10, 2)->nullable();
-            $table->foreignId('milestone_id')->references('id')->on('milestones')->nullable();
+            $table->foreignId('milestone_id')->nullable()->references('id')->on('milestones');
             $table->boolean('approved')->default(false);
-            $table->softDeletes();  
+            $table->softDeletes();
             $table->timestamps();
         });
     }
