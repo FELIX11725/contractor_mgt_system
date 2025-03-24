@@ -23,8 +23,16 @@ class Expense extends Model
     {
         return $this->belongsTo(BudgetItem::class, 'budget_items_id');
     }
-    public function category(){
-        return $this->belongsTo(ExpenseCategoryItem::class, 'expense_category_item_id');
+    public function category()
+    {
+        return $this->hasOneThrough(
+            ExpenseCategoryItem::class,
+            BudgetItem::class,
+            'id', // Foreign key on BudgetItem table
+            'id', // Foreign key on ExpenseCategoryItem table
+            'budget_items_id', // Local key on Expense table
+            'expense_category_item_id' // Local key on BudgetItem table
+        );
     }
     public function approvals()
     {
