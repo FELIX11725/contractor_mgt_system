@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Project extends Model
 {
@@ -66,12 +67,20 @@ class Project extends Model
     }
 
     /**
-     * Project has many budgets.
+     * Project has many budgets through phases.
      */
-    public function budgets(): HasMany
+    public function budgets(): HasManyThrough
     {
-        return $this->hasMany(Budget::class, 'project_id');
+        return $this->hasManyThrough(
+            Budget::class,
+            Phase::class,
+            'project_id', // Foreign key on Phase table
+            'phase_id', // Foreign key on Budget table
+            'id', // Local key on Project table
+            'id' // Local key on Phase table
+        );
     }
+
 
     /**
      * Project has many expenses.

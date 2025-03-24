@@ -11,6 +11,30 @@
                 </x-slot>
 
                 <x-slot name="form">
+                    <div class="col-span-3">
+                        <x-label for="project"> {{ __('Project') }} <span class="text-rose-500">*</span> </x-label>
+                        <select wire:model.live="project" id="project"
+                            class="block w-full rounded-md bg-white px-3 py-2 text-gray-900 border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+                            <option value="">-- Select a project --</option>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}">{{ $project->project_name }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="project" />
+                    </div>
+                    <div class="col-span-3">
+                        <x-label for="budget"> {{ __('Budget') }} <span class="text-rose-500">*</span> </x-label>
+                        <select wire:model="budget" id="budget"
+                            class="block w-full rounded-md bg-white px-3 py-2 text-gray-900 border border-gray-300 focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+                            <option value="">-- Select a budget --</option>
+                            @if (isset($budgetProject))
+                                @foreach ($budgetProject->budgets as $budget)
+                                    <option value="{{ $budget->id }}">{{ $budget->budget_name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <x-input-error for="budget" />
+                    </div>
                     <div class="col-span-6">
                         <div class="grid grid-cols-12 gap-4">
                             <div class="col-span-12">
@@ -121,22 +145,22 @@
                     </div>
 
                     @script
-                    <script>
-                        document.addEventListener('livewire:init', () => {
-                            // Initialize Select2 when Livewire is ready
-                            $('#select_category_id').select2();
-
-                            // Update Livewire state when Select2 value changes
-                            $('#select_category_id').on('change', function (e) {
-                                @this.set('category_id', $(this).val());
-                            });
-
-                            // Reinitialize Select2 when Livewire updates the DOM
-                            Livewire.hook('element.updated', (el) => {
+                        <script>
+                            document.addEventListener('livewire:init', () => {
+                                // Initialize Select2 when Livewire is ready
                                 $('#select_category_id').select2();
+
+                                // Update Livewire state when Select2 value changes
+                                $('#select_category_id').on('change', function(e) {
+                                    @this.set('category_id', $(this).val());
+                                });
+
+                                // Reinitialize Select2 when Livewire updates the DOM
+                                Livewire.hook('element.updated', (el) => {
+                                    $('#select_category_id').select2();
+                                });
                             });
-                        });
-                    </script>
+                        </script>
                     @endscript
                 </x-slot>
 
