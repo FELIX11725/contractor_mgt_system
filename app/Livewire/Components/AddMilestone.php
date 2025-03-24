@@ -37,7 +37,7 @@ class AddMilestone extends Component
             'milestone_status' => 'pending', 
         ]);
 
-        $flasher->addSuccess('Milestone created successfully!');
+        flash()->addSuccess('Milestone created successfully!');
 
         return $this->redirect(route('milestones'));
     }

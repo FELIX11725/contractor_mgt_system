@@ -112,6 +112,6 @@ class AddProject extends Component
         $this->projectTypes = ProjectType::all(); 
         $this->project_type_id = $projectType->id; 
         $this->closeModal();
-        $flasher->addSuccess('Project type added successfully!');
+        flash()->addSuccess('Project type added successfully!');
     }
 }
