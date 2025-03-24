@@ -116,10 +116,12 @@
                     Name <span class="text-red-500">*</span>
                 </label>
                 <input type="text" wire:model="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <x-input-error for="name" class="mt-2" />
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
                 <textarea wire:model="description" id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                <x-input-error for="description" class="mt-2" />
             </div>
         </x-slot>
         <x-slot name="footer">
@@ -135,10 +137,12 @@
             <div class="mb-4">
                 <label for="editName" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
                 <input type="text" wire:model="name" id="editName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <x-input-error for="editName" class="mt-2" />
             </div>
             <div class="mb-4">
                 <label for="editDescription" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
                 <textarea wire:model="description" id="editDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                <x-input-error for="editDescription" class="mt-2" />
             </div>
         </x-slot>
         <x-slot name="footer">

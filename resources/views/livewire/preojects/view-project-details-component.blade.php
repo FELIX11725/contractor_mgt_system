@@ -147,18 +147,22 @@
             <div class="mb-4">
                 <label for="phase_name" class="block text-sm font-medium text-gray-700">Phase Name <span class="text-red-500">*</span></label>
                 <input type="text" wire:model="phase_name" id="phase_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Phase Name">
+                {{-- input error --}}
+                <x-input-error for="phase_name" class="mt-2" />
             </div>
 
             <!-- Start Date Input -->
             <div class="mb-4">
                 <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date <span class="text-red-500">*</span></label>
                 <input type="date" wire:model="start_date" id="start_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <x-input-error for="start_date" class="mt-2" />
             </div>
 
             <!-- End Date Input -->
             <div class="mb-4">
                 <label for="end_date" class="block text-sm font-medium text-gray-700">End Date <span class="text-red-500">*</span></label>
                 <input type="date" wire:model="end_date" id="end_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                <x-input-error for="end_date" class="mt-2" />
             </div>
         </form>
         <!-- Form Ends Here -->
@@ -180,6 +184,7 @@
         <div class="mb-4">
             <label for="milestone_name" class="block text-sm font-medium text-gray-700">Milestone Name <span class="text-red-500">*</span></label>
             <input type="text" wire:model="milestone_name" id="milestone_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Milestone Name">
+            <x-input-error for="milestone_name" class="mt-2" />
         </div>
 
         <!-- Milestone Type Selection -->
@@ -189,6 +194,7 @@
                 <option value="project">Project</option>
                 <option value="phase">Phase</option>
             </select>
+            <x-input-error for="milestoneType" class="mt-2" />
         </div>
 
         <!-- Phase Selection (Conditional) -->
@@ -201,6 +207,7 @@
                         <option value="{{ $phase->id }}">{{ $phase->name }}</option>
                     @endforeach
                 </select>
+                <x-input-error for="phase_id" class="mt-2" />
             </div>
         @endif
     </x-slot>
@@ -443,53 +450,56 @@
                     </table>
                 </div>
             </div>
-        @elseif ($activeTab == 'ProjectProgressTab')
+            @elseif ($activeTab == 'ProjectProgressTab')
             <div>
                 <div class="p-6">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Project Progress</h2>
         
-                    <!-- Progress Bars for Phases -->
-                    @foreach ($phases as $phase)
-                        <div class="mb-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $phase['name'] }}</h3>
-                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {{ ucfirst($phase['phase_status']) }} ({{ $phase['progress'] }}%)
-                                </span>
+                    <div class="space-y-3">
+                        @foreach ($milestones as $milestone)
+                            <!-- Milestone Progress -->
+                            <div>
+                                <div class="inline-block mb-2 ms-[calc({{ $milestone['progress'] }}%-20px)] py-0.5 px-1.5 bg-blue-50 border border-blue-200 text-xs font-medium text-blue-600 rounded-lg dark:bg-blue-800/30 dark:border-blue-800 dark:text-blue-500">
+                                    {{ $milestone['progress'] }}%
+                                </div>
+                                <div class="flex w-full h-2 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" 
+                                     aria-valuenow="{{ $milestone['progress'] }}" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="flex flex-col justify-center rounded-full overflow-hidden bg-blue-600 text-xs text-white text-center whitespace-nowrap transition duration-500 dark:bg-blue-500" 
+                                         style="width: {{ $milestone['progress'] }}%">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                    {{ $milestone['name'] }} - {{ ucfirst($milestone['progress']) }}
+                                    <br>
+                                    Due Date: {{ \Carbon\Carbon::parse($milestone['due_date'])->format('M d, Y') }}
+                                </div>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
-                                <div
-                                    class="h-3 rounded-full {{
-                                        $phase['progress'] >= 100 ? 'bg-green-500' :
-                                        ($phase['progress'] >= 50 ? 'bg-blue-500' :
-                                        ($phase['progress'] >= 30 ? 'bg-yellow-500' : 'bg-red-500'))
-                                    }}"
-                                    style="width: {{ $phase['progress'] }}%; transition: width 0.5s ease;"
-                                ></div>
-                            </div>
-                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                                Start Date: {{ \Carbon\Carbon::parse($phase['start_date'])->format('M d, Y') }} 
-                                {{-- End Date: {{ \Carbon\Carbon::parse($phase['end_date'])->format('M d, Y') }} --}}
-                            </div>
-                        </div>
-                    @endforeach
+                            <!-- End Milestone Progress -->
+                        @endforeach
         
-                    <!-- Overall Project Progress -->
-                    <div class="mt-8">
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
-                        <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
-                            <div
-                                class="h-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500"
-                                style="width: {{ $overallProgress }}%; transition: width 0.5s ease;">
+                        <!-- Overall Project Progress -->
+                        <div class="mt-8">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
+                            <div>
+                                <div class="inline-block mb-2 ms-[calc({{ $overallProgress }}%-20px)] py-0.5 px-1.5 bg-blue-50 border border-blue-200 text-xs font-medium text-blue-600 rounded-lg dark:bg-blue-800/30 dark:border-blue-800 dark:text-blue-500">
+                                    {{ $overallProgress }}%
+                                </div>
+                                <div class="flex w-full h-4 bg-gray-200 rounded-full overflow-hidden dark:bg-neutral-700" role="progressbar" 
+                                     aria-valuenow="{{ $overallProgress }}" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="flex flex-col justify-center rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-green-500 text-xs text-white text-center whitespace-nowrap transition duration-500" 
+                                         style="width: {{ $overallProgress }}%">
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                    Overall Progress: {{ $overallProgress }}%
+                                </div>
                             </div>
-                        </div>
-                        <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Overall Progress: {{ $overallProgress }}%
                         </div>
                     </div>
                 </div>
             </div>
         @endif
+        
     </div>
 
 </div>

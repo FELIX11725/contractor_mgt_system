@@ -3,8 +3,9 @@
 namespace App\Livewire\Components;
 
 use App\Models\Project;
-use App\Models\ProjectType;
 use Livewire\Component;
+use App\Models\Milestone;
+use App\Models\ProjectType;
 use Flasher\Prime\FlasherInterface;
 
 class AddProject extends Component
@@ -42,7 +43,7 @@ class AddProject extends Component
         ]);
     
         // Create the project
-        Project::create([
+        $project = Project::create([
             'project_name' => $this->project_name,
             'location' => $this->location,
             'project_type_id' => $this->project_type_id,
@@ -52,8 +53,25 @@ class AddProject extends Component
             'project_status' => 'pending',
         ]);
     
+        // Create default milestones
+        Milestone::create([
+            'project_id' => $project->id,
+            'milestone_name' => 'Start Project',
+            'due_date' => $this->start_date,
+            'description' => 'Initial phase of the project',
+            'milestone_status' => 'pending',
+        ]);
+    
+        Milestone::create([
+            'project_id' => $project->id,
+            'milestone_name' => 'End Project',
+            'due_date' => $this->end_date,
+            'description' => 'Final phase of the project',
+            'milestone_status' => 'pending',
+        ]);
+    
         // Flash success message
-        $flasher->addSuccess('Project created successfully!');
+        flash()->addSuccess('Project created successfully with default milestones!');
     
         // Reset the form
         $this->reset([
@@ -68,6 +86,7 @@ class AddProject extends Component
         // Redirect to the projects page
         return redirect()->route('projects');
     }
+    
 
     public function openModal()
     {

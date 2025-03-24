@@ -272,6 +272,7 @@
                                     <option value="{{ $categoryitem->id }}">{{ $categoryitem->name }}</option>
                                 @endforeach
                             </select>
+                        <x-input-error for="selectedExpenseCategory" />
                         </div>
 
 
@@ -281,6 +282,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model.live="newCategoryRate" id="rate"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="newCategoryRate" />
                         </div>
 
                         <!-- Quantity -->
@@ -289,6 +291,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model.live="newCategoryQuantity" id="quantity"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="newCategoryQuantity" />
                         </div>
 
                         <!-- Amount -->
@@ -297,6 +300,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model="newCategoryAmount" id="amount"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="newCategoryAmount" />
                         </div>
                     </div>
                 </x-slot>
@@ -328,6 +332,7 @@
                                     <option value="{{ $categoryitem->id }}">{{ $categoryitem->name }}</option>
                                 @endforeach
                             </select>
+                            <x-input-error for="selectedEditExpenseCategory" />
                         </div>
                         <!-- Rate -->
                         <div>
@@ -335,6 +340,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model.live="editCategoryRate" id="edit_rate"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="editCategoryRate" />
                         </div>
                         <!-- Quantity -->
                         <div>
@@ -342,6 +348,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model.live="editCategoryQuantity" id="edit_quantity"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="editCategoryQuantity" />
                         </div>
                         <!-- Amount -->
                         <div>
@@ -349,6 +356,7 @@
                                     class="text-red-500">*</span></label>
                             <input type="text" wire:model="editCategoryAmount" id="edit_amount"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <x-input-error for="editCategoryAmount" />
                         </div>
                     </div>
                 </x-slot>
