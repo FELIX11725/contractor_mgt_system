@@ -22,6 +22,7 @@ class ExpenseTypes extends Component
     public $name;
     public $description;
     public $amount;
+    public $showDeleteModal = false;
 
     // Validation rules
     protected $rules = [
@@ -62,6 +63,13 @@ class ExpenseTypes extends Component
         $this->modalType = 'edit';
         $this->showEditModal = true;
     }
+    public function openDeleteModal(){
+        $this->showDeleteModal = true;
+    }
+    public function deleteCategoryItem($itemId){
+        ExpenseCategoryItem::destroy($itemId);
+        flash()->addSuccess('Expense item deleted successfully!');
+    }
 
     // Close the modal for editing an item
     public function closeEditModal()
@@ -84,7 +92,7 @@ class ExpenseTypes extends Component
 
         $this->resetInputFields();
         $this->showNewCategoryItemModal = false;
-        $flasher->addSuccess('Expense item created successfully!');
+        flash()->addSuccess('Expense item created successfully!');
     }
 
     // Update an existing item
@@ -100,14 +108,23 @@ class ExpenseTypes extends Component
 
         $this->resetInputFields();
         $this->showEditModal = false;
-        $flasher->addSuccess('Expense item updated successfully!');
+        flash()->addSuccess('Expense item updated successfully!');
     }
 
     // Delete an item
-    public function delete($itemId, FlasherInterface $flasher)
+    public function deleteCategory($itemId)
     {
+        // check if item has been used in budgets_items table
+        // if yes, show error message
+        // else delete item
+        $item = ExpenseCategoryItem::find($itemId);
+        if($item->budgetsItems()->exists()){
+            flash()->addError('Cannot delete expense item that has been used in budgeting.');
+            return;
+        }
+//        else delete item
         ExpenseCategoryItem::destroy($itemId);
-        $flasher->addSuccess('Expense item deleted successfully!');
+        flash()->addSuccess('Expense item deleted successfully!');
     }
 
     // Reset input fields

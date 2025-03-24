@@ -11,15 +11,26 @@ class Expense extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['amount_paid','payment_method','payment_date','expense_status', 'project_plan_id', 'project_id','budget_id'];
+    protected $table = 'expenses';
 
-    public function project()
+    protected $fillable = [
+        'budget_items_id',
+        'amount_paid',
+        'date_of_pay',
+        'description',
+    ];
+    public function budgetItem()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(BudgetItem::class, 'budget_items_id');
     }
-
-    public function budget()
+    public function category(){
+        return $this->belongsTo(ExpenseCategoryItem::class, 'expense_category_item_id');
+    }
+    public function approvals()
     {
-        return $this->belongsTo(Budget::class);
+        return $this->hasMany(ExpenseApproval::class);
+    }
+    public function paymentMethod(){
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

@@ -480,8 +480,8 @@
                         <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
                             <div
                                 class="h-4 rounded-full bg-gradient-to-r from-blue-500 to-green-500"
-                                style="width: {{ $overallProgress }}%; transition: width 0.5s ease;"
-                            ></div>
+                                style="width: {{ $overallProgress }}%; transition: width 0.5s ease;">
+                            </div>
                         </div>
                         <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                             Overall Progress: {{ $overallProgress }}%

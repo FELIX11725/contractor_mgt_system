@@ -13,7 +13,6 @@ class ViewProjectDetailsComponent extends Component
 {
     public $project;
     public $activeTab = "PlansTab";
-    
     public $budgetName;
     public $budgetDescription;
     public $budgetEstimatedAmount;
@@ -22,10 +21,9 @@ class ViewProjectDetailsComponent extends Component
     public $budgetId;
     public $budgets;
     public $showBudgetForm = false;
-    public $milestoneType = 'project'; // 'project' or 'phase'
+    public $milestoneType = 'project';
     public $newBudgetModal_isOpen = false;
     public $showMilestoneForm = false;
-
     public $phase_id;
 
     public function mount($project)
@@ -51,9 +49,9 @@ class ViewProjectDetailsComponent extends Component
     
         // Create the budget
         Budget::create([
-            'budget_name' => $this->budgetName ?? null, // Match the column name in the `budgets` table
-            'description' => $this->budgetDescription ?? null, // Match the column name in the `budgets` table
-            'phase_id' => $this->budgetPhaseId, // Match the column name in the `budgets` table
+            'budget_name' => $this->budgetName ?? null, 
+            'description' => $this->budgetDescription ?? null,
+            'phase_id' => $this->budgetPhaseId,
         ]);
     
         // Show success message
