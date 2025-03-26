@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Budget;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Budget;
 use Livewire\Component;
 use App\Models\BudgetItem;
@@ -125,6 +126,26 @@ class BudgetDetailsComponent extends Component
         $this->showDeleteBudgetItemModal = true;
     }
 
+    public function exportToPdf()
+{
+    $budget = $this->budget->load(['items.expenseCategoryItem', 'phase.project']);
+    $budgetItems = BudgetItem::with(['expenseCategoryItem'])
+        ->where('budget_id', $this->budget->id)
+        ->withSum('expenses', 'amount_paid')
+        ->withSum('approvedExpenses', 'amount_paid')
+        ->get();
+
+    $pdf = Pdf::loadView('pdf.budget-details', [
+        'budget' => $budget,
+        'budgetItems' => $budgetItems
+    ])->setPaper('a4', 'portrait');
+
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        'budget-'.$this->budget->budget_name.'-details.pdf'
+    );
+}
+
     public function closeDeleteBudgetItemModal()
     {
         $this->showDeleteBudgetItemModal = false;
@@ -158,8 +179,6 @@ class BudgetDetailsComponent extends Component
     }
     public function saveNewBudgetItem()
     {
-
-        // Validate the input fields
         $this->validate([
             'newCategoryRate' => 'required|numeric',
             'newCategoryQuantity' => 'nullable|numeric',
@@ -175,9 +194,6 @@ class BudgetDetailsComponent extends Component
             'budget_id' => $this->budget->id,
         ]);
 
-
-
-        // Close the modal and reset the fields
         $this->closeNewBudgetItemModal();
 
         flash()->addSuccess('Budget Item Added');
