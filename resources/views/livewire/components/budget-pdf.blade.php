@@ -3,59 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Report</title>
+    <title>Budget Report - {{ $currentProject->name }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 12px;
+            color: #333;
         }
-        h1 {
+        .header {
             text-align: center;
-            font-size: 24px;
             margin-bottom: 20px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
         }
-        h2 {
+        .project-title {
             font-size: 18px;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            font-weight: bold;
+            color: #1e40af;
         }
-        ul {
-            list-style-type: disc;
-            margin-left: 20px;
+        .report-date {
+            font-size: 12px;
+            color: #6b7280;
         }
-        li {
-            margin-bottom: 5px;
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
         }
-        .budget-item {
-            font-size: 14px;
+        .table th {
+            background-color: #3b82f6;
+            color: white;
+            text-align: left;
+            padding: 8px;
+            font-weight: bold;
+        }
+        .table td {
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #e5e7eb !important;
+        }
+        .status-approved {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .status-pending {
+            color: #f59e0b;
+            font-weight: bold;
         }
         .footer {
-            text-align: center;
             margin-top: 30px;
-            font-size: 12px;
-            color: #666;
+            text-align: right;
+            font-size: 10px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 10px;
+        }
+        .group-header {
+            background-color: #e5e7eb;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Budget Report for {{ $currentProject->project_name }}</h1>
+    <div class="header">
+        <div class="project-title">{{ $currentProject->name }} - Budget Report</div>
+        <div class="report-date">Generated on: {{ now()->format('F j, Y') }}</div>
+    </div>
 
-    @forelse ($budgetData as $milestone => $items)
-        <h2> {{ $milestone }}</h2>
-        <ul>
-            @foreach ($items as $item)
-                <li class="budget-item">
-                    {{ $item->expense_item }} - shs. {{ number_format($item->estimated_amount, 0, '.', ',') }}
-                </li>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Budget Name</th>
+                <th>Description</th>
+                <th>Phase/Milestone</th>
+                <th>Estimated Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalAmount = 0;
+            @endphp
+
+            @foreach($budgets as $budget)
+                <tr>
+                    <td>{{ $budget->budget_name }}</td>
+                    <td>{{ Str::limit($budget->description, 50) }}</td>
+                    <td>
+                        @if($budget->phase)
+                            Phase: {{ $budget->phase->name }}
+                        @elseif($budget->milestone)
+                            Milestone: {{ $budget->milestone->name }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td>
+                        @if($budget->estimated_amount)
+                            {{ number_format($budget->estimated_amount, 2) }}
+                            @php $totalAmount += $budget->estimated_amount; @endphp
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td class="{{ $budget->approved ? 'status-approved' : 'status-pending' }}">
+                        {{ $budget->approved ? 'Approved' : 'Pending' }}
+                    </td>
+                </tr>
             @endforeach
-        </ul>
-    @empty
-        <p>No budget data found.</p>
-    @endforelse
+
+            <tr class="total-row">
+                <td colspan="3">Total</td>
+                <td>{{ number_format($totalAmount, 2) }}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
 
     <div class="footer">
-        Generated on {{ now()->format('Y-m-d H:i:s') }}
+        Page 1 of 1 | Generated by {{ auth()->user()->name }}
     </div>
 </body>
 </html>
