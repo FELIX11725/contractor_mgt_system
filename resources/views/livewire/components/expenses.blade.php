@@ -135,10 +135,7 @@
                 <textarea wire:model="editCategoryDescription" id="editDescription" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300"></textarea>
                 <x-input-error for="editCategoryDescription" class="mt-2" />
             </div>
-            <div class="mb-4">
-                <label for="editCode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Code (Optional)</label>
-                <input type="text" wire:model="editCategoryCode" id="editCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-gray-300">
-            </div>
+            
         </x-slot>
         <x-slot name="footer">
             <button wire:click="closeEditModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 transition duration-300">Cancel</button>

@@ -1,201 +1,236 @@
 <x-app-layout>
     <div class="w-full px-4 py-8 mx-auto sm:px-6 lg:px-8 max-w-9xl">
 
-        {{-- Dashboard actions (Filter, Datepicker, Add View) --}}
+        {{-- Dashboard Header --}}
         <div class="mb-8 sm:flex sm:justify-between sm:items-center">
-            <h1 class="text-2xl font-bold text-gray-800 md:text-3xl dark:text-gray-100 mb-4 sm:mb-0">Dashboard</h1>
-            <div class="grid justify-start grid-flow-col gap-2 sm:auto-cols-max sm:justify-end">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 md:text-3xl dark:text-gray-100">Dashboard Overview</h1>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">Welcome back! Here's what's happening today</p>
+            </div>
+            <div class="grid justify-start grid-flow-col gap-2 sm:auto-cols-max sm:justify-end mt-4 sm:mt-0">
                 <x-dropdown-filter align="right" />
-                <x-datepicker />
-                <button class="btn text-gray-100 bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white">
-                    <svg class="fill-current shrink-0 xs:hidden" width="16" height="16" viewBox="0 0 16 16">
-                        <path d="M15 7H9V1c0-.6-.4-1-1-1S7 .4 7 1v6H1c-.6 0-1 .4-1 1s.4 1 1 1h6v6c0 .6.4 1 1 1s1-.4 1-1V9h6c.6 0 1-.4 1-1s-.4-1-1-1z"/>
-                    </svg>
-                    <span class="max-xs:sr-only">Add View</span>
-                </button>
+                <livewire:components.date-range-picker />
             </div>
         </div>
 
-        <div class="flex flex-wrap">
-
-            {{-- Active Projects --}}
-            <div class="w-full lg:w-6/12 xl:w-3/12 px-4 mb-4">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-700 rounded-lg shadow-lg p-6 relative overflow-hidden">
-                    <h5 class="text-white uppercase font-bold text-sm mb-2">Active Projects</h5>
-                    <span class="text-3xl font-bold text-white">{{ $activeProjectsCount }}</span>
-                    <div class="absolute bottom-0 left-0 w-full h-2 bg-blue-300">
-                        {{-- <div class="h-full bg-blue-600" style="width: {{ $projectCompletionPercentage }}%;"></div> --}}
+        {{-- Summary Cards Grid --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {{-- Customers Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="p-6 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 mb-4">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Total Customers</h3>
+                        <p class="text-2xl font-bold text-gray-800 dark:text-white mt-1">1,248</p>
+                        <p class="text-sm text-green-600 dark:text-green-400 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                            12.5% from last month
+                        </p>
                     </div>
-                    <div class="mt-4 text-white text-sm">
-                       {{-- @foreach ($recentProjects as $project)  
-                          <p>{{ Str::limit($project->name, 15) }}</p> 
-                       @endforeach --}}
-                     </div>
-                </div>
-            </div>
-
-            {{-- Financial Health --}}
-            <div class="w-full lg:w-6/12 xl:w-3/12 px-4 mb-4">
-                <div class="bg-gradient-to-r from-green-500 to-green-700 rounded-lg shadow-lg p-6">
-                   <h5 class="text-white uppercase font-bold text-sm mb-2">Expenses</h5>
-                    <div class="flex items-center text-white">
-                        <span class="text-3xl font-bold mr-2">UGX {{ number_format($totalExpenses,"0",".",",") }}</span>
-                    </div>
-                    <div class="w-full bg-green-300 rounded-full h-2.5 mt-4 overflow-hidden">
-                        {{-- <div class="bg-green-600 h-full" style="width: {{ $budgetPercentage }}%;"></div> --}}
+                    <div class="text-blue-600 dark:text-blue-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="w-full lg:w-6/12 xl:w-3/12 px-4 mb-4">
-                <div class="bg-gradient-to-r from-yellow-500 to-yellow-700 rounded-lg shadow-lg p-6">
-                   <h5 class="text-white uppercase font-bold text-sm mb-2">Budget Costs</h5>
-                    <div class="flex items-center text-white">
-                        <span class="text-3xl font-bold mr-2">UGX {{ number_format($totalBudget,"0",".",",") }}</span> 
+            {{-- Projects Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="p-6 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 mb-4">
+                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
+                        <p class="text-2xl font-bold text-gray-800 dark:text-white mt-1">42</p>
+                        <p class="text-sm text-green-600 dark:text-green-400 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                            </svg>
+                            3 new this week
+                        </p>
                     </div>
-                    <div class="w-full bg-yellow-300 rounded-full h-2.5 mt-4 overflow-hidden">
-                        {{-- <div class="bg-green-600 h-full" style="width: {{ $budgetPercentage }}%;"></div> --}}
+                    <div class="text-purple-600 dark:text-purple-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
                 </div>
             </div>
 
-            {{-- Contractor Performance --}}
-            <div class="w-full lg:w-6/12 xl:w-3/12 px-4 mb-4 relative">  {{-- Added relative for positioning --}}
-                <div class="bg-gradient-to-r from-purple-500 to-purple-700 rounded-lg shadow-lg p-6 overflow-hidden"> {{-- Overflow hidden for carousel --}}
-                    <h5 class="text-white uppercase font-bold text-sm mb-2">Contractors</h5>
-                    <div id="contractor-carousel" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                           @foreach ($topContractors as $contractor)
-                                <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                    <div class="text-white">
-                                        <p class="font-bold">{{ $contractor->first_name }} {{ $contractor->last_name }}</p>
-                                        <p>Experience: {{ $contractor->work_experience }}years</p>
-                                    </div>
-                                </div>
-                           @endforeach
+            {{-- Contractors Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="p-6 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 mb-4">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Contractors</h3>
+                        <p class="text-2xl font-bold text-gray-800 dark:text-white mt-1">87</p>
+                        <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                            </svg>
+                            15 available now
+                        </p>
+                    </div>
+                    <div class="text-green-600 dark:text-green-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Beneficiaries Card --}}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="p-6 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/50 mb-4">
+                            <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Beneficiaries</h3>
+                        <p class="text-2xl font-bold text-gray-800 dark:text-white mt-1">2,450</p>
+                        <p class="text-sm text-red-600 dark:text-red-400 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                            </svg>
+                            5% decrease this quarter
+                        </p>
+                    </div>
+                    <div class="text-orange-600 dark:text-orange-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Financial Summary Cards --}}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {{-- Budget Card --}}
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg overflow-hidden text-white">
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-medium uppercase tracking-wider">Total Budget</h3>
+                            <p class="text-3xl font-bold mt-2">UGX {{ number_format(10000000, 0, '.', ',') }}</p>
+                        </div>
+                        <div class="bg-white/20 p-3 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                         </div>
                     </div>
+                    <div class="mt-4">
+                        <div class="h-2 bg-blue-300 rounded-full overflow-hidden">
+                            <div class="h-full bg-white/80 rounded-full" style="width: 65%"></div>
+                        </div>
+                        <p class="text-sm mt-2">65% of budget allocated</p>
+                    </div>
                 </div>
             </div>
 
-            {{-- Custom Reports --}}
-            {{-- <div class="w-full lg:w-6/12 xl:w-3/12 px-4 mb-4 transition-transform duration-300 hover:scale-105">
-                 <div class="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg shadow-lg p-6">
-                    <h5 class="text-white uppercase font-bold text-sm mb-4">Reports</h5>
-                    {{-- <a href="{{ route('reports') }}" class="btn bg-white text-yellow-600 hover:bg-gray-100">Generate Report</a> --}}
-                </div>
-            </div>
-
-            <div class="mt-8 p-10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-                    <!-- Monthly Expenses vs Revenues Line Chart -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h5 class="text-gray-700 font-bold text-lg mb-4">Monthly Expenses vs. Revenues</h5>
-                        <div class="h-[350px]"> <!-- Set height -->
-                            <canvas id="expensesRevenuesChart"></canvas>
+            {{-- Expenses Card --}}
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg overflow-hidden text-white">
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-medium uppercase tracking-wider">Total Expenses</h3>
+                            <p class="text-3xl font-bold mt-2">UGX {{ number_format(6500000, 0, '.', ',') }}</p>
+                        </div>
+                        <div class="bg-white/20 p-3 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
                         </div>
                     </div>
-            
-                    <!-- Quarterly Profits and Losses Bar Chart -->
-                    <div class="bg-white rounded-lg shadow-lg p-6">
-                        <h5 class="text-gray-700 font-bold text-lg mb-4">Quarterly Profits and Losses</h5>
-                        <div class="h-[350px]"> <!-- Set height -->
-                            <canvas id="profitsLossesChart"></canvas>
+                    <div class="mt-4">
+                        <div class="h-2 bg-purple-300 rounded-full overflow-hidden">
+                            <div class="h-full bg-white/80 rounded-full" style="width: 45%"></div>
                         </div>
+                        <p class="text-sm mt-2">45% increase from last quarter</p>
                     </div>
-            
                 </div>
             </div>
-            
 
-            {{-- Project Progress --}}
-            {{-- <div class="w-full mt-8 p-10">
-                <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6">
-                    <h5 class="text-gray-700 dark:text-gray-100 font-bold text-lg mb-4">Project Progress</h5>
-                    @foreach ($projects as $project)
-                        @php
-                            $gradient = 'from-red-500 to-red-700';
-                            if ($project->progress >= 50 && $project->progress < 100) {
-                                $gradient = 'from-blue-500 to-blue-700';
-                            } elseif ($project->progress == 100) {
-                                $gradient = 'from-green-500 to-green-700';
-                            }
-                        @endphp
-                        <div class="mb-6">
-                            <p class="text-gray-800 dark:text-white font-medium">{{ $project->project_name }}</p>
-                            <div class="relative w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2 shadow-inner overflow-hidden">
-                                <div class="h-full bg-gradient-to-r {{ $gradient }} rounded-full transition-all duration-700 ease-in-out"
-                                    style="width: {{ $project->progress }}%;">
-                                </div>
-                                <span class="absolute top-[-1.8rem] left-[calc({{ $project->progress }}% - 15px)] bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded-md opacity-80 shadow-md">
-                                    {{ number_format($project->progress, 2) }}%
-                                </span>
+            {{-- Profit Card --}}
+            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg overflow-hidden text-white">
+                <div class="p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-medium uppercase tracking-wider">Projected Profit</h3>
+                            <p class="text-3xl font-bold mt-2">UGX {{ number_format(3500000, 0, '.', ',') }}</p>
+                        </div>
+                        <div class="bg-white/20 p-3 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="h-2 bg-green-300 rounded-full overflow-hidden">
+                            <div class="h-full bg-white/80 rounded-full" style="width: 78%"></div>
+                        </div>
+                        <p class="text-sm mt-2">22% higher than target</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Charts Section --}}
+        <div class="w-full mt-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <livewire:components.monthly-income-chart />
+                <livewire:components.monthly-expenditure-chart />
+            </div>
+        </div>
+
+        {{-- Recent Activity Section --}}
+        <div class="mt-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-medium text-gray-800 dark:text-white">Recent Activity</h3>
+                </div>
+                <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                    @foreach(range(1, 5) as $i)
+                    <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                                <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Project update submitted</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Phase {{ $i }} completed by Contractor #{{ $i }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ $i }} hour{{ $i > 1 ? 's' : '' }} ago</p>
                             </div>
                         </div>
+                    </div>
                     @endforeach
                 </div>
-            </div> --}}
-            
-
-        </div>  {{-- End flex-wrap --}}
-
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700 text-center">
+                    <a href="#" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">View all activity</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Monthly Expenses vs Revenues Chart
-            var ctx1 = document.getElementById("expensesRevenuesChart").getContext("2d");
-            new Chart(ctx1, {
-                type: "line",
-                data: {
-                    labels: @json($months),
-                    datasets: [
-                        {
-                            label: "Expenses",
-                            data: @json($expensesData),
-                            borderColor: "red",
-                            backgroundColor: "rgba(255, 0, 0, 0.2)",
-                            fill: true,
-                        },
-                        {
-                            label: "Revenues",
-                            data: @json($revenuesData),
-                            borderColor: "green",
-                            backgroundColor: "rgba(0, 255, 0, 0.2)",
-                            fill: true,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
     
-            // Quarterly Profits and Losses Chart
-            var ctx2 = document.getElementById("profitsLossesChart").getContext("2d");
-            new Chart(ctx2, {
-                type: "bar",
-                data: {
-                    labels: ["Q1", "Q2", "Q3", "Q4"],
-                    datasets: [
-                        {
-                            label: "Profits",
-                            data: @json($quarterlyProfits),
-                            backgroundColor: "blue",
-                        },
-                        {
-                            label: "Losses",
-                            data: @json($quarterlyLosses),
-                            backgroundColor: "orange",
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
-            });
-        });
-    </script>
+    @livewireScripts
+    @livewireChartsScripts
 </x-app-layout>
