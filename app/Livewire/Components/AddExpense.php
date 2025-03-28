@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AddExpense extends Component
 {
-    // State properties
     public $date_of_pay;
     public $category_id;
     public $amount;
@@ -21,10 +20,8 @@ class AddExpense extends Component
 
     public $projects = [], $budgets = [];
     public $project, $budget, $budgetProject;
-
-    // Fetch financial categories for the dropdown
-    public $financialCategories;
-
+     public $financialCategories;
+ 
     public function mount()
     {
         // Load financial categories when the component is initialized
@@ -96,9 +93,7 @@ class AddExpense extends Component
                 ]);
             }
         });
-        // Save each expense to the database
-
-
+       
         // Clear the expenses list and reset the form
         $this->reset(['expenses', 'project', 'budget']);
 

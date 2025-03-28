@@ -63,18 +63,22 @@ class ViewBudgets extends Component
         flash()->addSuccess('Budget deleted successfully!');
     }
 
-    public function updateBudget()
+    public function updateBudget(FlasherInterface $flasher)
     {
         $validated = $this->validate([
             'selectedBudget.budget_name' => 'required|string|max:255',
             'selectedBudget.description' => 'required|string',
             'selectedBudget.estimated_amount' => 'nullable|numeric',
         ]);
-
-        Budget::findOrFail($this->selectedBudget->id)->update($validated['selectedBudget']);
-        $this->selectedBudget = Budget::with(['phase', 'milestone'])->findOrFail($this->selectedBudget->id);
-        $this->originalBudgetData = $this->selectedBudget->toArray();  // Reset the original data for validation on reopening the modal
-      
+    
+        $budget = Budget::findOrFail($this->selectedBudget->id);
+        $budget->update($validated['selectedBudget']);
+        
+        // Update the selectedBudget property with the validated data
+        $this->selectedBudget->budget_name = $validated['selectedBudget']['budget_name'];
+        $this->selectedBudget->description = $validated['selectedBudget']['description'];
+        $this->selectedBudget->estimated_amount = $validated['selectedBudget']['estimated_amount'];
+        
         $this->showEditModal = false;
         flash()->addSuccess('Budget updated successfully!');
     }
