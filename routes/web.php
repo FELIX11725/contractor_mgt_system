@@ -28,6 +28,8 @@ use App\Http\Controllers\ManageContractors\AddContractorController;
 use App\Http\Controllers\ManageContractors\ComplianceRecordsController;
 
 Route::redirect('/', 'login');
+Route::redirect('/register', 'login');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
