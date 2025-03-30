@@ -221,85 +221,104 @@
                     </div>
 
                     <ol class="relative border-s border-gray-200 dark:border-gray-700">
-                        <!-- Project -->
+                        <!-- Project Header -->
                         <li class="mb-10 ms-6">
                             <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                                 <svg class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                 </svg>
                             </span>
-                            <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-                                {{ $project->project_name }}
-                                <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Project</span>
-                            </h3>
-                            <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                                Start: {{ \Carbon\Carbon::parse($project->start_date)->format('M d, Y') }} - End: {{ \Carbon\Carbon::parse($project->end_date)->format('M d, Y') }}
-                            </time>
+                            <div class="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600">
+                                <div class="flex justify-between items-center w-full">
+                                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                                        {{ $project->project_name }}
+                                        <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">Project</span>
+                                    </h3>
+                                    <time class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                        {{ \Carbon\Carbon::parse($project->start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($project->end_date)->format('M d, Y') }}
+                                    </time>
+                                </div>
+                                <p class="mt-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                    {{ $project->project_description }}
+                                </p>
+                            </div>
                         </li>
                     
-                        <!-- Phases and Milestones -->
+                        <!-- Timeline Items (Phases and Milestones) -->
                         @foreach($timelineItems as $item)
-                        @if($item['type'] === 'phase')
-                            <!-- Phase -->
-                            <li class="mb-10 ms-6">
-                                <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-                                    <svg class="w-2.5 h-2.5 text-blue-800 dark:text-blue-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                                    </svg>
-                                </span>
-                                <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-                                    {{ $item['name'] }}
-                                    <span class="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-blue-900 dark:text-blue-300 ms-3">Phase</span>
-                                </h3>
-                                <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                                    Start: {{ \Carbon\Carbon::parse($item['start_date'])->format('M d, Y') }} - Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
-                                </time>
-                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }} </p>
-                            </li>
+                            @if($item['type'] === 'phase')
+                                <!-- Phase Item -->
+                                <li class="mb-10 ms-6">
+                                    <span class="absolute flex items-center justify-center w-6 h-6 bg-purple-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-purple-900">
+                                        <svg class="w-2.5 h-2.5 text-purple-800 dark:text-purple-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
+                                        </svg>
+                                    </span>
+                                    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600">
+                                        <div class="flex justify-between items-center w-full">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                {{ $item['name'] }}
+                                                <span class="bg-purple-100 text-purple-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-purple-900 dark:text-purple-300">Phase</span>
+                                            </h3>
+                                            <time class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($item['start_date'])->format('M d, Y') }} - {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
+                                            </time>
+                                        </div>
+                                        <p class="mt-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                            {{ $item['details'] }}
+                                        </p>
                     
-                            <!-- Milestones under this phase -->
-                            @foreach($item['milestones'] as $milestone)
-                                <li class="mb-10 ms-12">
+                                        <!-- Milestones under this Phase -->
+                                        @if(isset($item['milestones']) && count($item['milestones']) > 0)
+                                            <div class="mt-4 ml-6 space-y-4">
+                                                @foreach($item['milestones'] as $milestone)
+                                                    <div class="relative pl-6">
+                                                        <span class="absolute flex items-center justify-center w-3 h-3 bg-green-200 rounded-full -left-1.5 ring-4 ring-white dark:ring-gray-900 dark:bg-green-900"></span>
+                                                        <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg dark:bg-gray-600 dark:border-gray-500">
+                                                            <div class="flex items-center justify-between">
+                                                                <h4 class="text-base font-medium text-gray-800 dark:text-gray-200">
+                                                                    {{ $milestone['name'] }}
+                                                                    <span class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Milestone</span>
+                                                                </h4>
+                                                                <time class="text-xs font-normal text-gray-500 dark:text-gray-400">
+                                                                    Due: {{ \Carbon\Carbon::parse($milestone['due_date'])->format('M d, Y') }}
+                                                                </time>
+                                                            </div>
+                                                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                                {{ $milestone['details'] }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </li>
+                            @elseif($item['type'] === 'milestone' && empty($item['phase_id']))
+                                <!-- Project-level Milestone -->
+                                <li class="mb-10 ms-6">
                                     <span class="absolute flex items-center justify-center w-6 h-6 bg-green-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-green-900">
                                         <svg class="w-2.5 h-2.5 text-green-800 dark:text-green-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
                                         </svg>
                                     </span>
-                                    <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-                                        {{ $item['name'] }} -
-
-                                        @if($item['type'] === 'milestone')
-                                        {{ $item['name'] }}
-                                        @endif
-
-                                        {{ $milestone['name'] }}
-                                        <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
-                                    </h3>
-                                    <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                                        Due: {{ \Carbon\Carbon::parse($milestone['due_date'])->format('M d, Y') }}
-                                    </time>
-                                    <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $milestone['details'] }}</p>
+                                    <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-700 dark:border-gray-600">
+                                        <div class="flex justify-between items-center w-full">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                                {{ $item['name'] }}
+                                                <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Milestone</span>
+                                            </h3>
+                                            <time class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                                Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
+                                            </time>
+                                        </div>
+                                        <p class="mt-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                                            {{ $item['details'] }}
+                                        </p>
+                                    </div>
                                 </li>
-                            @endforeach
-                        @elseif($item['type'] === 'milestone' && empty($item['phase_id']))
-                            <!-- Milestones under the project -->
-                            <li class="mb-10 ms-6">
-                                <span class="absolute flex items-center justify-center w-6 h-6 bg-green-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-green-900">
-                                    <svg class="w-2.5 h-2.5 text-green-800 dark:text-green-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                                    </svg>
-                                </span>
-                                <h3 class="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-                                    {{ $item['name'] }}
-                                    <span class="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-green-900 dark:text-green-300 ms-3">Milestone</span>
-                                </h3>
-                                <time class="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                                    Due: {{ \Carbon\Carbon::parse($item['due_date'])->format('M d, Y') }}
-                                </time>
-                                <p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{{ $item['details'] }}</p>
-                            </li>
-                        @endif
-                    @endforeach
+                            @endif
+                        @endforeach
                     </ol>
                     
                 </div>
