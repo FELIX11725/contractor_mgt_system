@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Livewire\Budget\BudgetDetailsComponent;
 use App\Livewire\Expenses\ExpenseCategoriesComponent;
+use App\Livewire\Business\AddNewBusinessFormComponent;
 use App\Livewire\Preojects\ViewProjectDetailsComponent;
 use App\Http\Controllers\ManagePlans\ViewplansController;
 use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
@@ -16,11 +17,11 @@ use App\Http\Controllers\ManageExpenses\ExpensetypeController;
 use App\Http\Controllers\ManageExpenses\ViewExpenseController;
 use App\Http\Controllers\ManageMilestones\MilestoneController;
 use App\Http\Controllers\ProjectManagement\ProjectsController;
+
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
-
 use App\Http\Controllers\ManageContracts\AddContractController;
-use App\Http\Controllers\ProjectManagement\AddProjectController;
 
+use App\Http\Controllers\ProjectManagement\AddProjectController;
 use App\Http\Controllers\ManageContractors\ContractorsController;
 use App\Http\Controllers\ManageExpenses\ApproveExpenseController;
 use App\Http\Controllers\ManageMilestones\AddMilestoneController;
@@ -28,6 +29,8 @@ use App\Http\Controllers\ManageContractors\AddContractorController;
 use App\Http\Controllers\ManageContractors\ComplianceRecordsController;
 
 Route::redirect('/', 'login');
+Route::redirect('/register', 'login');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
@@ -76,4 +79,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/viewbudgets',[ViewbudgetController::class, 'index'])->name('viewbudgets');
         Route::get('/budgets/{budget}/details', BudgetDetailsComponent::class )->name('budgets.details');
     });
+
+    Route::get('/businees/create', AddNewBusinessFormComponent::class)->name('businsess.new');
 });
