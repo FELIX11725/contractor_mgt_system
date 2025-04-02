@@ -93,7 +93,7 @@ class ApproveExpense extends Component
         $existingApproval = ExpenseApproval::where('expense_id', $expenseId)->first();
 
         if ($existingApproval && $existingApproval->is_approved) {
-            session()->flash('error', 'This expense is already approved.');
+            flash()->addError( 'This expense is already approved.');
             return;
         }
 
@@ -107,7 +107,7 @@ class ApproveExpense extends Component
             ]
         );
 
-        session()->flash('message', 'Expense approved successfully.');
+        flash()->addInfo( 'Expense approved successfully.');
     }
 
     public function declineExpense($expenseId)
@@ -118,7 +118,7 @@ class ApproveExpense extends Component
         $existingApproval = ExpenseApproval::where('expense_id', $expenseId)->first();
 
         if ($existingApproval && !$existingApproval->is_approved) {
-            session()->flash('error', 'This expense is already declined.');
+            flash()->addError( 'This expense is already declined.');
             return;
         }
 
@@ -132,7 +132,7 @@ class ApproveExpense extends Component
             ]
         );
 
-        session()->flash('message', 'Expense declined successfully.');
+        flash()->addInfo( 'Expense declined successfully.');
     }
 
     public function addPayment()
@@ -149,7 +149,7 @@ class ApproveExpense extends Component
         ]);
 
         $this->closePaymentModal();
-        session()->flash('message', 'Payment details added successfully.');
+        flash()->addInfo( 'Payment details added successfully.');
     }
 
     public function render()
