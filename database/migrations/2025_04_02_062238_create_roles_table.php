@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('branches', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->foreignId('business_id')->references('id')->on('businesses');
-            $table->string('branch_name')->nullable();
-            $table->string('branch_code')->unique();
-            $table->string('branch_phone')->nullable();
-            $table->string('branch_email')->nullable();
-            $table->string('branch_address')->nullable();
-            $table->boolean('is_main')->default(false);
-            $table->softDeletes();
+            $table->foreignId('branch_id')->nullable()->references('id')->on('branches');
             $table->timestamps();
         });
     }
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('branches');
+        Schema::dropIfExists('roles');
     }
 };

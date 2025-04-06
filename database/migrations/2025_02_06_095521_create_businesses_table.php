@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('businesses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('staff_id')->nullable();
             $table->string('business_name')->nullable();
             $table->string('business_email')->nullable();
             $table->string('business_phone')->nullable();
             $table->string('business_address')->nullable();
             $table->string('business_location')->nullable();
-            $table->string('business_status')->nullable();
+            $table->string('business_status')->default('active');
             $table->foreignId('created_by')->references('id')->on('users')->nullable();
             $table->softDeletes();
             $table->timestamps();

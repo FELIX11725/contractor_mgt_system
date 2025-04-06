@@ -11,39 +11,100 @@ class MonthlyExpenditureChart extends Component
 {
     public $startDate;
     public $endDate;
+    public $selectedFilter = 'year'; // Default to past 3 months
+    
     protected $listeners = ['dateRangeSelected' => 'updateDateRange'];
+    
     public function mount()
     {
-        $this->startDate = now()->startOfMonth()->format('Y-m-d');
-        $this->endDate = now()->endOfMonth()->format('Y-m-d');
+        $this->applyFilter();
     }
+    
+    public function applyFilter($filter = null)
+    {
+        if ($filter) {
+            $this->selectedFilter = $filter;
+        }
+        
+        $now = now();
+        
+        switch ($this->selectedFilter) {
+            case 'year':
+                $this->startDate = $now->copy()->subYear()->startOfMonth()->format('Y-m-d');
+                $this->endDate = $now->format('Y-m-d');
+                break;
+            case '6months':
+                $this->startDate = $now->copy()->subMonths(6)->startOfMonth()->format('Y-m-d');
+                $this->endDate = $now->format('Y-m-d');
+                break;
+            case '3months':
+                $this->startDate = $now->copy()->subMonths(3)->startOfMonth()->format('Y-m-d');
+                $this->endDate = $now->format('Y-m-d');
+                break;
+            case 'month':
+                $this->startDate = $now->copy()->startOfMonth()->format('Y-m-d');
+                $this->endDate = $now->copy()->endOfMonth()->format('Y-m-d');
+                break;
+            default:
+                $this->startDate = $now->copy()->subMonths(3)->startOfMonth()->format('Y-m-d');
+                $this->endDate = $now->format('Y-m-d');
+        }
+    }
+    
     public function updateDateRange($startDate, $endDate)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->selectedFilter = 'custom'; // Set to custom when dates are manually selected
     }
+    
+    public function updatedSelectedFilter()
+    {
+        $this->applyFilter();
+    }
+    
     protected function generateChart()
     {
         $expenses = Expense::query()
             ->whereBetween('created_at', [$this->startDate, $this->endDate])
-            ->selectRaw('MONTH(created_at) as month, SUM(amount_paid) as total')
-            ->groupBy('month')
+            ->selectRaw('MONTH(created_at) as month, YEAR(created_at) as year, SUM(amount_paid) as total')
+            ->groupBy('year', 'month')
+            ->orderBy('year')
             ->orderBy('month')
             ->get();
         
-        $months = [];
+        // Calculate total expenses for the stats
+        $totalExpenses = $expenses->sum('total');
+        $monthCount = $expenses->count() ?: 1;
+        $avgExpenses = $totalExpenses / $monthCount;
+        
+        // Get all months in the selected range
+        $start = Carbon::parse($this->startDate);
+        $end = Carbon::parse($this->endDate);
+        $monthsInRange = [];
+        
+        while ($start <= $end) {
+            $monthsInRange[$start->month] = $start->format('M Y');
+            $start->addMonth();
+        }
+        
         $expenseData = [];
         
-        // Initialize all months with 0
-        for ($i = 1; $i <= 12; $i++) {
-            $monthName = Carbon::create()->month($i)->format('M');
-            $months[] = $monthName;
-            $expenseData[$i] = 0;
+        // Initialize with 0 for all months in range
+        foreach ($monthsInRange as $monthNum => $monthName) {
+            $expenseData[$monthNum] = [
+                'name' => $monthName,
+                'value' => 0
+            ];
         }
         
         // Fill actual data
         foreach ($expenses as $expense) {
-            $expenseData[$expense->month] = $expense->total;
+            $monthName = Carbon::create($expense->year, $expense->month)->format('M Y');
+            $expenseData[$expense->month] = [
+                'name' => $monthName,
+                'value' => $expense->total
+            ];
         }
         
         $chart = LivewireCharts::areaChartModel()
@@ -51,23 +112,27 @@ class MonthlyExpenditureChart extends Component
             ->setAnimated(true)
             ->withDataLabels()
             ->setColors(['#EF4444'])
-            ->setXAxisCategories($months);
+            ->setXAxisCategories(array_column($expenseData, 'name'));
             
-        foreach ($expenseData as $month => $amount) {
+        foreach ($expenseData as $monthData) {
             $chart->addPoint(
-                Carbon::create()->month($month)->format('M'),
-                $amount,
-                ['formatted' => 'UGX '.number_format($amount, 0, '.', ',')]
+                $monthData['name'],
+                $monthData['value'],
+                ['formatted' => 'UGX '.number_format($monthData['value'], 0, '.', ',')]
             );
         }
         
-        return $chart;
+        return [
+            'chartModel' => $chart,
+            'totalExpenses' => $totalExpenses,
+            'avgExpenses' => $avgExpenses,
+            // You can add more stats here as needed
+        ];
     }
+    
     public function render()
     {
-        $chartModel = $this->generateChart();
-        return view('livewire.components.monthly-expenditure-chart',[
-            'chartModel' => $chartModel,
-        ]);
+        $data = $this->generateChart();
+        return view('livewire.components.monthly-expenditure-chart', $data);
     }
 }

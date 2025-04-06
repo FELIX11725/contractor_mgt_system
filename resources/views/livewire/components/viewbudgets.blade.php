@@ -1,71 +1,136 @@
 <div>
     <section class="container px-4 mx-auto">
-        <!-- Header Section -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-10 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Project Budgets</h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage and track all project budgets in one place</p>
+        <!-- Enhanced Header Section with Gradient Background -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg mb-8">
+            <div class="absolute inset-0 opacity-10">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-full h-full">
+                    <path d="M10 20h80v60H10z" fill="none" stroke="currentColor" stroke-width="1" />
+                    <path d="M30 80V20M50 80V20M70 80V20" fill="none" stroke="currentColor" stroke-width="0.5" />
+                    <path d="M10 40h80M10 60h80" fill="none" stroke="currentColor" stroke-width="0.5" />
+                </svg>
             </div>
-            
-            <div class="flex items-center gap-x-3">
-                {{-- <span class="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-full dark:bg-gray-800 dark:text-blue-400">
-                    {{ $budgets->total() }} {{ $budgets->total() === 1 ? 'Budget' : 'Budgets' }}
-                </span> --}}
-                <button 
-                    wire:click="downloadBudget"
-                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Export PDF
-                </button>
+            <div class="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-6">
+                <div class="text-white">
+                    <h2 class="text-3xl font-bold">Project Budgets</h2>
+                    <p class="mt-2 text-blue-100 max-w-md">Manage and track all project budgets in one place with comprehensive financial insights</p>
+                </div>
+                
+                <div>
+                    <button 
+                        wire:click="downloadBudget"
+                        class="flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export PDF
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Project Selection -->
-        <div class="mt-6 mb-6">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Project</label>
-            <div class="flex flex-wrap gap-2">
-                @foreach($projects as $index => $project)
-                    <button 
-                        wire:click="goToProject({{ $index }})"
-                        class="px-4 py-2 text-sm font-medium rounded-lg transition-all
-                            {{ $currentProjectIndex == $index ? 
-                               'bg-blue-600 text-white shadow-md' : 
-                               'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}"
+    <!-- Simplified Project Selection Dropdown -->
+<div class="mb-6 relative" x-data="{ isOpen: false, selectedProject: '{{ $projects[$currentProjectIndex]->project_name }}' }">
+    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Project Selection</h3>
+    
+    <!-- Dropdown Trigger Button -->
+    <button 
+        @click="isOpen = !isOpen" 
+        @click.away="isOpen = false"
+        class="w-full flex items-center justify-between p-3 rounded-lg
+            bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 shadow"
+    >
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span x-text="selectedProject"></span>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200" :class="{'rotate-180': isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+    
+    <!-- Dropdown Menu -->
+    <div 
+        x-show="isOpen" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 transform -translate-y-2"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform -translate-y-2"
+        class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+    >
+        <div class="max-h-56 overflow-y-auto">
+            <!-- Search Input -->
+            <div class="sticky top-0 bg-gray-50 dark:bg-gray-700 p-2">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        placeholder="Search projects..." 
+                        class="w-full pl-8 pr-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                        {{ $project->project_name }}
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 absolute left-2.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Project List -->
+            <div class="py-1">
+                @foreach($projects as $index => $project)
+                    <button
+                        wire:click="goToProject({{ $index }})"
+                        @click="selectedProject = '{{ $project->project_name }}'; isOpen = false"
+                        class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-gray-800 dark:text-white {{ $currentProjectIndex == $index ? 'font-medium' : '' }}">
+                                {{ $project->project_name }}
+                            </span>
+                        </div>
+                        
+                        @if($currentProjectIndex == $index)
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                Current
+                            </span>
+                        @endif
                     </button>
                 @endforeach
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Search and Filter Section -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-3 bg-gray-50 rounded-lg dark:bg-gray-800 mb-6">
-            <div class="relative w-full md:w-80">
+        <!-- Improved Search and Filter Section -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+            <div class="relative w-full md:w-96">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
                 <input 
                     wire:model.live.debounce.300ms="search"
                     type="text" 
-                    placeholder="Search budgets..." 
-                    class="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Search budgets by name or description..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors"
                 >
             </div>
             
-            <div class="flex items-center space-x-2 w-full md:w-auto">
-                <div class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                    Showing {{ $budgets->firstItem() }}-{{ $budgets->lastItem() }} of {{ $budgets->total() }}
+            <div class="flex items-center space-x-4 w-full md:w-auto">
+                <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300">
+                    Showing <span class="font-semibold text-gray-800 dark:text-white">{{ $budgets->firstItem() ?? 0 }}-{{ $budgets->lastItem() ?? 0 }}</span> of <span class="font-semibold text-gray-800 dark:text-white">{{ $budgets->total() }}</span>
                 </div>
                 <div class="flex space-x-1">
                     <button 
                         wire:click="previousPage"
                         @disabled($budgets->onFirstPage())
-                        class="px-3 py-1 rounded-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -74,7 +139,7 @@
                     <button 
                         wire:click="nextPage"
                         @disabled(!$budgets->hasMorePages())
-                        class="px-3 py-1 rounded-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -84,147 +149,155 @@
             </div>
         </div>
 
-        <!-- Budgets Table -->
-        <div class="flex flex-col">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle">
-                    <div class="overflow-hidden shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 rounded-lg">
-                        @if($budgets->isEmpty())
-                            <div class="p-12 text-center bg-white dark:bg-gray-800 rounded-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">No budgets found</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    @if($search)
-                                        Try adjusting your search query
-                                    @else
-                                        No budgets available for the selected project
-                                    @endif
-                                </p>
-                            </div>
+        <!-- Improved Budget Table -->
+        <div class="overflow-hidden bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-100 dark:border-gray-700">
+            @if($budgets->isEmpty())
+                <div class="p-16 text-center">
+                    <div class="flex justify-center">
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="mt-4 text-xl font-medium text-gray-900 dark:text-white">No budgets found</h3>
+                    <p class="mt-2 text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                        @if($search)
+                            Your search for "<span class="font-medium text-gray-700 dark:text-gray-300">{{ $search }}</span>" didn't match any budgets. Try using different keywords or check your spelling.
                         @else
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead class="bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                            Budget Name
-                                        </th>
-                                        <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                            Description
-                                        </th>
-                                        <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                            Phase/Milestone
-                                        </th>
-                                        <th scope="col" class="relative px-6 py-3.5">
-                                            <span class="sr-only">Actions</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
-                                    @foreach($budgets as $budget)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                            <td class="whitespace-nowrap px-6 py-4">
-                                                <div class="flex items-center">
-                                                    <div class="h-10 w-10 flex-shrink-0 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="font-medium text-gray-900 dark:text-white">{{ $budget->budget_name }}</div>
-                                                        <div class="text-gray-500 dark:text-gray-400 text-sm">
-                                                            {{ $budget->estimated_amount ? '$'.number_format($budget->estimated_amount, 2) : 'Amount not set' }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="text-gray-900 dark:text-gray-100">{{ Str::limit($budget->description, 60) }}</div>
-                                            </td>
-                                            <td class="whitespace-nowrap px-6 py-4">
-                                                <div class="flex items-center">
-                                                    @if($budget->phase)
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                                                            Phase: {{ $budget->phase->name }}
-                                                        </span>
-                                                    @elseif($budget->milestone)
-                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                                            Milestone: {{ $budget->milestone->name }}
-                                                        </span>
+                            No budgets have been created for this project yet. When you add budgets, they'll appear here.
+                        @endif
+                    </p>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                            <tr class="bg-gray-50 dark:bg-gray-700">
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                                    Budget Name
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                                    Description
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                                    Phase/Milestone
+                                </th>
+                                <th scope="col" class="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+                            @foreach($budgets as $budget)
+                                <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="font-medium text-gray-900 dark:text-white">{{ $budget->budget_name }}</div>
+                                                <div class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                                                    @if($budget->estimated_amount)
+                                                        <span class="font-medium text-green-600 dark:text-green-400">${{ number_format($budget->estimated_amount, 2) }}</span>
                                                     @else
-                                                        <span class="text-gray-500 dark:text-gray-400 text-sm">Not assigned</span>
+                                                        <span class="text-gray-400 dark:text-gray-500">Amount not set</span>
                                                     @endif
                                                 </div>
-                                            </td>
-                                            <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                                                <div class="flex items-center justify-end space-x-2">
-                                                    <button 
-                                                        wire:click="openViewModal({{ $budget->id }})"
-                                                        class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30"
-                                                        title="View"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button 
-                                                        wire:click="openEditModal({{ $budget->id }})"
-                                                        class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 p-1 rounded-full hover:bg-yellow-50 dark:hover:bg-yellow-900/30"
-                                                        title="Edit"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button 
-                                                        wire:click="confirmDelete({{ $budget->id }})"
-                                                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30"
-                                                        title="Delete"
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                            
-                                                    <!-- Details Button -->
-                                                    <a href="{{ route('budgets.details', $budget->id) }}" 
-                                                        class="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-                                                        title="Details">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
-                                                        </svg>
-                                                        Details
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            
-                                            
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
-                    </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-gray-700 dark:text-gray-300 max-w-xs">{{ Str::limit($budget->description, 60) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($budget->phase)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                </svg>
+                                                Phase: {{ $budget->phase->name }}
+                                            </span>
+                                        @elseif($budget->milestone)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                </svg>
+                                                Milestone: {{ $budget->milestone->name }}
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                                                Not assigned
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <button 
+                                                wire:click="openViewModal({{ $budget->id }})"
+                                                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                                                title="View Details"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                </svg>
+                                            </button>
+                                            <button 
+                                                wire:click="openEditModal({{ $budget->id }})"
+                                                class="text-amber-600 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 p-1.5 rounded-full hover:bg-amber-50 dark:hover:bg-amber-900/30 transition-colors"
+                                                title="Edit Budget"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <button 
+                                                wire:click="confirmDelete({{ $budget->id }})"
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                                                title="Delete Budget"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        
+                                            <a href="{{ route('budgets.details', $budget->id) }}" 
+                                                class="flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition duration-300 shadow-sm hover:shadow"
+                                                title="View Details">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                                Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            @endif
         </div>
 
         <!-- Enhanced Pagination -->
-        <div class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700 rounded-b-lg">
+        @if(!$budgets->isEmpty())
+        <div class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl mt-6 shadow-sm">
             <div class="flex-1 flex justify-between sm:hidden">
                 <button 
                     wire:click="previousPage"
                     @disabled($budgets->onFirstPage())
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Previous
                 </button>
                 <button 
                     wire:click="nextPage"
                     @disabled(!$budgets->hasMorePages())
-                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Next
                 </button>
@@ -241,7 +314,7 @@
                         <button 
                             wire:click="previousPage"
                             @disabled($budgets->onFirstPage())
-                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="relative inline-flex items-center px-3 py-2 rounded-l-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <span class="sr-only">Previous</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -261,7 +334,7 @@
                                 @foreach($element as $page => $url)
                                     <button 
                                         wire:click="gotoPage({{ $page }})"
-                                        class="{{ $budgets->currentPage() == $page ? 'z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-400' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600' }} relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                                        class="{{ $budgets->currentPage() == $page ? 'z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900/30 dark:border-blue-500 dark:text-blue-400' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600' }} relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors"
                                     >
                                         {{ $page }}
                                     </button>
@@ -273,7 +346,7 @@
                         <button 
                             wire:click="nextPage"
                             @disabled(!$budgets->hasMorePages())
-                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="relative inline-flex items-center px-3 py-2 rounded-r-lg border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <span class="sr-only">Next</span>
                             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -284,138 +357,189 @@
                 </div>
             </div>
         </div>
+        @endif
 
-        <!-- View Modal -->
-        <x-modals wire:model="showViewModal" title="Budget Details" max-width="2xl">
+        <!-- Enhanced View Modal -->
+        {{-- <x-modals wire:model="showViewModal" title="Budget Details" max-width="2xl">
             <x-card title="Budget Details" rounded="lg" shadow="none" class="border-0">
                 @if($selectedBudget)
                     <div class="space-y-6">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0 p-3 bg-blue-100 rounded-lg dark:bg-blue-900/30">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ $selectedBudget->budget_name }}</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $selectedBudget->description }}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Financial Details</h4>
-                                <dl class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <dt class="text-sm text-gray-500 dark:text-gray-400">Estimated Amount</dt>
-                                        <dd class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $selectedBudget->estimated_amount ? '$'.number_format($selectedBudget->estimated_amount, 2) : 'Not specified' }}
-                                        </dd>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <dt class="text-sm text-gray-500 dark:text-gray-400">Status</dt>
-                                        <dd>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $selectedBudget->approved ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200' }}">
-                                                {{ $selectedBudget->approved ? 'Approved' : 'Pending Approval' }}
-                                            </span>
-                                        </dd>
-                                    </div>
-                                </dl>
-                            </div>
-                            
-                            <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Project Association</h4>
-                                <dl class="space-y-3">
-                                    <div class="flex justify-between">
-                                        <dt class="text-sm text-gray-500 dark:text-gray-400">Project</dt>
-                                        <dd class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $currentProject->project_name }}
-                                        </dd>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <dt class="text-sm text-gray-500 dark:text-gray-400">Associated With</dt>
-                                        <dd class="text-sm font-medium text-gray-900 dark:text-white">
-                                            @if($selectedBudget->phase)
-                                                Phase: {{ $selectedBudget->phase->name }}
-                                            @elseif($selectedBudget->milestone)
-                                                Milestone: {{ $selectedBudget->milestone->name }}
-                                            @else
-                                                Not assigned
-                                            @endif
-                                        </dd>
-                                    </div>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
+                            <div class="flex-shrink-0 p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-sm text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599 --}}
 
-                <x-slot name="footer">
-                    <div class="flex justify-end">
-                        <x-button wire:click="$set('showViewModal', false)" label="Close" flat>Close</x-button>
+        <!-- View Modal -->
+       <!-- View Modal -->
+<x-modals wire:model="showViewModal" title="Budget Details" max-width="2xl">
+    <x-card title="Budget Details" rounded="lg" shadow="none" class="border-0">
+        @if($selectedBudget)
+            <div class="space-y-6">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0 p-3 bg-blue-100 rounded-full dark:bg-blue-900/40">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                </x-slot>
-            </x-card>
-        </x-modals>
-
-        <!-- Edit Modal -->
-        <x-modals wire:model="showEditModal" title="Edit Budget" max-width="lg">
-            <x-card title="Edit Budget" rounded="lg" shadow="none" class="border-0">
-                @if($selectedBudget)
-                <div class="space-y-4">
-                    <x-input 
-                        wire:model="selectedBudget.budget_name" 
-                        label="Budget Name" 
-                        placeholder="Enter budget name"
-                        class="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <x-textarea 
-                        wire:model="selectedBudget.description" 
-                        label="Description" 
-                        placeholder="Enter description"
-                        rows="3"
-                        class="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <x-input 
-                        wire:model="selectedBudget.estimated_amount" 
-                        label="Estimated Amount" 
-                        placeholder="0.00" 
-                        type="number" 
-                        step="0.01"
-                        class="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $selectedBudget->budget_name }}</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $selectedBudget->description }}</p>
+                    </div>
                 </div>
-                @endif
-
-                <x-slot name="footer">
-                    <div class="flex justify-end gap-x-4">
-                        <x-button wire:click="$set('showEditModal', false)" label="Cancel" flat>Cancel</x-button>
-                        <x-button wire:click="updateBudget" label="Save Changes" spinner="updateBudget" primary>Update</x-button>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <h4 class="text-sm font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300 mb-3">Financial Details</h4>
+                        <dl class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <dt class="text-sm text-gray-500 dark:text-gray-400">Estimated Amount</dt>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">
+                                    {{ $selectedBudget->estimated_amount ? '$'.number_format($selectedBudget->estimated_amount, 2) : 'Not specified' }}
+                                </dd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <dt class="text-sm text-gray-500 dark:text-gray-400">Status</dt>
+                                <dd>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $selectedBudget->approved ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200' }}">
+                                        {{ $selectedBudget->approved ? 'Approved' : 'Pending Approval' }}
+                                    </span>
+                                </dd>
+                            </div>
+                        </dl>
                     </div>
-                </x-slot>
-            </x-card>
-        </x-modals>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                        <h4 class="text-sm font-medium uppercase tracking-wider text-gray-500 dark:text-gray-300 mb-3">Project Association</h4>
+                        <dl class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <dt class="text-sm text-gray-500 dark:text-gray-400">Project</dt>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">
+                                    {{ $currentProject->project_name }}
+                                </dd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <dt class="text-sm text-gray-500 dark:text-gray-400">Associated With</dt>
+                                <dd class="text-base font-medium text-gray-900 dark:text-white">
+                                    @if($selectedBudget->phase)
+                                        <span class="flex items-center">
+                                            <span class="inline-block w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                                            Phase: {{ $selectedBudget->phase->name }}
+                                        </span>
+                                    @elseif($selectedBudget->milestone)
+                                        <span class="flex items-center">
+                                            <span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                                            Milestone: {{ $selectedBudget->milestone->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-gray-400 dark:text-gray-500">Not assigned</span>
+                                    @endif
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        @endif
 
-        <!-- Delete Confirmation Modal -->
-        <x-modals wire:model="showDeleteModal" max-width="md" title="Delete Budget">
-            <x-card title="Delete Budget" rounded="lg" shadow="none" class="border-0">
-                <div class="flex flex-col items-center text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        <x-slot name="footer">
+            <div class="flex justify-end">
+                <x-button wire:click="$set('showViewModal', false)" label="Close" flat class="px-6 py-2.5 text-sm font-medium">Close</x-button>
+            </div>
+        </x-slot>
+    </x-card>
+</x-modals>
+
+<!-- Edit Modal -->
+<x-modals wire:model="showEditModal" title="Edit Budget" max-width="lg">
+    <x-card title="Edit Budget" rounded="lg" shadow="none" class="border-0">
+        @if($selectedBudget)
+        <div class="space-y-5">
+            <div class="relative">
+                <x-input 
+                    wire:model="selectedBudget.budget_name" 
+                    label="Budget Name" 
+                    placeholder="Enter budget name"
+                    class="w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div class="absolute top-0 right-3 h-full flex items-center text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                        <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
                     </svg>
-                    <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">Are you sure?</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        This will permanently delete the budget and all associated data. This action cannot be undone.
-                    </p>
                 </div>
+            </div>
+            
+            <div>
+                <x-textarea 
+                    wire:model="selectedBudget.description" 
+                    label="Description" 
+                    placeholder="Enter a detailed description of this budget"
+                    rows="4"
+                    class="w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+            </div>
+            
+            <div class="relative">
+                <x-input 
+                    wire:model="selectedBudget.estimated_amount" 
+                    label="Estimated Amount" 
+                    placeholder="0.00" 
+                    type="number" 
+                    step="0.01"
+                    class="w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div class="absolute top-0 right-3 h-full flex items-center text-gray-400">
+                    <span class="text-sm font-medium">$</span>
+                </div>
+            </div>
+        </div>
+        @endif
 
-                <x-slot name="footer">
-                    <div class="flex justify-end gap-x-4">
-                        <x-button wire:click="$set('showDeleteModal', false)" label="Cancel" flat>Close</x-button>
-                        <x-button wire:click="deleteBudget" label="Delete Budget" spinner="deleteBudget" negative>Delete</x-button>
-                    </div>
-                </x-slot>
-            </x-card>
-        </x-modals>
+        <x-slot name="footer">
+            <div class="flex justify-end gap-x-4">
+                <x-button wire:click="$set('showEditModal', false)" label="Cancel" flat class="px-5 py-2.5 text-sm font-medium">Cancel</x-button>
+                <x-button wire:click="updateBudget" label="Save Changes" spinner="updateBudget" primary class="px-5 py-2.5 text-sm font-medium bg-blue-600 hover:bg-blue-700">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Update
+                    </span>
+                </x-button>
+            </div>
+        </x-slot>
+    </x-card>
+</x-modals>
+
+<!-- Delete Confirmation Modal -->
+<x-modals wire:model="showDeleteModal" max-width="md" title="Delete Budget">
+    <x-card title="Delete Budget" rounded="lg" shadow="none" class="border-0">
+        <div class="flex flex-col items-center text-center py-4">
+            <div class="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center dark:bg-red-900/30 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-600 dark:text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Are you sure?</h3>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-md">
+                This will permanently delete the budget and all associated data. This action cannot be undone.
+            </p>
+        </div>
+
+        <x-slot name="footer">
+            <div class="flex justify-end gap-x-4">
+                <x-button wire:click="$set('showDeleteModal', false)" label="Cancel" flat class="px-5 py-2.5 text-sm font-medium">Cancel</x-button>
+                <x-button wire:click="deleteBudget" label="Delete Budget" spinner="deleteBudget" negative class="px-5 py-2.5 text-sm font-medium bg-red-600 hover:bg-red-700">
+                    <span class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete
+                    </span>
+                </x-button>
+            </div>
+        </x-slot>
+    </x-card>
+</x-modals>
     </section>
 </div>
