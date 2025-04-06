@@ -2,26 +2,26 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\User;
+use App\Models\staff;
 use Livewire\Component;
 use App\Models\Contractor;
+use Illuminate\Support\Str;
+use App\Mail\WelcomeNewUser;
 use Livewire\WithPagination;
 use Flasher\Prime\FlasherInterface;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class Contractors extends Component
 {
     use WithPagination;
 
-    public $showModal = false;
-    public $modalType = null;
-    public $contractorIdToEdit;
-    public $first_name;
-    public $last_name;
-    public $contractor_email;
-    public $contractor_phone;
-    public $contractor_address;
-    public $searchQuery = '';
-    public $selectedContractors = [];
+    public $search = '';
+    public $selectedStaff = [];
     public $selectAll = false;
+    public $perPage = 10;
+    public $action = '';
 
     protected $paginationTheme = 'bootstrap';
 
@@ -35,131 +35,103 @@ class Contractors extends Component
 
     public function render()
     {
-        $contractors = Contractor::when($this->searchQuery, function ($query) {
-            $query->where(function ($q) {
-                $q->where('first_name', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('last_name', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('contractor_email', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('contractor_phone', 'like', '%' . $this->searchQuery . '%')
-                  ->orWhere('contractor_address', 'like', '%' . $this->searchQuery . '%');
-            });
-        })->paginate(10);
+        $staff = staff::with(['user'])
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('first_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('email', 'like', '%' . $this->search . '%')
+                      ->orWhere('phone', 'like', '%' . $this->search . '%')
+                      ->orWhere('position', 'like', '%' . $this->search . '%');
+                });
+            })->get();
+            // ->orderBy('created_at', 'desc')
+            // ->paginate($this->perPage);
 
-        return view('livewire.components.contractors', compact('contractors'));
+        return view('livewire.components.contractors', compact('staff'));
     }
 
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selectedContractors = $this->contractors->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            $this->selectedStaff = $this->staff->pluck('id')->map(fn($id) => (string)$id)->toArray();
         } else {
-            $this->selectedContractors = [];
+            $this->selectedStaff = [];
         }
     }
 
-    public function openModal()
+    public function performAction(FlasherInterface $flasher)
     {
-        $this->resetInputFields();
-        $this->modalType = 'add';
-        $this->showModal = true;
-    }
-
-    public function save(FlasherInterface $flasher)
-    {
-        $this->validate($this->rules + ['contractor_email' => 'unique:contractors,contractor_email']);
-
-        Contractor::create([
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'contractor_email' => $this->contractor_email,
-            'contractor_phone' => $this->contractor_phone,
-            'contractor_address' => $this->contractor_address,
-        ]);
-
-        $this->resetInputFields();
-        $this->showModal = false;
-        $flasher->addSuccess('Contractor created successfully!');
-    }
-
-    public function openEditModal($contractorId)
-    {
-        $this->resetInputFields();
-        $contractor = Contractor::findOrFail($contractorId);
-        $this->contractorIdToEdit = $contractor->id;
-        $this->first_name = $contractor->first_name;
-        $this->last_name = $contractor->last_name;
-        $this->contractor_email = $contractor->contractor_email;
-        $this->contractor_phone = $contractor->contractor_phone;
-        $this->contractor_address = $contractor->contractor_address;
-        $this->modalType = 'edit';
-        $this->showModal = true;
-    }
-    public function openViewModal(){
-        $this->resetInputFields();
-        $contractor = Contractor::findOrFail($this->contractorIdToEdit);
-        $this->first_name = $contractor->first_name;
-        $this->last_name = $contractor->last_name;
-        $this->contractor_email = $contractor->contractor_email;
-        $this->contractor_phone = $contractor->contractor_phone;
-        $this->contractor_address = $contractor->contractor_address;
-        $this->modalType = 'view';
-        $this->showModal = true;
-    }
-
-    public function update(FlasherInterface $flasher)
-    {
-        $this->validate($this->rules + [
-            'contractor_email' => 'unique:contractors,contractor_email,' . $this->contractorIdToEdit,
-        ]);
-
-        $contractor = Contractor::findOrFail($this->contractorIdToEdit);
-        $contractor->update([
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'contractor_email' => $this->contractor_email,
-            'contractor_phone' => $this->contractor_phone,
-            'contractor_address' => $this->contractor_address,
-        ]);
-
-        $this->resetInputFields();
-        $this->showModal = false;
-        $flasher->addSuccess('Contractor updated successfully!');
-    }
-
-    public function delete($contractorId, FlasherInterface $flasher)
-    {
-        $contractor = Contractor::findOrFail($contractorId);
-        if($contractor->contracts()->exists()){
-            $flasher->addError('Cannot delete contractor with existing contracts.');
-            return;  
+        if ($this->action === 'deleteSelectedStaff' && !empty($this->selectedStaff)) {
+            $this->deleteSelected($flasher);
         }
-        Contractor::destroy($contractorId);
-        $this->selectedContractors = array_diff($this->selectedContractors, [$contractorId]);
-        $flasher->addSuccess('Contractor deleted successfully!');
     }
 
-    public function search()
+    public function deleteSelected()
     {
-        $this->resetPage();
+        Staff::whereIn('id', $this->selectedStaff)->delete();
+        $this->selectedStaff = [];
+        flash()->addSuccess('Selected staff members deleted successfully!');
     }
 
-    private function resetInputFields()
+    public function deselectAll()
     {
-        $this->reset([
-            'first_name',
-            'last_name',
-            'contractor_email',
-            'contractor_phone',
-            'contractor_address',
-            'contractorIdToEdit',
-            'modalType',
-            'showModal'
+        $this->selectedStaff = [];
+        $this->selectAll = false;
+    }
+
+    public function activate($staffId)
+    {
+        $staff = Staff::findOrFail($staffId);
+
+        //check if the staff member already has a user account
+    
+        $password = Str::random(12);
+        $user = User::withTrashed()->firstOrCreate([
+            'email' => $staff->email,
+        ],[
+            'name' => $staff->first_name . ' ' . $staff->last_name,
+            'password' => Hash::make($password),
+            'business_id' =>auth()->user()->business_id,
+            'branch_id' => auth()->user()->branch_id,
+            'staff_id' => $staff->id,
+            'deleted_at' => null,
         ]);
-        $this->resetErrorBag();
+
+        if ($user->wasRecentlyCreated) {
+            // Assign the user to the staff member
+            $staff->update([
+                'user_id' => $user->id,
+            ]);
+            Mail::to($staff->email)->send(new WelcomeNewUser($user, $password));
+            flash()->addSuccess('User account created successfully!');   
+        } else {
+            $user->restore();
+            flash()->addSuccess('User account reactivated');
+            return;
+        }
+
+       
+
+        // Here you would typically send a welcome email with the password
     }
 
-    public function setPage($pageNumber)
+    public function deactivate($staffId)
     {
-        $this->gotoPage($pageNumber);
+        $staff = Staff::findOrFail($staffId);
+        
+        if ($staff) {
+            $staff->user->delete();
+        flash()->addSuccess('Staff deactivated successfully!');
+
+        } else {
+            flash()->addError('Staff member does not have an associated user account.');
+        }
+
+    }
+
+    public function openStaffProfile($staffId)
+    {
+        return redirect()->route('staff.profile', $staffId);
     }
 }

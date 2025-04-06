@@ -102,7 +102,7 @@
                 <th width="10%">Quantity</th>
                 <th width="15%">Rate</th>
                 <th width="15%">Estimated Amount</th>
-                <th width="20%">Total Spent</th>
+                {{-- <th width="20%">Total Spent</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -112,13 +112,13 @@
                 <td>{{ $item->quantity }}</td>
                 <td>{{ number_format($item->rate, 2) }}</td>
                 <td>{{ number_format($item->estimated_amount, 2) }}</td>
-                <td>{{ number_format($item->approved_expenses_sum_amount_paid ?? 0, 2) }}</td>
+                {{-- <td>{{ number_format($item->approved_expenses_sum_amount_paid ?? 0, 2) }}</td> --}}
             </tr>
             @endforeach
             <tr class="total-row">
                 <td colspan="3"><strong>Total</strong></td>
                 <td><strong>{{ number_format($budgetItems->sum('estimated_amount'), 2) }}</strong></td>
-                <td><strong>{{ number_format($budgetItems->sum('approved_expenses_sum_amount_paid'), 2) }}</strong></td>
+                {{-- <td><strong>{{ number_format($budgetItems->sum('approved_expenses_sum_amount_paid'), 2) }}</strong></td> --}}
             </tr>
         </tbody>
     </table>

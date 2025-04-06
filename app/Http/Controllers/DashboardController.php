@@ -14,6 +14,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
+
         // Active projects count
         $activeProjectsCount = Project::all()->count();
         $totalContractors = Contractor::count();

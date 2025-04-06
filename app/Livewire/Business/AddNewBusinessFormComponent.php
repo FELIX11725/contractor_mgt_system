@@ -2,13 +2,17 @@
 
 namespace App\Livewire\Business;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\staff;
 use App\Models\branch;
 use Livewire\Component;
 use App\Models\business;
+use App\Models\Permission;
+use App\Models\UsersRoles;
 use Illuminate\Support\Str;
 use App\Mail\StaffWelcomeEmail;
+use App\Models\RolesPermission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -77,16 +81,47 @@ class AddNewBusinessFormComponent extends Component
                 'email' => $this->staff_email,
                 'password' => Hash::make($password),
                 'is_admin' => false,
+                'business_id' => $business->id,
+                'branch_id' => $branch->id,
+                'email_verified_at' => now(),
             ]);
 
             // Create staff record
-            staff::create([
+        $staff=    staff::create([
+                'first_name' => $this->staff_name,
+                'email' => $this->staff_email,
                 'user_id' => $user->id,
                 'business_id' => $business->id,
                 'branch_id' => $branch->id,
                 'position' => $this->staff_position,
                 'phone' => $this->staff_phone,
                 'is_primary' => true,
+            ]);
+
+            $role = Role::create([
+                'name' => 'Admin',
+                'business_id' => $business->id,
+                'branch_id' => $branch->id,
+            ]);
+
+            //assign all permissions
+            foreach(Permission::all() as $permission) {
+                RolesPermission::create([
+                    'role_id' => $role->id,
+                    'permission_id' => $permission->id,
+                ]);
+            }
+
+            // Assign the role to the user
+            UsersRoles::firstOrCreate([
+                'user_id' => $user->id,
+                'role_id' => $role->id,
+            ]);
+
+
+            //user update
+            $user->update([
+                'staff_id' => $staff->id,
             ]);
 
             // Send welcome email with password
