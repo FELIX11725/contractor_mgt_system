@@ -30,81 +30,81 @@
         </div>
 
     <!-- Simplified Project Selection Dropdown -->
-<div class="mb-6 relative" x-data="{ isOpen: false, selectedProject: '{{ $projects[$currentProjectIndex]->project_name }}' }">
-    <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Project Selection</h3>
-    
-    <!-- Dropdown Trigger Button -->
-    <button 
-        @click="isOpen = !isOpen" 
-        @click.away="isOpen = false"
-        class="w-full flex items-center justify-between p-3 rounded-lg
-            bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200 shadow"
-    >
-        <div class="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span x-text="selectedProject"></span>
-        </div>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200" :class="{'rotate-180': isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
-    </button>
-    
-    <!-- Dropdown Menu -->
-    <div 
-        x-show="isOpen" 
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 transform -translate-y-2"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform -translate-y-2"
-        class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700"
-    >
-        <div class="max-h-56 overflow-y-auto">
-            <!-- Search Input -->
-            <div class="sticky top-0 bg-gray-50 dark:bg-gray-700 p-2">
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        placeholder="Search projects..." 
-                        class="w-full pl-8 pr-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 absolute left-2.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </div>
+    <div class="mb-6 relative" x-data="{ isOpen: false, selectedProject: '{{ $projects[$currentProjectIndex]->project_name }}' }">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Project Selection</h3>
+        
+        <!-- Dropdown Trigger Button -->
+        <button 
+            @click="isOpen = !isOpen" 
+            @click.away="isOpen = false"
+            class="w-full flex items-center justify-between p-3 rounded-lg
+                bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 border border-gray-300 dark:border-gray-600 shadow-sm"
+        >
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span x-text="selectedProject"></span>
             </div>
-            
-            <!-- Project List -->
-            <div class="py-1">
-                @foreach($projects as $index => $project)
-                    <button
-                        wire:click="goToProject({{ $index }})"
-                        @click="selectedProject = '{{ $project->project_name }}'; isOpen = false"
-                        class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                        <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span class="text-gray-800 dark:text-white {{ $currentProjectIndex == $index ? 'font-medium' : '' }}">
-                                {{ $project->project_name }}
-                            </span>
-                        </div>
-                        
-                        @if($currentProjectIndex == $index)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                Current
-                            </span>
-                        @endif
-                    </button>
-                @endforeach
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-200 text-gray-600 dark:text-gray-300" :class="{'rotate-180': isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        
+        <!-- Dropdown Menu -->
+        <div 
+            x-show="isOpen" 
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform -translate-y-2"
+            x-transition:enter-end="opacity-100 transform translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 transform translate-y-0"
+            x-transition:leave-end="opacity-0 transform -translate-y-2"
+            class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+        >
+            <div class="max-h-56 overflow-y-auto">
+                <!-- Search Input -->
+                <div class="sticky top-0 bg-gray-50 dark:bg-gray-700 p-2">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search projects..." 
+                            class="w-full pl-8 pr-3 py-2 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 absolute left-2.5 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Project List -->
+                <div class="py-1">
+                    @foreach($projects as $index => $project)
+                        <button
+                            wire:click="goToProject({{ $index }})"
+                            @click="selectedProject = '{{ $project->project_name }}'; isOpen = false"
+                            class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <span class="text-gray-800 dark:text-white {{ $currentProjectIndex == $index ? 'font-medium' : '' }}">
+                                    {{ $project->project_name }}
+                                </span>
+                            </div>
+                            
+                            @if($currentProjectIndex == $index)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200">
+                                    Current
+                                </span>
+                            @endif
+                        </button>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
-</div>
 
         <!-- Improved Search and Filter Section -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
@@ -123,28 +123,16 @@
             </div>
             
             <div class="flex items-center space-x-4 w-full md:w-auto">
-                <div class="px-4 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300">
-                    Showing <span class="font-semibold text-gray-800 dark:text-white">{{ $budgets->firstItem() ?? 0 }}-{{ $budgets->lastItem() ?? 0 }}</span> of <span class="font-semibold text-gray-800 dark:text-white">{{ $budgets->total() }}</span>
-                </div>
                 <div class="flex space-x-1">
-                    <button 
-                        wire:click="previousPage"
-                        @disabled($budgets->onFirstPage())
-                        class="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    <x-button 
+                        wire:click="openCreateBudgetModal"
+                        class="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 border border-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                    </button>
-                    <button 
-                        wire:click="nextPage"
-                        @disabled(!$budgets->hasMorePages())
-                        class="p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                        Create Budget
+                    </x-button>
                 </div>
             </div>
         </div>
@@ -178,7 +166,7 @@
                                     Budget Name
                                 </th>
                                 <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
-                                    Description
+                                    Approval Status
                                 </th>
                                 <th scope="col" class="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                                     Phase/Milestone
@@ -210,8 +198,27 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-gray-700 dark:text-gray-300 max-w-xs">{{ Str::limit($budget->description, 60) }}</div>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($budget->approved)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-800">
+                                                Approved
+                                            </span>
+                                        @else
+                                            <div class="flex space-x-2">
+                                                <button 
+                                                    wire:click="approveBudget({{ $budget->id }})"
+                                                    class="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 transition-colors"
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button 
+                                                    wire:click="rejectBudget({{ $budget->id }})"
+                                                    class="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($budget->phase)
@@ -358,18 +365,6 @@
             </div>
         </div>
         @endif
-
-        <!-- Enhanced View Modal -->
-        {{-- <x-modals wire:model="showViewModal" title="Budget Details" max-width="2xl">
-            <x-card title="Budget Details" rounded="lg" shadow="none" class="border-0">
-                @if($selectedBudget)
-                    <div class="space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl">
-                            <div class="flex-shrink-0 p-4 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl shadow-sm text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599 --}}
-
-        <!-- View Modal -->
        <!-- View Modal -->
 <x-modals wire:model="showViewModal" title="Budget Details" max-width="2xl">
     <x-card title="Budget Details" rounded="lg" shadow="none" class="border-0">
@@ -400,9 +395,15 @@
                             <div class="flex justify-between items-center">
                                 <dt class="text-sm text-gray-500 dark:text-gray-400">Status</dt>
                                 <dd>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $selectedBudget->approved ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200' }}">
-                                        {{ $selectedBudget->approved ? 'Approved' : 'Pending Approval' }}
-                                    </span>
+                                    @if($selectedBudget->approved)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200">
+                                            Approved
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200">
+                                            Rejected
+                                        </span>
+                                    @endif
                                 </dd>
                             </div>
                         </dl>
@@ -510,6 +511,87 @@
         </x-slot>
     </x-card>
 </x-modals>
+        <!-- Create Modal -->
+        <x-dialog-modal wire:model="showCreateBudgetModal" class="max-w-2xl">
+            <x-slot name="title">
+                <h3 class="text-lg font-medium text-gray-900">Create New Budget</h3>
+            </x-slot>
+            
+            <x-slot name="content">
+                <x-form-section>
+                    <x-slot name="submit">saveBudget</x-slot>
+                    <x-slot name="title">New Budget</x-slot>
+                    <x-slot name="description">
+                        <p class="text-sm text-gray-600">
+                            Complete the form below to create a new budget for your project.
+                            All fields marked with an asterisk (*) are required.
+                        </p>
+                    </x-slot>
+                    
+                    <x-slot name="form">
+
+<!-- Select Phase -->
+<div class="col-span-6 sm:col-span-6">
+    <x-label for="budgetPhaseId" value="Phase *" class="font-medium text-gray-700" />
+    <div class="relative">
+        <select id="budgetPhaseId"
+            class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+            wire:model.defer="budgetPhaseId">
+            <option value="">Select Phase (project)</option>
+            @foreach ($allPhases  as $phase)
+                <option value="{{ $phase->id }}">{{ $phase->name }} ({{ $phase->project->project_name }})</option>
+            @endforeach
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </div>
+    <x-input-error for="budgetPhaseId" class="mt-2 text-sm text-red-600" />
+</div>
+                        
+                        <!-- Budget Name -->
+                        <div class="col-span-6 sm:col-span-6 mt-4">
+                            <x-label for="budgetName" value="Budget Name / Title *" class="font-medium text-gray-700" />
+                            <x-input id="budgetName" type="text" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                                wire:model.defer="budgetName" required placeholder="Enter budget name" />
+                            <x-input-error for="budgetName" class="mt-2 text-sm text-red-600" />
+                        </div>
+                        
+                        <!-- Budget Description -->
+                        <div class="col-span-6 sm:col-span-6 mt-4">
+                            <x-label for="budgetDescription" value="Description" class="font-medium text-gray-700" />
+                            <textarea id="budgetDescription" 
+                                class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                                wire:model.defer="budgetDescription" 
+                                rows="4"
+                                placeholder="Provide a brief description of this budget"></textarea>
+                            <x-input-error for="budgetDescription" class="mt-2 text-sm text-red-600" />
+                        </div>
+                    </x-slot>
+                </x-form-section>
+            </x-slot>
+            
+            <x-slot name="footer">
+                <div class="flex justify-end space-x-3">
+                    <x-button type="button" class="bg-white text-gray-700 border-gray-300 hover:bg-gray-50" wire:click="closeNewBudgetModal">
+                        Cancel
+                    </x-button>
+                    <x-button type="button" class="bg-indigo-600 text-white hover:bg-indigo-700" wire:click="saveBudget">
+                        <span wire:loading.remove wire:target="saveBudget">Save Budget</span>
+                        <span wire:loading wire:target="saveBudget" class="inline-flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </span>
+                    </x-button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
+
 
 <!-- Delete Confirmation Modal -->
 <x-modals wire:model="showDeleteModal" max-width="md" title="Delete Budget">
