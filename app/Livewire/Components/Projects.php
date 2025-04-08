@@ -18,6 +18,7 @@ class Projects extends Component
     public $projectIdToView;
     public $project_name;
     public $location;
+    public $showconfirmDelete = false;
     public $project_type_id;
     public $project_description = '';
     public $start_date;
@@ -73,6 +74,10 @@ class Projects extends Component
         $this->modalType = 'edit';
     }
 
+    public function openconfirmDelete(){
+        $this->showconfirmDelete = true;
+    }
+
     // Open modal in "view" mode
     public function openViewModal($projectId)
     {
@@ -110,7 +115,7 @@ class Projects extends Component
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
             ]);
-            $flasher->addSuccess('Project updated successfully!');
+            flash()->addSuccess('Project updated successfully!');
         } else {
             // Create new project
             Project::create([
@@ -122,7 +127,7 @@ class Projects extends Component
                 'end_date' => $this->end_date,
                 'project_status' => 'pending',
             ]);
-            $flasher->addSuccess('Project created successfully!');
+            flash()->addSuccess('Project created successfully!');
         }
 
         $this->resetInputFields();
@@ -150,19 +155,19 @@ class Projects extends Component
         $this->project_type_id = $projectType->id; // Set the new project type as selected
         $this->showProjectTypeModal = false;
         $this->new_project_type = ''; // Reset input field
-        $flasher->addSuccess('Project type added successfully!');
+        flash()->addSuccess('Project type added successfully!');
     }
 
     // Delete a project
     public function delete($projectId, FlasherInterface $flasher)
     {
         $project =Project::findOrFail($projectId);
-        if($project->milestones()->exists() || $project->contracts()->exists()){
-            $flasher->addError('Cannot delete project with associated milestones or contracts.');
+        if($project->phases()->exists() || $project->contracts()->exists()){
+            flash()->addError('Cannot delete project with associated phases or contracts.');
             return;
         }
-        Project::destroy($projectId);
-        $flasher->addSuccess('Project deleted successfully!');
+        $project->delete();
+        flash()->addSuccess('Project deleted successfully!');
     }
 
     // Reset input fields

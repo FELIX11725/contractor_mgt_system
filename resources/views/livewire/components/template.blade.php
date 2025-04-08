@@ -68,7 +68,7 @@
 
     <div class="section">
         <h3>2. Contract Details</h3>
-        <p><strong>Contract Type:</strong> {{ $contract->contractType }}</p>
+        <p><strong>Contract Type:</strong> {{ $contract->contractType->name }}</p>
         <p><strong>Start Date:</strong> {{ $contract->start_date }}</p>
         <p><strong>End Date:</strong> {{ $contract->end_date }}</p>
         <p><strong>Total Amount:</strong> shs. {{ number_format($contract->total_amount, 0, '.', ',') }}</p>
