@@ -26,7 +26,13 @@ class ViewBudgets extends Component
     public $originalBudgetData;
     public $showViewModal = false;
     public $showDeleteModal = false;
+    public $showCreateBudgetModal = false;
     public $budgetId;
+    public $allPhases; 
+    public $budgetName = '';
+    public $budgetDescription = '';
+    public $budgetPhaseId = '';
+    public $budgetEstimatedAmount = ''; 
 
     public function openEditModal($id)
     {
@@ -41,6 +47,11 @@ class ViewBudgets extends Component
         $this->budgetId = $id;
         $this->selectedBudget = Budget::with(['phase', 'milestone'])->findOrFail($id);
         $this->showViewModal = true;
+    }
+
+    public function openCreateBudgetModal()
+    {
+        $this->showCreateBudgetModal = true;
     }
 
     public function confirmDelete($id)
@@ -62,6 +73,20 @@ class ViewBudgets extends Component
         $this->showDeleteModal = false;
         flash()->addSuccess('Budget deleted successfully!');
     }
+    public function approveBudget($id, FlasherInterface $flasher)
+{
+    $budget = Budget::findOrFail($id);
+    $budget->update(['approved' => true]);
+    
+    flash()->addSuccess('Budget approved successfully!');
+}
+
+public function rejectBudget($id, FlasherInterface $flasher)
+{
+    $budget = Budget::findOrFail($id);
+    // We don't need to update the 'approved' field since we're just showing status in modal
+    flash()->addWarning('Budget rejected!');
+}
 
     public function updateBudget(FlasherInterface $flasher)
     {
@@ -85,7 +110,18 @@ class ViewBudgets extends Component
 
     public function mount()
     {
-        $this->projects = Project::with(['projectplan', 'projectplan.phases', 'projectplan.milestones'])->get();
+        $this->projects = Project::with(['phases', 'milestones'])->get();
+        // Extract all phases from all projects with their project information
+    $this->allPhases = collect();
+    foreach ($this->projects as $project) {
+        if ($project->phases) {
+            foreach ($project->phases as $phase) {
+                // Add project information to each phase
+                $phase->projectName = $project->name;
+                $this->allPhases->push($phase);
+            }
+        }
+    }
 
         if ($this->projects->isNotEmpty()) {
             $this->currentProject = $this->projects->first();
@@ -102,6 +138,38 @@ class ViewBudgets extends Component
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'budget-report.pdf');
+    }
+    public function saveBudget()
+    {
+        // Validation needs to match your form fields
+        $this->validate([
+            'budgetName' => 'required|string|max:255',
+            'budgetDescription' => 'nullable|string',
+            'budgetPhaseId' => 'required|exists:phases,id',
+            // Add estimated_amount validation if it exists in your form
+        ]);
+        
+        // Create the budget with correct field names and phase ID
+        $budget = Budget::create([
+            'budget_name' => $this->budgetName,
+            'description' => $this->budgetDescription,
+            // Add estimated_amount if it exists in your form
+            'phase_id' => $this->budgetPhaseId, // This should be the selected phase ID, not the project ID
+        ]);
+        
+        // Show success message
+        flash()->addSuccess('Budget created successfully!');
+        
+        // Reset form fields
+        $this->reset([
+            'budgetName',
+            'budgetDescription',
+            'budgetPhaseId',
+            // Reset estimated_amount if it exists
+        ]);
+        
+        // Close the modal
+        $this->showCreateBudgetModal = false;
     }
 
     public function getBudgetsProperty()

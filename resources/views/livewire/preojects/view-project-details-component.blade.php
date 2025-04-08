@@ -81,18 +81,18 @@
         <div class="flex flex-wrap gap-4">
             @php
                 $tabs = [
-                    'ProfileTab' => [
-                        'name' => 'Profile',
-                        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>'
-                    ],
+                    // 'ProfileTab' => [
+                    //     'name' => 'Profile',
+                    //     'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>'
+                    // ],
                     'PlansTab' => [
                         'name' => 'Phase & Milestones',
                         'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>'
                     ],
-                    'BudjetTab' => [
-                        'name' => 'Budget',
-                        'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
-                    ],
+                    // 'BudjetTab' => [
+                    //     'name' => 'Budget',
+                    //     'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
+                    // ],
                     'ProjectProgressTab' => [
                         'name' => 'Project Progress',
                         'icon' => '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>'
@@ -115,7 +115,7 @@
     {{-- Main page data based on activeTab with enhanced styling --}}
     <div class="mt-6 p-8 w-full bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700 transition-all duration-300">
         @if ($activeTab == 'ProfileTab')
-        <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
+        {{-- <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 border-l-4 border-blue-500 pl-3 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -172,7 +172,7 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </div> --}}
     
         @elseif ($activeTab == 'PlansTab')
         <div class="p-6">
@@ -436,7 +436,7 @@
 </div>
 </div>
 {{-- @endif --}}
-@elseif ($activeTab == 'BudjetTab')
+{{-- @elseif ($activeTab == 'BudjetTab')
 <div class="mt-4 p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
 <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -535,7 +535,7 @@
         </tbody>
     </table>
 </div>
-</div>
+</div> --}}
 @elseif ($activeTab == 'ProjectProgressTab')
 <div>
 <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
