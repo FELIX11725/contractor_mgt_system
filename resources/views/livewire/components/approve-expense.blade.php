@@ -215,12 +215,19 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 flex space-x-2">
-                                            @if ($expense->approvals->isEmpty() || !$expense->approvals->first()->is_approved)
-                                                <x-button wire:click="approveExpense({{ $expense->id }})" 
+                                            
+                                            @if ($expense->approvals->isNotEmpty() && $expense->approvals->first()->is_approved)
+                                                <x-button wire:click="viewInvoice({{ $expense->id }})" 
                                                     class="bg-green-600 hover:bg-green-700 text-white border-0 text-xs py-1 px-3">
-                                                    Approve
+                                                    View Invoice
                                                 </x-button>
                                             @endif
+                                            @if ($expense->approvals->isEmpty() || !$expense->approvals->first()->is_approved)
+                                            <x-button wire:click="approveExpense({{ $expense->id }})" 
+                                                class="bg-green-600 hover:bg-green-700 text-white border-0 text-xs py-1 px-3">
+                                                Approve
+                                            </x-button>
+                                        @endif
                                             @if ($expense->approvals->isEmpty() || $expense->approvals->first()->is_approved)
                                                 <x-danger-button wire:click="declineExpense({{ $expense->id }})"
                                                     class="text-xs py-1 px-3">
@@ -359,4 +366,46 @@
             </div>
         </x-slot>
     </x-dialog-modal>
+        <!-- View Invoice Modal -->
+        <x-dialog-modal wire:model="viewInvoiceModal_isOpen">
+            <x-slot name="title">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    View Invoice
+                </div>
+            </x-slot>
+    
+            <x-slot name="content">
+                @if($currentInvoiceUrl)
+                    <div class="h-96">
+                        <iframe src="{{ $currentInvoiceUrl }}" class="w-full h-full border rounded-lg"></iframe>
+                    </div>
+                @else
+                    <div class="text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="mt-2 text-gray-500">Invoice not available</p>
+                    </div>
+                @endif
+            </x-slot>
+    
+            <x-slot name="footer">
+                <div class="flex justify-end">
+                    <x-secondary-button wire:click="closeViewInvoiceModal" class="mr-2">
+                        Close
+                    </x-secondary-button>
+                    @if($currentInvoiceUrl)
+                        <x-button onclick="window.open('{{ $currentInvoiceUrl }}', '_blank')" class="bg-blue-600 hover:bg-blue-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download
+                        </x-button>
+                    @endif
+                </div>
+            </x-slot>
+        </x-dialog-modal>
 </div>

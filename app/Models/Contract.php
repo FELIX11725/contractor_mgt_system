@@ -17,13 +17,20 @@ class Contract extends Model
     //one contract given to one contractor
     public function contractor()
     {
-        return $this->belongsTo(Contractor::class, 'contractor_id');
+        return $this->belongsTo(staff::class, 'contractor_id');
     }
     //one contract for one project
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
+
+    public function contractType()
+    {
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
+    }
+
+
 
     
 }

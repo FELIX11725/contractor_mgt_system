@@ -5,13 +5,17 @@ namespace App\Livewire\Components;
 use App\Models\Project;
 use Livewire\Component;
 use App\Models\Contract;
-use App\Models\Contractor;
+use App\Models\Staff; // Changed from Contractor to Staff
 use App\Models\ContractType;
+use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Flasher\Prime\FlasherInterface;
 
 class AddContracts extends Component
 {
+    use WithFileUploads;
+
     public $project_id;
     public $contractor_id;
     public $start_date;
@@ -19,6 +23,8 @@ class AddContracts extends Component
     public $contract_type_id;
     public $total_amount;
     public $description;
+    public $payment_schedule;
+    public $attachments = [];
 
     public $contractTypes = [];
     public $showContractTypeForm = false;
@@ -26,13 +32,14 @@ class AddContracts extends Component
 
     protected $rules = [
         'project_id' => 'required|exists:projects,id',
-        'contractor_id' => 'required|exists:contractors,id',
+        'contractor_id' => 'required|exists:staff,id',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after:start_date',
         'contract_type_id' => 'required|exists:contract_types,id',
-        'total_amount' => 'required|numeric',
+        'total_amount' => 'required|numeric|min:0',
         'description' => 'nullable|string|min:10',
-        
+        'payment_schedule' => 'nullable|string|max:255',
+        'attachments.*' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:10240',
     ];
 
     public function mount()
@@ -51,6 +58,11 @@ class AddContracts extends Component
         $this->new_contract_type = '';
     }
 
+    public function removeAttachment($key)
+    {
+        unset($this->attachments[$key]);
+    }
+
     public function addContractType(FlasherInterface $flasher)
     {
         $this->validate([
@@ -61,19 +73,18 @@ class AddContracts extends Component
             'name' => $this->new_contract_type,
         ]);
 
-        $this->contractTypes[] = $contractType;
-        // $this->contractTypes = collect($this->contractTypes)->push($contractType)->all();
+        $this->contractTypes->push($contractType);
         $this->contract_type_id = $contractType->id;
         $this->hideAddContractTypeForm();
 
-        $flasher->addSuccess('Contract type added successfully.');
+        flash()->addSuccess('Contract type added successfully.');
     }
 
     public function save(FlasherInterface $flasher)
     {
-        
         $this->validate();
 
+        // Create the contract
         $contract = Contract::create([
             'project_id' => $this->project_id,
             'contractor_id' => $this->contractor_id,
@@ -81,28 +92,34 @@ class AddContracts extends Component
             'end_date' => $this->end_date,
             'contract_type_id' => $this->contract_type_id,
             'total_amount' => $this->total_amount,
-            'contract_status' => 'pending', // Default status
+            'contract_status' => 'pending',
             'description' => strip_tags($this->description),
-           
+            'payment_schedule' => $this->payment_schedule,
         ]);
-        // $this->generatePdf($contract);
-        $flasher->addSuccess('Contract created successfully.');
 
+        // Handle file uploads
+        if ($this->attachments) {
+            foreach ($this->attachments as $attachment) {
+                $path = $attachment->store('contracts/documents', 'public');
+                
+                // $contract->documents()->create([
+                //     'file_path' => $path,
+                //     'file_name' => $attachment->getClientOriginalName(),
+                //     'file_type' => $attachment->getClientMimeType(),
+                //     'file_size' => $attachment->getSize(),
+                // ]);
+            }
+        }
+
+        flash()->addSuccess('Contract created successfully.');
         return redirect()->route('contracts');
-      
-
-
-       
-        
     }
-
-   
 
     public function render()
     {
         return view('livewire.components.add-contracts', [
             'projects' => Project::all(),
-            'contractors' => Contractor::all(),
+            'contractors' => Staff::where('position', 'contractor')->with('user')->get(),
         ]);
     }
 }

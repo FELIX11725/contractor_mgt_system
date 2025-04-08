@@ -225,7 +225,7 @@
                                                 Status
                                             </button>
                                             
-                                            <button wire:click="openViewModal({{ $contract->id }})"
+                                            <button wire:click="openModal('view',{{ $contract->id }})"
                                                 class="bg-green-500 text-white px-3 py-1 rounded-md text-xs hover:bg-green-600 transition-colors flex items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
@@ -252,7 +252,7 @@
                                             </button>
                                             @endif
                                             
-                                            <button wire:click="confirmDelete({{ $contract->id }})"
+                                            <button wire:click="openconfirmDelete({{ $contract->id }})"
                                                 class="bg-red-500 text-white px-3 py-1 rounded-md text-xs hover:bg-red-600 transition-colors flex items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -275,263 +275,289 @@
     </div>
 
     <!-- Add/Edit/View Modal -->
-    <div x-data="{ modalOpen: @entangle('showModal') }" x-cloak>
-        <div class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" x-show="modalOpen">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="modalOpen = false">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
-
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-                    role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                    <div class="border-b border-gray-200 pb-2 mb-4 px-4 pt-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-lg font-medium text-gray-900" id="modal-headline">
-                                @if ($modalType === 'edit')
-                                    Edit Contract
-                                @elseif($modalType === 'view')
-                                    View Contract
-                                @else
-                                    Add Contract
-                                @endif
-                            </h3>
-                            <button class="text-gray-400 hover:text-gray-500" @click="modalOpen = false">
-                                <span class="sr-only">Close</span>
-                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
+    <x-dialog-modal wire:model="showModal" maxWidth="2xl">
+        <x-slot name="title">
+            @if($modalType === 'edit')
+                Edit Contract
+            @elseif($modalType === 'view')
+                Contract Details
+            @else
+                Add New Contract
+            @endif
+        </x-slot>
+    
+        <x-slot name="content">
+            @if($modalType === 'view')
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Project:</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ $projects->find($project_id)->project_name ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Contractor:</label>
+                            <p class="mt-1 text-sm text-gray-900">
+                                {{ ($contractors->find($contractor_id))->user->name ?? 'N/A' }}
+                            </p>
                         </div>
                     </div>
-                    
-                    @if ($modalType === 'view')
-                        <div class="px-4 pb-4">
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Project:</label>
-                                <span class="block text-sm text-gray-900">{{ $projects->project_name }}</span>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Contractor:</label>
-                                <span class="block text-sm text-gray-900">
-                                    {{ $contractors->first_name }} {{ $contractors->last_name }}
-                                </span>                        
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Start date:</label>
-                                <span class="block text-sm text-gray-900">
-                                    {{ \Carbon\Carbon::parse($start_date)->format('M j, Y') }}
-                                </span>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">End date:</label>
-                                <span class="block text-sm text-gray-900">
-                                    {{ \Carbon\Carbon::parse($end_date)->format('M j, Y') }}
-                                </span>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Contract Type:</label>
-                                <span class="block text-sm text-gray-900">
-                                    {{ $contractTypes->find($contract_type_id)->name ?? 'N/A' }}
-                                </span>                        
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Contract Description:</label>
-                                <div class="block text-sm text-gray-900 trix-content">
-                                    {!! $description !!}
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Total Amount:</label>
-                                <span class="block text-sm text-gray-900">
-                                    {{ number_format($total_amount, "0",".",",") }}
-                                </span>
-                            </div>
-                            <div class="mt-2">
-                                <label class="block text-sm font-medium text-gray-700">Contract Status:</label>
-                                <span class="block text-sm text-gray-900">
-                                    <x-status :status="$contract_status" />
-                                </span>
-                            </div>
-
-                            <div class="mt-4 border-t border-gray-200 pt-4">
-                                <div class="flex justify-end">
-                                    <button type="button" @click="modalOpen = false"
-                                        class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Close
-                                    </button>
-                                </div>
+    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Start Date:</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ \Carbon\Carbon::parse($start_date)->format('M j, Y') }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">End Date:</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ \Carbon\Carbon::parse($end_date)->format('M j, Y') }}</p>
+                        </div>
+                    </div>
+    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Contract Type:</label>
+                            <p class="mt-1 text-sm text-gray-900">{{ $contractTypes->find($contract_type_id)->name ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Total Amount:</label>
+                            <p class="mt-1 text-sm text-gray-900">${{ number_format($total_amount, 2) }}</p>
+                        </div>
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Payment Schedule:</label>
+                        <p class="mt-1 text-sm text-gray-900">{{ $payment_schedule ?? 'N/A' }}</p>
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Contract Description:</label>
+                        <div class="mt-1 text-sm text-gray-900 trix-content">
+                            {!! $description !!}
+                        </div>
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Status:</label>
+                        <p class="mt-1 text-sm text-gray-900">
+                            <x-status :status="$contract_status" />
+                        </p>
+                    </div>
+    
+                    @if(count($contractDocuments) > 0)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Attached Documents:</label>
+                            <div class="mt-2 space-y-2">
+                                @foreach($contractDocuments as $document)
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                        <div class="flex items-center">
+                                            <svg class="h-5 w-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                            <span class="text-sm">{{ $document->file_name }}</span>
+                                        </div>
+                                        <button wire:click="downloadDocument({{ $document->id }})" class="text-blue-500 hover:text-blue-700">
+                                            Download
+                                        </button>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                    @else
-                        <form wire:submit.prevent="{{ $modalType === 'edit' ? 'update' : 'save' }}" class="px-4 pb-4">
-                            @csrf
-                            <div class="mt-2">
-                                <label for="project_id" class="block text-sm font-medium text-gray-700">
-                                    Project <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="project_id" id="project_id"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    @endif
+                </div>
+            @else
+                <form wire:submit.prevent="save">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-label for="project_id" value="Project" />
+                                <select wire:model="project_id" id="project_id" class="mt-1 block w-full">
                                     <option value="">Select Project</option>
                                     @foreach($projects as $project)
                                         <option value="{{ $project->id }}">{{ $project->project_name }}</option>
                                     @endforeach
                                 </select>
-                                <x-input-error for="project_id" />
+                                <x-input-error for="project_id" class="mt-2" />
                             </div>
-                            
-                            <div class="mt-2">
-                                <label for="contractor_id" class="block text-sm font-medium text-gray-700">
-                                    Contractor <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="contractor_id" id="contractor_id"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <div>
+                                <x-label for="contractor_id" value="Contractor" />
+                                <select wire:model="contractor_id" id="contractor_id" class="mt-1 block w-full">
                                     <option value="">Select Contractor</option>
                                     @foreach($contractors as $contractor)
-                                        <option value="{{ $contractor->id }}">{{ $contractor->first_name }} {{ $contractor->last_name }}</option>
+                                        <option value="{{ $contractor->id }}">
+                                            {{ $contractor->user->name }} ({{ $contractor->position }})
+                                        </option>
                                     @endforeach
                                 </select>
-                                <x-input-error for="contractor_id" />
+                                <x-input-error for="contractor_id" class="mt-2" />
                             </div>
-                            <div class="mt-2">
-                                <label for="contract_type" class="block text-sm font-medium text-gray-700">
-                                    Contract Type <span class="text-red-500">*</span>
-                                </label>
-                                <select wire:model="contract_type_id" id="contract_type_id"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="">--Select Contract Type--</option>
-                                    @foreach($contractTypes as $type)
-                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error for="contract_type_id" />
+                        </div>
+    
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-label for="start_date" value="Start Date" />
+                                <x-input wire:model="start_date" id="start_date" type="date" class="mt-1 block w-full" />
+                                <x-input-error for="start_date" class="mt-2" />
                             </div>
-                            <div class="mt-2">
-                                <label for="start_date" class="block text-sm font-medium text-gray-700">
-                                    Start Date <span class="text-red-500">*</span>
-                                </label>
-                                <input type="date" wire:model="start_date" id="start_date"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                <x-input-error for="start_date" />
+                            <div>
+                                <x-label for="end_date" value="End Date" />
+                                <x-input wire:model="end_date" id="end_date" type="date" class="mt-1 block w-full" />
+                                <x-input-error for="end_date" class="mt-2" />
                             </div>
-                            <div class="mt-2">
-                                <label for="end_date" class="block text-sm font-medium text-gray-700">
-                                    End Date <span class="text-red-500">*</span>
-                                </label>
-                                <input type="date" wire:model="end_date" id="end_date"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                <x-input-error for="end_date" />
-                            </div>
-                            <div class="mt-2">
-                                <label for="total_amount" class="block text-sm font-medium text-gray-700">
-                                    Total Amount <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" wire:model="total_amount" id="total_amount"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                <x-input-error for="total_amount" />
-                            </div>
-                            <div class="mt-2">
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Contract Description
-                                </label>
-                                <input id="description" type="hidden" wire:model="description">
-                                <div wire:ignore>
-                                    <trix-editor
-                                        input="description"
-                                        class="trix-content mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        x-data
-                                        x-init="
-                                            const trixEditor = $el;
-                                            trixEditor.addEventListener('trix-change', function(event) {
-                                                @this.set('description', trixEditor.value);
-                                            });
-                                        ">
-                                    </trix-editor>
-                                </div>
-                                <x-input-error for="description" />
-                            </div>
-
-                            <div class="mt-4 border-t border-gray-200 pt-4">
-                                <div class="flex justify-end">
-                                    <button type="button" @click="modalOpen = false"
-                                        class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                        Cancel
+                        </div>
+    
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-label for="contract_type_id" value="Contract Type" />
+                                <div class="flex">
+                                    <select wire:model="contract_type_id" id="contract_type_id" class="mt-1 block w-full">
+                                        <option value="">Select Type</option>
+                                        @foreach($contractTypes as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="button" wire:click="openContractTypeModal" class="ml-2 px-3 py-2 bg-blue-500 text-white rounded">
+                                        +
                                     </button>
-                                    @if($modalType !== 'view')
-                                        <button type="submit"
-                                            class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                                            @if($modalType === 'edit')
-                                                Update
-                                            @else
-                                                Submit
-                                            @endif
-                                        </button>
-                                    @endif
+                                </div>
+                                <x-input-error for="contract_type_id" class="mt-2" />
+                            </div>
+                            <div>
+                                <x-label for="total_amount" value="Total Amount" />
+                                <x-input wire:model="total_amount" id="total_amount" type="number" step="0.01" class="mt-1 block w-full" />
+                                <x-input-error for="total_amount" class="mt-2" />
+                            </div>
+                        </div>
+    
+                        <div>
+                            <x-label for="payment_schedule" value="Payment Schedule" />
+                            <x-input wire:model="payment_schedule" id="payment_schedule" type="text" class="mt-1 block w-full" placeholder="e.g., 30% upfront, 40% on completion" />
+                            <x-input-error for="payment_schedule" class="mt-2" />
+                        </div>
+    
+                        <div>
+                            <x-label for="description" value="Description" />
+                            <input id="description" type="hidden" wire:model="description">
+                            <div wire:ignore>
+                                <trix-editor input="description" class="trix-content mt-1 block w-full"></trix-editor>
+                            </div>
+                            <x-input-error for="description" class="mt-2" />
+                        </div>
+    
+                        @if($modalType === 'edit')
+                            <div>
+                                <x-label for="contract_status" value="Status" />
+                                <select wire:model="contract_status" id="contract_status" class="mt-1 block w-full">
+                                    <option value="pending">Pending</option>
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                                <x-input-error for="contract_status" class="mt-2" />
+                            </div>
+                        @endif
+    
+                        <div>
+                            <x-label value="Attachments (Blueprints, Checklists, etc.)" />
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500">
+                                            <span>Upload files</span>
+                                            <input type="file" class="sr-only" wire:model="attachments" multiple>
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PDF, DOC, XLS up to 10MB</p>
                                 </div>
                             </div>
-                        </form>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Status Update Modal -->
-    <div x-data="{ statusModalOpen: @entangle('showStatusModal') }" x-cloak>
-        <div class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" x-show="statusModalOpen">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="statusModalOpen = false">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
-
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg font-medium text-gray-900">Update Contract Status</h3>
-                        <div class="mt-4">
-                            <label for="updatedStatus" class="block text-sm font-medium text-gray-700">Status</label>
-                            <select wire:model="updatedStatus" id="updatedStatus"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                <option value="pending">Pending</option>
-                                <option value="active">Active</option>
-                                <option value="completed">Completed</option>
-                            </select>
+                            @if($attachments)
+                                <div class="mt-2 space-y-2">
+                                    @foreach($attachments as $key => $attachment)
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                            <div class="flex items-center">
+                                                <svg class="h-5 w-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                                </svg>
+                                                <span class="text-sm">{{ $attachment->getClientOriginalName() }}</span>
+                                            </div>
+                                            <button type="button" wire:click="removeAttachment({{ $key }})" class="text-red-500 hover:text-red-700">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <x-input-error for="attachments.*" class="mt-2" />
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button wire:click="updateStatus" type="button"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            Update
-                        </button>
-                        <button @click="statusModalOpen = false" type="button"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
+                </form>
+            @endif
+        </x-slot>
+    
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$set('showModal', false)" wire:loading.attr="disabled">
+                Cancel
+            </x-secondary-button>
+    
+            @if($modalType !== 'view')
+                <x-button class="ml-2" wire:click="save" wire:loading.attr="disabled">
+                    @if($modalType === 'edit')
+                        Update
+                    @else
+                        Create
+                    @endif
+                </x-button>
+            @endif
+        </x-slot>
+    </x-dialog-modal>
+
+    <!-- Status Update Modal -->
+    <x-dialog-modal wire:model="showStatusModal">
+        <x-slot name="title">
+            Update Contract Status
+        </x-slot>
+    
+        <x-slot name="content">
+            <div class="mt-4">
+                <x-label for="updatedStatus" value="New Status" />
+                <select wire:model="updatedStatus" id="updatedStatus" class="mt-1 block w-full">
+                    <option value="pending">Pending</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <x-input-error for="updatedStatus" class="mt-2" />
             </div>
-        </div>
-    </div>
+        </x-slot>
+    
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$set('showStatusModal', false)" wire:loading.attr="disabled">
+                Cancel
+            </x-secondary-button>
+            <x-button class="ml-2" wire:click="updateStatus" wire:loading.attr="disabled">
+                Update Status
+            </x-button>
+        </x-slot>
+    </x-dialog-modal>
 
     <!-- Delete Confirmation Modal -->
-    <x-confirmation-modal wire:model="confirmingDeletion">
+    <x-dialog-modal wire:model="showconfirmDelete">
         <x-slot name="title">
             Delete Contract
         </x-slot>
-
+    
         <x-slot name="content">
             Are you sure you want to delete this contract? This action cannot be undone.
         </x-slot>
-
+    
         <x-slot name="footer">
-            <x-secondary-button wire:click="$set('confirmingDeletion', false)" class="mr-2">
+            <x-secondary-button wire:click="$set('confirmingDeletion', false)" wire:loading.attr="disabled">
                 Cancel
             </x-secondary-button>
-            <x-danger-button wire:click="delete">
-                Delete
+            <x-danger-button class="ml-2" wire:click="delete" wire:loading.attr="disabled">
+                Delete Contract
             </x-danger-button>
         </x-slot>
-    </x-confirmation-modal>
+    </x-dialog-modal>
 </div>
