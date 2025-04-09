@@ -529,10 +529,10 @@
                     </x-slot>
                     
                     <x-slot name="form">
-
+            
 <!-- Select Phase -->
 <div class="col-span-6 sm:col-span-6">
-    <x-label for="budgetPhaseId" value="Phase *" class="font-medium text-gray-700" />
+    <x-label for="budgetPhaseId" value="Phase" class="font-medium text-gray-700" />
     <div class="relative">
         <select id="budgetPhaseId"
             class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
@@ -553,7 +553,7 @@
                         
                         <!-- Budget Name -->
                         <div class="col-span-6 sm:col-span-6 mt-4">
-                            <x-label for="budgetName" value="Budget Name / Title *" class="font-medium text-gray-700" />
+                            <x-label for="budgetName" value="Budget Name" class="font-medium text-gray-700" />
                             <x-input id="budgetName" type="text" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
                                 wire:model.defer="budgetName" required placeholder="Enter budget name" />
                             <x-input-error for="budgetName" class="mt-2 text-sm text-red-600" />

@@ -1,17 +1,18 @@
 <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
     <div class="grid grid-cols-12 gap-6">
-        <!-- Left Section: New Expense Voucher -->
+        <!-- Left Section: New Expense Invoice -->
         <div class="col-span-12 lg:col-span-8">
             <x-form-section submit="">
                 <x-slot name="title">
-                    <h2 class="text-xl font-bold text-gray-800">{{ __('New Expense Voucher') }}</h2>
+                    <h2 class="text-xl font-bold text-gray-800">{{ __('New Expense Invoice') }}</h2>
                 </x-slot>
 
                 <x-slot name="description">
-                    <p class="text-gray-600">{{ __('Create new expenses under a single voucher.') }}</p>
+                    <p class="text-gray-600">{{ __('Create new expenses under a single invoice.') }}</p>
                 </x-slot>
 
                 <x-slot name="form">
+                    @if (!empty($expenses))
                     <div class="col-span-6 md:col-span-3">
                         <x-label for="project" class="font-medium"> 
                             {{ __('Project') }} <span class="text-rose-500">*</span> 
@@ -43,17 +44,18 @@
                     </div>
                     
                     <div class="col-span-6">
+                        <x-label for="date_of_pay" class="font-medium"> 
+                            {{ __('Date of Payment') }} <span class="text-rose-500">*</span>
+                        </x-label>
+                        <x-input id="date_of_pay" type="date" class="w-full mt-1" wire:model="date_of_pay" />
+                        <x-input-error for="date_of_pay" class="mt-2" />
+                    </div>
+                    @endif
+
+                    <div class="col-span-6">
                         <div class="grid grid-cols-12 gap-4">
                             <div class="col-span-12">
                                 <x-validation-errors class="mb-4" />
-                            </div>
-
-                            <div class="col-span-12">
-                                <x-label for="date_of_pay" class="font-medium"> 
-                                    {{ __('Date of Payment') }} <span class="text-rose-500">*</span>
-                                </x-label>
-                                <x-input id="date_of_pay" type="date" class="w-full mt-1" wire:model="date_of_pay" />
-                                <x-input-error for="date_of_pay" class="mt-2" />
                             </div>
 
                             <div class="col-span-12 mt-6">
@@ -137,7 +139,7 @@
                 </x-slot>
 
                 <x-slot name="description">
-                    <p class="text-gray-600">{{ __('Add new expense item to the voucher.') }}</p>
+                    <p class="text-gray-600">{{ __('Add new expense item to the invoice.') }}</p>
                 </x-slot>
 
                 <x-slot name="form">

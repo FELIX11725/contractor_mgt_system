@@ -60,7 +60,7 @@ class ViewBudgets extends Component
         $this->showDeleteModal = true;
     }
 
-    public function deleteBudget(FlasherInterface $flasher)
+    public function deleteBudget()
     {
         $budget = Budget::find($this->budgetId);
     
@@ -73,7 +73,7 @@ class ViewBudgets extends Component
         $this->showDeleteModal = false;
         flash()->addSuccess('Budget deleted successfully!');
     }
-    public function approveBudget($id, FlasherInterface $flasher)
+    public function approveBudget($id)
 {
     $budget = Budget::findOrFail($id);
     $budget->update(['approved' => true]);
@@ -81,14 +81,14 @@ class ViewBudgets extends Component
     flash()->addSuccess('Budget approved successfully!');
 }
 
-public function rejectBudget($id, FlasherInterface $flasher)
+public function rejectBudget($id)
 {
     $budget = Budget::findOrFail($id);
     // We don't need to update the 'approved' field since we're just showing status in modal
     flash()->addWarning('Budget rejected!');
 }
 
-    public function updateBudget(FlasherInterface $flasher)
+    public function updateBudget()
     {
         $validated = $this->validate([
             'selectedBudget.budget_name' => 'required|string|max:255',
