@@ -12,8 +12,8 @@ class Expenses extends Component
 
     public $showNewCategoryModal = false;
     public $showEditModal = false;
-
-    // Fields for creating a new category
+    public $selectedCategories = [];
+    public $selectAll = false;
     public $newCategoryName;
     public $newCategoryDescription;
     public $newCategoryCode;
@@ -36,6 +36,36 @@ class Expenses extends Component
     public function openNewCategoryModal()
     {
         $this->showNewCategoryModal = true;
+    }
+
+    public function activateSelected() {
+        ExpenseCategory::whereIn('id', $this->selectedCategories)->update(['is_active' => true]);
+        $this->selectedCategories = [];
+        $this->selectAll = false;
+        // Add flash message
+    }
+    
+    public function deactivateSelected() {
+        ExpenseCategory::whereIn('id', $this->selectedCategories)->update(['is_active' => false]);
+        $this->selectedCategories = [];
+        $this->selectAll = false;
+        // Add flash message
+    }
+    
+    // For individual actions
+    public function activateCategory($id) {
+        ExpenseCategory::find($id)->update(['is_active' => true]);
+        // Add flash message
+    }
+    
+    public function deactivateCategory($id) {
+        ExpenseCategory::find($id)->update(['is_active' => false]);
+        // Add flash message
+    }
+    
+    // For sorting
+    public function sortBy($field) {
+        // Implement your sorting logic here
     }
 
     // Close the modal for creating a new category and reset fields

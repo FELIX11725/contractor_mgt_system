@@ -64,7 +64,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
     //expenses
     Route::prefix('expenses')->group(function () {
-        Route::get('/expensetypes', [ExpensetypeController::class, 'index'])->name('expensetypes');
+        // Route::get('/expensetypes', [ExpensetypeController::class, 'index'])->name('expensetypes');
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('expenses');
         Route::get('/expense-categories', ExpenseCategoriesComponent::class)->name('expenses.manage-categories');
         Route::get('/expense-categories/{category}', ExpenseCategoryDetailsComponent::class)->name('expenses.categories.view');

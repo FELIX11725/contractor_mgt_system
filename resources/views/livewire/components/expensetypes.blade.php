@@ -29,20 +29,16 @@
                     </div>
                     
                     <div class="flex flex-col">
-                        <h3 class="text-3xl font-bold text-white tracking-tight">Expense Category Items</h3>
+                        <h3 class="text-3xl font-bold text-white tracking-tight">Expense Items Management</h3>
                         <div class="mt-2 inline-flex items-center">
                             <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border-l-4 border-yellow-400">
-                                <p class="text-xl font-semibold text-white">{{ $category->name }}</p>
+                                <p class="text-xl font-semibold text-white">All Expense Items</p>
                             </div>
-                            <span class="ml-3 text-blue-200 text-sm">Manage items in this category</span>
+                            <span class="ml-3 text-blue-200 text-sm">Manage all expense items across categories</span>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Decorative element -->
-            <div class="absolute bottom-0 right-0 h-24 w-24 -mb-12 -mr-12 bg-blue-500 rounded-full opacity-20"></div>
-            <div class="absolute top-0 left-1/2 h-16 w-16 -mt-8 bg-indigo-500 rounded-full opacity-20"></div>
         </div>
     </div>
 
@@ -51,7 +47,7 @@
         <section class="container mx-auto">
             <!-- Table Header with Action Button -->
             <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/80 flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Category Items</h2>
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">All Expense Items</h2>
                 
                 <!-- New Item Button with Animation -->
                 <x-button 
@@ -70,13 +66,16 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-700/80">
                         <tr>
-                            <th scope="col" class="py-4 px-6 text-sm font-semibold text-left text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Item Name
                             </th>
-                            <th scope="col" class="px-6 py-4 text-sm font-semibold text-left text-gray-700 dark:text-gray-300 uppercase tracking-wider">
-                                Description
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Category
                             </th>
-                            <th scope="col" class="px-6 py-4 text-sm font-semibold text-left text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Has Quantity
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -88,7 +87,18 @@
                                 {{ $item->name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $item->description }}
+                                {{ $item->expenseCategory->name }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                                @if($item->has_quantity)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
+                                        Yes
+                                    </span>
+                                @else
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                        No
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-sm whitespace-nowrap">
                                 <div class="flex items-center gap-3">
@@ -106,7 +116,7 @@
                                 
                                     <!-- Delete Button -->
                                     <button 
-                                        wire:click="openDeleteModal({{ $item->id }})" 
+                                        wire:click="confirmDelete({{ $item->id }})" 
                                         class="px-3.5 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 flex items-center gap-2 text-sm font-medium shadow-sm"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -123,12 +133,12 @@
                         <!-- Empty State -->
                         @if(count($items) === 0)
                         <tr>
-                            <td colspan="3" class="px-6 py-8 text-center">
+                            <td colspan="4" class="px-6 py-8 text-center">
                                 <div class="flex flex-col items-center justify-center space-y-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-300 dark:text-gray-600">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
                                     </svg>
-                                    <p class="text-gray-500 dark:text-gray-400">No items found in this category</p>
+                                    <p class="text-gray-500 dark:text-gray-400">No expense items found</p>
                                     <button 
                                         wire:click="openNewCategoryItemModal" 
                                         class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
@@ -192,7 +202,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">New Expense Category Item</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">New Expense Item</h3>
             </div>
         </x-slot>
         <x-slot name="content">
@@ -210,18 +220,55 @@
                     >
                     <x-input-error for="name" class="mt-2" />
                 </div>
+                
                 <div>
-                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Description <span class="text-red-500">*</span>
+                    <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Category <span class="text-red-500">*</span>
                     </label>
-                    <textarea 
-                        wire:model="description" 
-                        id="description" 
-                        rows="4"
+                    <select 
+                        wire:model="expense_category_id" 
+                        id="category" 
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500/20 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                        placeholder="Enter item description"
-                    ></textarea>
-                    <x-input-error for="description" class="mt-2" />
+                    >
+                        <option value="">Select Category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error for="expense_category_id" class="mt-2" />
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Quantity Type <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-2 space-y-2">
+                        <div class="flex items-center">
+                            <input 
+                                type="radio" 
+                                wire:model="has_quantity" 
+                                id="has_quantity_yes" 
+                                value="1" 
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            >
+                            <label for="has_quantity_yes" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Has Quantity (Countable)
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input 
+                                type="radio" 
+                                wire:model="has_quantity" 
+                                id="has_quantity_no" 
+                                value="0" 
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            >
+                            <label for="has_quantity_no" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                No Quantity (Uncountable)
+                            </label>
+                        </div>
+                    </div>
+                    <x-input-error for="has_quantity" class="mt-2" />
                 </div>
             </div>
         </x-slot>
@@ -252,7 +299,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Expense Category Item</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Expense Item</h3>
             </div>
         </x-slot>
         <x-slot name="content">
@@ -267,19 +314,59 @@
                         id="editName" 
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500/20 dark:bg-gray-700 dark:text-white transition-all duration-200"
                     >
-                    <x-input-error for="editName" class="mt-2" />
+                    <x-input-error for="name" class="mt-2" />
                 </div>
+                
                 <div>
-                    <label for="editDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Description <span class="text-red-500">*</span>
+                    <label for="editCategory" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Category <span class="text-red-500">*</span>
                     </label>
-                    <textarea 
-                        wire:model="description" 
-                        id="editDescription" 
-                        rows="4"
+                    <select 
+                        wire:model="expense_category_id" 
+                        id="editCategory" 
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500/20 dark:bg-gray-700 dark:text-white transition-all duration-200"
-                    ></textarea>
-                    <x-input-error for="editDescription" class="mt-2" />
+                    >
+                        <option value="">Select Category</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ $category->id == $expense_category_id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error for="expense_category_id" class="mt-2" />
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Quantity Type <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-2 space-y-2">
+                        <div class="flex items-center">
+                            <input 
+                                type="radio" 
+                                wire:model="has_quantity" 
+                                id="edit_has_quantity_yes" 
+                                value="1" 
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            >
+                            <label for="edit_has_quantity_yes" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Has Quantity (Countable)
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input 
+                                type="radio" 
+                                wire:model="has_quantity" 
+                                id="edit_has_quantity_no" 
+                                value="0" 
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                            >
+                            <label for="edit_has_quantity_no" class="ml-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                No Quantity (Uncountable)
+                            </label>
+                        </div>
+                    </div>
+                    <x-input-error for="has_quantity" class="mt-2" />
                 </div>
             </div>
         </x-slot>
@@ -301,7 +388,7 @@
         </x-slot>
     </x-dialog-modal>
 
-    <!-- Enhanced Delete Item Modal -->
+    <!-- Delete Confirmation Modal -->
     <x-dialog-modal wire:model="showDeleteModal">
         <x-slot name="title">
             <div class="flex items-center gap-3">
@@ -310,7 +397,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Item</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Expense Item</h3>
             </div>
         </x-slot>
         <x-slot name="content">
@@ -322,7 +409,7 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm text-red-700 dark:text-red-200">Are you sure you want to delete this item? This action cannot be undone.</p>
+                        <p class="text-sm text-red-700 dark:text-red-200">Are you sure you want to delete this expense item? This action cannot be undone.</p>
                     </div>
                 </div>
             </div>

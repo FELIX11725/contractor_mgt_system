@@ -16,11 +16,57 @@
                     <p class="text-blue-100 mt-1">Manage your expense categories and classifications</p>
                 </div>
             </div>
-            {{-- <div class="hidden md:block">
-                <div class="bg-white/10 px-4 py-2 rounded-lg">
-                    <span class="text-white text-sm">{{ now()->format('F j, Y') }}</span>
-                </div>
-            </div> --}}
+        </div>
+    </div>
+
+    {{-- Stats Summary --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
+            <div class="rounded-full bg-blue-100 dark:bg-blue-900/50 p-3 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Expense Categories</p>
+                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->total() }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
+            <div class="rounded-full bg-green-100 dark:bg-green-900/50 p-3 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Expense Items</p>
+                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->sum('items_count') }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
+            <div class="rounded-full bg-purple-100 dark:bg-purple-900/50 p-3 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Countable Items</p>
+                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->sum('countable_items_count') }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex items-center">
+            <div class="rounded-full bg-orange-100 dark:bg-orange-900/50 p-3 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Uncountable Items</p>
+                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->sum('uncountable_items_count') }}</p>
+            </div>
         </div>
     </div>
 
@@ -43,90 +89,168 @@
                 </x-button>
             </div>
 
-            {{-- Search and Filter (Optional) --}}
-            <div class="mb-6 bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="relative flex-grow">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            {{-- Search and Filter --}}
+            <div class="mb-4 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <!-- Search field (left) -->
+                    <div class="relative flex-grow max-w-md">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
+                            <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                             </svg>
                         </div>
-                        <input type="search" wire:model.debounce.300ms="search" class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-blue-500 focus:border-blue-500" placeholder="Search categories...">
+                        <input type="search" wire:model.debounce.300ms="search" class="block w-full p-2 pl-8 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-blue-500 focus:border-blue-500" placeholder="Search categories...">
                     </div>
-                    <div>
-                        <select wire:model="perPage" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    
+                    <!-- Filter dropdown (right) -->
+                    {{-- <div class="w-auto">
+                        <select wire:model="perPage" class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
                             <option value="10">10 per page</option>
                             <option value="25">25 per page</option>
                             <option value="50">50 per page</option>
                         </select>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 
             {{-- Enhanced Table --}}
-            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
+            <div class="overflow-hidden border border-gray-200 dark:border-gray-700 sm:rounded-lg shadow-sm">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            <th scope="col" class="py-4 px-6 text-sm font-semibold text-left text-gray-700 dark:text-gray-300">
-                                <div class="flex items-center gap-x-2">
-                                    <span>Name</span>
-                                    <button wire:click="sortBy('name')" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                                            <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center">
+                                    <input type="checkbox" wire:model="selectAll" class="rounded text-blue-600 focus:ring-blue-500" />
                                 </div>
                             </th>
-                            <th scope="col" class="px-6 py-4 text-sm font-semibold text-left text-gray-700 dark:text-gray-300">Description</th>
-                            <th scope="col" class="px-6 py-4 text-sm font-semibold text-right text-gray-700 dark:text-gray-300">Actions</th>
+                            <th scope="col" wire:click="sortBy('name')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
+                                <div class="flex items-center">
+                                    Name
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4 opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg>
+                                </div>
+                            </th>
+                            {{-- <th scope="col" wire:click="sortBy('description')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
+                                <div class="flex items-center">
+                                    Description
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4 opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg>
+                                </div>
+                            </th> --}}
+                            {{-- <th scope="col" wire:click="sortBy('items_count')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
+                                <div class="flex items-center">
+                                    Items Count
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4 opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg>
+                                </div>
+                            </th> --}}
+                            {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Status
+                            </th> --}}
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
+
                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-800">
-                        @foreach($expenseCategories as $category)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/70 transition duration-200">
-                            <td class="px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 mr-3">
-                                        {{ substr($category->name, 0, 1) }}
+                        @if ($expenseCategories->isEmpty())
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <span class="text-gray-500 text-lg font-medium">No categories found</span>
+                                        <p class="text-gray-400 mt-1">Try adjusting your search criteria</p>
                                     </div>
-                                    <span>{{ $category->name }}</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                <div class="line-clamp-2">{{ $category->description }}</div>
-                            </td>
-                            <td class="px-6 py-4 text-sm whitespace-nowrap text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <button wire:click="viewDetails({{ $category->id }})" class="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50 transition duration-300 focus:outline-none flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        Details
-                                    </button>
-                                    <button wire:click="openEditModal({{ $category->id }})" class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition duration-300 focus:outline-none flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-                                        </svg>
-                                        Edit
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
+                                </td>
+                            </tr>
+                        @else
+                            @foreach ($expenseCategories as $category)
+                                <tr wire:key="{{ 'category-' . $category->id }}" class="hover:bg-gray-50 dark:hover:bg-gray-700/70 transition-colors duration-150">
+                                    <td class="px-6 py-4">
+                                        <input type="checkbox" wire:model="selectedCategories" value="{{ $category->id }}" 
+                                            class="rounded text-blue-600 focus:ring-blue-500" />
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center">
+                                            {{-- <div class="h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 mr-3">
+                                                {{ substr($category->name, 0, 1) }}
+                                            </div> --}}
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ $category->name }}</div>
+                                        </div>
+                                    </td>
+                                    {{-- <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 dark:text-gray-300">{{ $category->description }}</div>
+                                    </td> --}}
+                                    {{-- <td class="px-6 py-4">
+                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                                            {{ $category->items_count }}
+                                        </div>
+                                    </td> --}}
+                                    {{-- <td class="px-6 py-4">
+                                        @if ($category->is_active)
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
+                                                Active
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">
+                                                Inactive
+                                            </span>
+                                        @endif
+                                    </td> --}}
+                                    <td class="px-6 py-4 flex space-x-2">
+                                        <x-button wire:click="viewDetails({{ $category->id }})" 
+                                            class="bg-blue-600 hover:bg-blue-700 text-white border-0 text-xs py-1 px-3">
+                                            Details
+                                        </x-button>
+                                        <x-button wire:click="openEditModal({{ $category->id }})" 
+                                            class="bg-gray-600 hover:bg-gray-700 text-white border-0 text-xs py-1 px-3">
+                                            Edit
+                                        </x-button>
+                                        {{-- @if($category->is_active)
+                                            <x-danger-button wire:click="deactivateCategory({{ $category->id }})"
+                                                class="text-xs py-1 px-3">
+                                                Deactivate
+                                            </x-danger-button>
+                                        @else
+                                            <x-button wire:click="activateCategory({{ $category->id }})" 
+                                                class="bg-green-600 hover:bg-green-700 text-white border-0 text-xs py-1 px-3">
+                                                Activate
+                                            </x-button>
+                                        @endif --}}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
 
-            {{-- Enhanced Pagination --}}
-            <div class="mt-6">
+            @if($selectedCategories && count($selectedCategories) > 0)
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg mt-4 flex justify-between items-center">
+                <span class="text-blue-700 dark:text-blue-300 font-medium">{{ count($selectedCategories) }} items selected</span>
+                <div>
+                    <x-button wire:click="activateSelected" class="bg-green-600 hover:bg-green-700">
+                        Activate Selected
+                    </x-button>
+                    <x-danger-button wire:click="deactivateSelected" class="ml-2">
+                        Deactivate Selected
+                    </x-danger-button>
+                </div>
+            </div>
+            @endif
+
+            <div class="mt-4">
                 {{ $expenseCategories->links() }}
             </div>
         </div>
     </div>
+
 
     {{-- Enhanced New Category Modal --}}
     <x-dialog-modal wire:model="showNewCategoryModal" maxWidth="md">

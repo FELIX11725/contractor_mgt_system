@@ -19,13 +19,12 @@ class ApproveExpense extends Component
 
     public $filtersModal_isOpen = false;
     public $addPaymentModal_isOpen = false;
-    public $viewInvoiceModal_isOpen = false;
-    public $currentInvoiceUrl = '';
-
     public $selectedReqs = [];
     public $payment_method;
     public $transaction_id;
     public $expenseIdForPayment;
+
+    public $currentInvoiceUrl; // Property to store the current invoice URL
 
     #[Url(as: 'fd', keep: true)]
     public $from_date;
@@ -102,19 +101,6 @@ class ApproveExpense extends Component
         $this->addPaymentModal_isOpen = false;
     }
 
-    public function viewInvoice($expenseId)
-    {
-        $expense = Expense::with(['category', 'paymentMethod', 'approvals'])->findOrFail($expenseId);
-        $this->generateInvoice($expense);
-        $this->viewInvoiceModal_isOpen = true;
-    }
-
-    public function closeViewInvoiceModal()
-    {
-        $this->viewInvoiceModal_isOpen = false;
-        $this->currentInvoiceUrl = '';
-    }
-
     protected function generateInvoice($expense)
     {
         $pdf = Pdf::loadView('pdf.expense-invoice', [
@@ -130,32 +116,45 @@ class ApproveExpense extends Component
     }
 
     public function approveExpense($expenseId)
-    {
-        $expense = Expense::findOrFail($expenseId);
+{
+    $expense = Expense::findOrFail($expenseId);
 
-        // Check if the expense is already approved
-        $existingApproval = ExpenseApproval::where('expense_id', $expenseId)->first();
+    // Check if the expense is already approved
+    $existingApproval = ExpenseApproval::where('expense_id', $expenseId)->first();
 
-        if ($existingApproval && $existingApproval->is_approved) {
-            flash()->addError('This expense is already approved.');
-            return;
-        }
-
-        // Create or update the approval record
-        ExpenseApproval::updateOrCreate(
-            ['expense_id' => $expenseId],
-            [
-                'user_id' => Auth::id(),
-                'is_approved' => true,
-                'comment' => 'Approved by ' . Auth::user()->name,
-            ]
-        );
-
-        // Generate invoice for approved expense
-        $this->generateInvoice($expense);
-
-        flash()->addInfo('Expense approved successfully. Invoice generated.');
+    if ($existingApproval && $existingApproval->is_approved) {
+        flash()->addError('This expense is already approved.');
+        return;
     }
+
+    // Create or update the approval record
+    ExpenseApproval::updateOrCreate(
+        ['expense_id' => $expenseId],
+        [
+            'user_id' => Auth::id(),
+            'is_approved' => true,
+            'comment' => 'Approved by ' . Auth::user()->name,
+        ]
+    );
+
+    flash()->addInfo('Expense approved successfully.');
+}
+
+    public function downloadInvoice($expenseId)
+{
+    $expense = Expense::with(['category', 'paymentMethod', 'approvals'])->findOrFail($expenseId);
+    
+    $pdf = Pdf::loadView('pdf.expense-invoice', [
+        'expense' => $expense,
+        'date' => now()->format('F j, Y'),
+        'invoiceNumber' => 'INV-' . $expense->id . '-' . now()->format('Ymd')
+    ]);
+
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        "invoice_{$expense->id}_" . now()->format('Ymd') . ".pdf"
+    );
+}
 
     public function declineExpense($expenseId)
     {
@@ -188,7 +187,7 @@ class ApproveExpense extends Component
             flash()->addError('No expenses selected for approval.');
             return;
         }
-
+    
         foreach ($this->selectedReqs as $expenseId) {
             $expense = Expense::find($expenseId);
             if ($expense) {
@@ -201,15 +200,12 @@ class ApproveExpense extends Component
                         'comment' => 'Bulk approved by ' . Auth::user()->name,
                     ]
                 );
-
-                // Generate invoice for each approved expense
-                $this->generateInvoice($expense);
             }
         }
-
+    
         $this->selectedReqs = [];
         $this->selectAll = false;
-        flash()->addInfo(count($this->selectedReqs) . ' expenses approved successfully. Invoices generated.');
+        flash()->addInfo(count($this->selectedReqs) . ' expenses approved successfully.');
     }
 
     public function declineSelected()
