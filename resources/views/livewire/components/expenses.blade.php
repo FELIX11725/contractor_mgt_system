@@ -131,14 +131,14 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th scope="col" wire:click="sortBy('description')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
+                            {{-- <th scope="col" wire:click="sortBy('description')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
                                 <div class="flex items-center">
                                     Description
                                     <svg xmlns="http://www.w3.org/2000/svg" class="ml-1 h-4 w-4 opacity-0 group-hover:opacity-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                                     </svg>
                                 </div>
-                            </th>
+                            </th> --}}
                             {{-- <th scope="col" wire:click="sortBy('items_count')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer group">
                                 <div class="flex items-center">
                                     Items Count
@@ -184,9 +184,9 @@
                                             <div class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ $category->name }}</div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    {{-- <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900 dark:text-gray-300">{{ $category->description }}</div>
-                                    </td>
+                                    </td> --}}
                                     {{-- <td class="px-6 py-4">
                                         <div class="text-sm font-semibold text-gray-900 dark:text-gray-200">
                                             {{ $category->items_count }}

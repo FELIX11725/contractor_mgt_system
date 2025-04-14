@@ -40,6 +40,8 @@ class ViewExpense extends Component
 
     #[Url(as: 'q', keep: true)]
     public $search = "";
+    public $selectedItems = [];
+    public $selectAll = false;
 
     public function mount()
     {
@@ -57,6 +59,61 @@ class ViewExpense extends Component
             $this->sort_dir = "asc";
         }
     }
+    public function clearSelection()
+{
+    $this->selectedItems = [];
+    $this->selectAll = false;
+}
+public function toggleSelectAll()
+{
+    // If all or some are selected, clear selection
+    if (count($this->selectedItems) > 0) {
+        $this->selectedItems = [];
+    } 
+    // If none are selected, select all
+    else {
+        $expenseIds = $this->getExpensesQuery()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        $this->selectedItems = $expenseIds;
+    }
+
+    $this->dispatch('selectionChanged');
+}
+public function exportSelected()
+{
+    // Implement export logic for selected items only
+    // You can use $this->selectedItems to get the IDs of selected expenses
+    $this->validate([
+        'selectedItems' => 'required|array',
+    ]);
+    $this->validate([
+        'from_date' => 'required|date',
+        'to_date' => 'required|date',
+    ]);
+    $expenses = Expense::with('category')
+        ->whereBetween('date_of_pay', [$this->from_date, $this->to_date])
+        ->when($this->category !== "", function ($query) {
+            return $query->where('budget_items_id', $this->category);
+        })
+        ->when($this->search !== "", function ($query) {
+            return $query->where($this->searchColumn, 'like', '%' . $this->search . '%');
+        })->whereHas('approvals', function ($query) {
+            $query->where('is_approved', true);
+        })
+        ->whereIn('id', $this->selectedItems)
+        ->orderBy($this->sort_by, $this->sort_dir)
+        ->get();
+    return Excel::download(new ExpensesExport($expenses), 'selected_expenses_' . Str::slug(date('Y-m-d H:i:s')) . '.xlsx');
+}
+
+// Method to handle "select all" toggle
+public function updatedSelectAll($value)
+{
+    if ($value) {
+        $this->selectedItems = $this->expenses->pluck('id')->map(fn($id) => (string) $id)->toArray();
+    } else {
+        $this->selectedItems = [];
+    }
+}
 
     public function openFiltersModal()
     {
