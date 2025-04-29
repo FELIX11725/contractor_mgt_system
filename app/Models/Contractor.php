@@ -13,7 +13,7 @@ class Contractor extends Model
     use SoftDeletes;
     protected $table= 'contractors';
     protected $fillable = ['first_name','last_name', 'contractor_email', 'contractor_phone', 'contractor_address', 'contractor_status','date_of_birth','gender',
-    'nationality','marital_status','education_level','work_experience'];
+    'nationality','marital_status','education_level','work_experience','staff_id','business_id','branch_id'];
 
     public function contracts(): HasOne
     {

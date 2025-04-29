@@ -152,8 +152,8 @@
                                     </a>
                                 </li>
                                 <li class="mb-1 last:mb-0">
-                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('contractors')) {{ '!text-indigo-500' }} @endif"
-                                        href="{{ route('contractors') }}">
+                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('role-manager')) {{ '!text-indigo-500' }} @endif"
+                                        href="{{ route('role-manager') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Roles and Permissions</span>
                                     </a>
@@ -303,14 +303,14 @@
                                             Categories</span>
                                     </a>
                                 </li>
-                                {{-- <li class="mb-1 last:mb-0">
-                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('expensetypes')) {{ '!text-indigo-500' }} @endif"
-                                        href="{{ route('expensetypes') }}">
+                                <li class="mb-1 last:mb-0">
+                                    <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('expenseitems')) {{ '!text-indigo-500' }} @endif"
+                                        href="{{ route('expenseitems') }}">
                                         <span
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Expense
                                             Items</span>
                                     </a>
-                                </li> --}}
+                                </li>
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('add-expense')) {{ '!text-indigo-500' }} @endif"
                                         href="{{ route('add-expense') }}">

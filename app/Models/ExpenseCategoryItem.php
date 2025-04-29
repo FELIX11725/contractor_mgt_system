@@ -10,7 +10,7 @@ class ExpenseCategoryItem extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['expense_category_id', 'name', 'description', 'user_id'];
+    protected $fillable = ['expense_category_id', 'name', 'description', 'user_id','has_quantity'];
 
     /**
      * Get the expense category that owns the item.

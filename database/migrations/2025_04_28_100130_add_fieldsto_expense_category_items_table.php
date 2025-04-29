@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('staff_id')->nullable()->references('id')->on('staff')->after('email');
+        Schema::table('expense_category_items', function (Blueprint $table) {
+            $table->boolean('has_quantity')->default(false);
+           
         });
     }
 

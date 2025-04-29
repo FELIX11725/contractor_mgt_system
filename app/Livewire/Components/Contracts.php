@@ -5,13 +5,12 @@ namespace App\Livewire\Components;
 use App\Models\Project;
 use Livewire\Component;
 use App\Models\Contract;
-use App\Models\Staff; // Changed from Contractor to Staff
+use App\Models\Staff; 
 use App\Models\ContractType;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Flasher\Prime\FlasherInterface;
 
 class Contracts extends Component
 {
@@ -58,11 +57,11 @@ class Contracts extends Component
 
     public function render()
     {
-        $contracts = Contract::with(['project', 'contractor.user'])
+        $contracts = Contract::with(['project', 'contractor'])
             ->when($this->searchQuery, function ($query) {
                 $query->whereHas('project', function ($q) {
                     $q->where('project_name', 'like', '%' . $this->searchQuery . '%');
-                })->orWhereHas('contractor.user', function ($q) {
+                })->orWhereHas('contractor', function ($q) {
                     $q->where('name', 'like', '%' . $this->searchQuery . '%');
                 });
             })
@@ -124,7 +123,7 @@ class Contracts extends Component
         $this->showModal = true;
     }
 
-    public function save(FlasherInterface $flasher)
+    public function save()
     {
         $this->validate();
 
@@ -178,18 +177,14 @@ class Contracts extends Component
         }, 'contract-agreement-'.$contractId.'.pdf');
     }
 
-    // public function downloadDocument($documentId)
-    // {
-    //     $document = Contract::findOrFail($documentId);
-    //     return Storage::disk('public')->download($document->file_path, $document->file_name);
-    // }
+  
 
     public function openContractTypeModal()
     {
         $this->showContractTypeModal = true;
     }
 
-    public function addContractType(FlasherInterface $flasher)
+    public function addContractType()
     {
         $this->validate([
             'new_contract_type' => 'required|string|max:255|unique:contract_types,name',
@@ -216,7 +211,7 @@ class Contracts extends Component
         }
     }
 
-    public function updateStatus(FlasherInterface $flasher)
+    public function updateStatus()
     {
         $this->validate([
             'updatedStatus' => 'required|in:pending,active,completed',

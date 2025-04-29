@@ -10,17 +10,18 @@ use App\Http\Controllers\ManagePlans\ViewplansController;
 use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
 use App\Http\Controllers\BudgetManagement\BudgetController;
 use App\Http\Controllers\ManageExpenses\ExpensesController;
+use App\Http\Controllers\ManageStaff\RoleManagerController;
 use App\Http\Controllers\ManagePlans\ProjectplansController;
 use App\Http\Controllers\ManageContracts\ContractsController;
 use App\Http\Controllers\ManageExpenses\AddExpenseController;
 use App\Http\Controllers\ManageExpenses\ExpensetypeController;
 use App\Http\Controllers\ManageExpenses\ViewExpenseController;
 use App\Http\Controllers\ManageMilestones\MilestoneController;
+
 use App\Http\Controllers\ProjectManagement\ProjectsController;
-
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
-use App\Http\Controllers\ManageContracts\AddContractController;
 
+use App\Http\Controllers\ManageContracts\AddContractController;
 use App\Http\Controllers\ProjectManagement\AddProjectController;
 use App\Http\Controllers\ManageContractors\ContractorsController;
 use App\Http\Controllers\ManageExpenses\ApproveExpenseController;
@@ -56,6 +57,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/contractors', [ContractorsController::class, 'index'])->name('contractors');
         Route::get('/addcontractor',[AddContractorController::class, 'index'])->name('addcontractor');
         Route::get('/compliance-records', [ComplianceRecordsController::class, 'index'])->name('compliance-records');
+        Route::get('/{staff}/profile', [ContractorsController::class, 'showProfile'])->name('contractors.profile');
+        // Route::get('/{staff}/profile/edit', [AddContractorController::class, 'edit'])->name('contractors.profile.edit');
+       
+        Route::get('/role-manager', [RoleManagerController::class, 'index'])->name('role-manager');
     });
     //contracts
     Route::prefix('contracts')->group(function () {
@@ -64,7 +69,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
     //expenses
     Route::prefix('expenses')->group(function () {
-        // Route::get('/expensetypes', [ExpensetypeController::class, 'index'])->name('expensetypes');
+        Route::get('/expenseitems', [ExpensetypeController::class, 'index'])->name('expenseitems');
         Route::get('/expenses', [ExpensesController::class, 'index'])->name('expenses');
         Route::get('/expense-categories', ExpenseCategoriesComponent::class)->name('expenses.manage-categories');
         Route::get('/expense-categories/{category}', ExpenseCategoryDetailsComponent::class)->name('expenses.categories.view');

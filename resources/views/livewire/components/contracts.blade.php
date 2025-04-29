@@ -384,7 +384,11 @@
                                     <option value="">Select Contractor</option>
                                     @foreach($contractors as $contractor)
                                         <option value="{{ $contractor->id }}">
-                                            {{ $contractor->user->name }} ({{ $contractor->position }})
+                                            @if($contractor->user)
+                                                {{ $contractor->user->name }} ({{ $contractor->position }})
+                                            @else
+                                                {{ $contractor->first_name }} {{ $contractor->last_name }} ({{ $contractor->position }})
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>

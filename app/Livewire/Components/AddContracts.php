@@ -5,7 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\Project;
 use Livewire\Component;
 use App\Models\Contract;
-use App\Models\Staff; // Changed from Contractor to Staff
+use App\Models\Staff; 
 use App\Models\ContractType;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -73,14 +73,14 @@ class AddContracts extends Component
             'name' => $this->new_contract_type,
         ]);
 
-        $this->contractTypes->push($contractType);
+        $this->contractTypes[] = $contractType;
         $this->contract_type_id = $contractType->id;
         $this->hideAddContractTypeForm();
 
         flash()->addSuccess('Contract type added successfully.');
     }
 
-    public function save(FlasherInterface $flasher)
+    public function save()
     {
         $this->validate();
 
