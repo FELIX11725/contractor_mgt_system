@@ -1,3 +1,3 @@
 <x-app-layout>
-     <livewire:components.expensetypes :categoryId="$category->id"/>
+     <livewire:components.expensetypes/>
 </x-app-layout>

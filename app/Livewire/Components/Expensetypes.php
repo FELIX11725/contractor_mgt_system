@@ -79,7 +79,7 @@ class ExpenseTypes extends Component
     }
 
     // Save a new item
-    public function saveNewCategoryItem(FlasherInterface $flasher)
+    public function saveNewCategoryItem()
     {
         $this->validate();
 

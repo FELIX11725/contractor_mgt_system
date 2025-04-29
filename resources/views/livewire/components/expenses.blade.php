@@ -53,7 +53,9 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Countable Items</p>
-                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->sum('countable_items_count') }}</p>
+                <p class="text-xl font-bold dark:text-white">
+                    {{ $expenseCategoryItems->where('has_quantity', 1)->count() }}
+                </p>
             </div>
         </div>
         
@@ -65,7 +67,9 @@
             </div>
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Uncountable Items</p>
-                <p class="text-xl font-bold dark:text-white">{{ $expenseCategories->sum('uncountable_items_count') }}</p>
+                <p class="text-xl font-bold dark:text-white">
+                    {{ $expenseCategoryItems->where('has_quantity', 0)->count() }}
+                </p>
             </div>
         </div>
     </div>
@@ -184,30 +188,12 @@
                                             <div class="text-sm font-medium text-gray-900 dark:text-gray-200">{{ $category->name }}</div>
                                         </div>
                                     </td>
-                                    {{-- <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-900 dark:text-gray-300">{{ $category->description }}</div>
-                                    </td> --}}
-                                    {{-- <td class="px-6 py-4">
-                                        <div class="text-sm font-semibold text-gray-900 dark:text-gray-200">
-                                            {{ $category->items_count }}
-                                        </div>
-                                    </td> --}}
-                                    {{-- <td class="px-6 py-4">
-                                        @if ($category->is_active)
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">
-                                                Active
-                                            </span>
-                                        @else
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">
-                                                Inactive
-                                            </span>
-                                        @endif
-                                    </td> --}}
+                                   
                                     <td class="px-6 py-4 flex space-x-2">
-                                        <x-button wire:click="viewDetails({{ $category->id }})" 
+                                        {{-- <x-button wire:click="viewDetails({{ $category->id }})" 
                                             class="bg-blue-600 hover:bg-blue-700 text-white border-0 text-xs py-1 px-3">
                                             Details
-                                        </x-button>
+                                        </x-button> --}}
                                         <x-button wire:click="openEditModal({{ $category->id }})" 
                                             class="bg-gray-600 hover:bg-gray-700 text-white border-0 text-xs py-1 px-3">
                                             Edit

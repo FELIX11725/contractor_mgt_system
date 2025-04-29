@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Components;
 
-use App\Models\ExpenseCategory;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\ExpenseCategory;
+use App\Models\ExpenseCategoryItem;
 
 class Expenses extends Component
 {
@@ -29,7 +30,9 @@ class Expenses extends Component
     public function render()
     {
         $expenseCategories = ExpenseCategory::paginate(10);
-        return view('livewire.components.expenses', ['expenseCategories' => $expenseCategories]);
+        $expenseCategoryItems = ExpenseCategoryItem::all();
+        return view('livewire.components.expenses', ['expenseCategories' => $expenseCategories,
+            'expenseCategoryItems' => $expenseCategoryItems]);
     }
 
     // Open the modal for creating a new category
@@ -50,17 +53,20 @@ class Expenses extends Component
         $this->selectedCategories = [];
         $this->selectAll = false;
         // Add flash message
+        flash()->addSuccess('Expense Category Deactivated');
     }
     
     // For individual actions
     public function activateCategory($id) {
         ExpenseCategory::find($id)->update(['is_active' => true]);
         // Add flash message
+        flash()->addSuccess('Expense Category Activated');
     }
     
     public function deactivateCategory($id) {
         ExpenseCategory::find($id)->update(['is_active' => false]);
         // Add flash message
+        flash()->addSuccess('Expense Category Deactivated');
     }
     
     // For sorting

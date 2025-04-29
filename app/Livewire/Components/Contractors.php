@@ -63,7 +63,8 @@ class Contractors extends Component
     public function performAction(FlasherInterface $flasher)
     {
         if ($this->action === 'deleteSelectedStaff' && !empty($this->selectedStaff)) {
-            $this->deleteSelected($flasher);
+            $this->deleteSelected();
+            
         }
     }
 
@@ -132,6 +133,8 @@ class Contractors extends Component
 
     public function openStaffProfile($staffId)
     {
-        return redirect()->route('staff.profile', $staffId);
-    }
+        return redirect()->route('contractors.profile', $staffId);
+    }  
+    
+    
 }

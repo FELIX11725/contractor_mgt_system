@@ -65,8 +65,8 @@
                     <x-input-error for="project_id" class="mt-2" />
                 </div>
 
-                <!-- Contractor Selection -->
-               <!-- Contractor Selection -->
+                
+<!-- Contractor Selection -->
 <div class="relative group">
     <x-label for="contractor_id" class="text-sm font-medium text-gray-700 mb-1 group-focus-within:text-blue-600 transition-colors">
         Contractor <span class="text-red-500">*</span>
@@ -82,7 +82,7 @@
             <option value="">Select Contractor</option>
             @foreach($contractors as $contractor)
                 <option value="{{ $contractor->id }}">
-                    {{ $contractor->user->name }} ({{ $contractor->position }})
+                    {{ $contractor->first_name }} {{ $contractor->last_name }} ({{ $contractor->position }})
                 </option>
             @endforeach
         </select>
