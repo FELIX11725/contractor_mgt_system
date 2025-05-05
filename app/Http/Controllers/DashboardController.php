@@ -17,6 +17,7 @@ class DashboardController extends Controller
 
         // Active projects count
         $activeProjectsCount = Project::all()->count();
+        $projects = Project::first();
         $totalContractors = Contractor::count();
         $availableContractors = Contractor::all()->count();
         $totalBudget = BudgetItem::sum('estimated_amount');
@@ -135,6 +136,7 @@ class DashboardController extends Controller
     
         return view('pages.dashboard.dashboard', compact(
             'activeProjectsCount',
+            'projects',
             'newProjectsThisWeek',
             'lastWeekCount',
             'percentageChange',

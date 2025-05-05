@@ -5,6 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\Budget;
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 
 class Budgets extends Component
 {
@@ -37,6 +38,14 @@ class Budgets extends Component
             'budget_name' => $this->budgetName,
             'description' => $this->budgetDescription,
         ]);
+
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new budget',
+            'description' => 'Budget: '.$this->budgetName,
+            'ip_address' => request()->ip(),
+        ])->save();
 
         $this->closeNewBudgetModal();
         $this->emit('budgetCreated'); // Emit event to refresh the component

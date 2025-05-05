@@ -88,6 +88,12 @@ public function hasPermission($permission)
     return $this->permissions->contains('name', $permission);
 }
 
+//auditLogs
+public function auditLogs()
+{
+    return $this->hasMany(Auditlog::class);
+}
+
 
 
 

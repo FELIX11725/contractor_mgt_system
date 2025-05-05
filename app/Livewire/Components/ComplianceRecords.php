@@ -61,16 +61,26 @@ class ComplianceRecords extends Component
            'submitted_date' => $this->submitted_date,
             'contractor_id' => $this->contractor_id,
         ]);
-        Auditlog::create([
-            'contractor_id' => $this->contractor_id,
-            'action' => 'Uploaded',
-            'date' => now(),
-            'user_id' => auth()->id(), 
-        ]);
+        //log the action
 
         $this->resetInputFields();
         $this->showModal = false;
-        $flasher->addSuccess('Compliance record added successfully');
+        // Auditlog::create([
+        //     'user_id' => Auth::id(),
+        //     'action' => 'Declined expense',
+        //     'description' => 'Expense ID: ' . $expenseId,
+        //     'ip_address' => request()->ip(),
+        // ])->save();
+        //log the action correctly
+        Auditlog::create([
+            'action' => 'Created a new compliance record',
+            'description' => 'Compliance record: '.$this->document_name,
+            'ip_address' => request()->ip(),
+            'user_id' => auth()->id(),
+        ])->save();
+       
+
+        flash()->addSuccess('Compliance record added successfully');
       
     }
     public function openEditModal($compliancerecordId){
@@ -87,7 +97,7 @@ class ComplianceRecords extends Component
         $this->modalType = 'edit';
         $this->showModal = true;
     }
-    public function update(FlasherInterface $flasher){
+    public function update(){
         $this->validate([
             'document_name' =>'required',
            'document_path' => 'required|file|mimes:pdf,jpg,png,docx|max:2048',
@@ -108,7 +118,7 @@ class ComplianceRecords extends Component
         ]);
         $this->resetInputFields();
         $this->showModal = false;
-        $flasher->addSuccess('Compliance record updated successfully');
+        flash()->addSuccess('Compliance record updated successfully');
     }
 
     public function download($compliancerecordId)
@@ -129,7 +139,7 @@ class ComplianceRecords extends Component
             $this->updatedStatus = $compliancerecord->doc_status;
             $this->showStatusModal = true;
         }else{
-            $flasher->addError('Compliance record not found.');
+            flash()->addError('Compliance record not found.');
         }
     }
     public function updateStatus(FlasherInterface $flasher){
@@ -141,19 +151,28 @@ class ComplianceRecords extends Component
             'doc_status' => $this->updatedStatus,
         ]);
         Auditlog::create([
-            'contractor_id' => $this->contractor_id,
             'action' => 'Approved',
             'date' => now(),
             'user_id' => auth()->id(), 
-        ]);
+            'description' => 'Compliance record status updated to: '.$this->updatedStatus,
+            'ip_address' => request()->ip(),
+        ])->save();
+       
 
         $this->resetInputFields();
         $this->showStatusModal = false;
-        $flasher->addSuccess('Compliance record status updated successfully');
+        flash()->addSuccess('Compliance record status updated successfully');
     }
-    public function delete($compliancerecordId, FlasherInterface $flasher){
+    public function delete($compliancerecordId){
         ComplianceRecord::destroy($compliancerecordId);
-        $flasher->addSuccess('Compliance record deleted successfully');
+        //log the action
+        Auditlog::create([
+            'action' => 'Deleted a compliance record',
+            'description' => 'Compliance record ID: '.$compliancerecordId,
+            'ip_address' => request()->ip(),
+            'user_id' => auth()->id(),
+        ])->save();
+        flash()->addSuccess('Compliance record deleted successfully');
     }
     private function resetInputFields(){
         $this->compliancerecordIdToEdit = null;

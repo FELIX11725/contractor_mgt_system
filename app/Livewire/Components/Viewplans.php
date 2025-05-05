@@ -81,7 +81,7 @@ class Viewplans extends Component
         // Close the modal and update the status in the database
 
         $this->dispatch('close-modal');
-        $flasher->addSuccess('Status updated successfully');
+        flash()->addSuccess('Status updated successfully');
         
 
 

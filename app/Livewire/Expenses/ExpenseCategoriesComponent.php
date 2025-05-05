@@ -3,9 +3,10 @@
 namespace App\Livewire\Expenses;
 
 use Livewire\Component;
+use App\Models\Auditlog;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Auth;
 use App\Models\ExpenseCategory;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseCategoriesComponent extends Component
 {
@@ -63,13 +64,18 @@ class ExpenseCategoriesComponent extends Component
             'description' => $this->description,
             'user_id' => Auth::user()->id,
         ]);
+        // log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Created expense category',
+            'description' => 'Expense category name: ' . $this->name,
+            'ip_address' => request()->ip(),
+        ])->save();
+        flash()->addSuccess('Expense category created successfully!');
         
         $this->showCreateModal = false;
         $this->resetExcept(['search', 'sortDir', 'sortField']);
-        $this->dispatch('notify', [
-            'type' => 'success', 
-            'message' => 'Expense category created successfully!'
-        ]);
+       
     }
     
     // Open edit modal
@@ -82,8 +88,17 @@ class ExpenseCategoriesComponent extends Component
         $this->category_id = $category->id;
         $this->name = $category->name;
         $this->description = $category->description;
-        
         $this->showEditModal = true;
+
+        // log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Editing expense category',
+            'description' => 'Expense category name: ' . $this->name,
+            'ip_address' => request()->ip(),
+        ])->save();
+
+        flash()->addInfo('Editing expense category: ' . $this->name);
     }
     
     // Update category
@@ -99,10 +114,14 @@ class ExpenseCategoriesComponent extends Component
         
         $this->showEditModal = false;
         $this->resetExcept(['search', 'sortDir', 'sortField']);
-        $this->dispatch('notify', [
-            'type' => 'success', 
-            'message' => 'Expense category updated successfully!'
-        ]);
+        // log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Updated expense category',
+            'description' => 'Expense category name: ' . $this->name,
+            'ip_address' => request()->ip(),
+        ])->save();
+        flash()->addSuccess('Expense category updated successfully!');
     }
     
     // Confirm delete
@@ -120,10 +139,15 @@ class ExpenseCategoriesComponent extends Component
         
         $this->showDeleteModal = false;
         $this->resetExcept(['search', 'sortDir', 'sortField']);
-        $this->dispatch('notify', [
-            'type' => 'success', 
-            'message' => 'Expense category deleted successfully!'
-        ]);
+        // log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Deleted expense category',
+            'description' => 'Expense category name: ' . $category->name,
+            'ip_address' => request()->ip(),
+        ])->save();
+        
+        flash()->addSuccess('Expense category deleted successfully!');
     }
     
     // Cancel any modal
