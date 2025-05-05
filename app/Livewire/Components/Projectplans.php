@@ -85,7 +85,7 @@ class Projectplans extends Component
         $this->reset(['selectedProject', 'planMethod', 'numberOfItems', 'itemNames']);
     
         // Show success message
-        $flasher->addSuccess('Project plan created successfully!');
+        flash()->addSuccess('Project plan created successfully!');
         //redirect to viewplans
         return redirect()->route('viewplans');
     }

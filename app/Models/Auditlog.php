@@ -9,5 +9,16 @@ class Auditlog extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['user_id', 'action', 'contractor_id', 'date'];
+
+    protected $fillable = [
+        'user_id',
+        'action',
+        'description',
+        'ip_address'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -3,8 +3,9 @@
 namespace App\Livewire\Components;
 
 use App\Models\Project;
-use App\Models\ProjectType;
 use Livewire\Component;
+use App\Models\Auditlog;
+use App\Models\ProjectType;
 use Livewire\WithPagination;
 use Flasher\Prime\FlasherInterface;
 
@@ -115,6 +116,13 @@ class Projects extends Component
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
             ]);
+            //log the action
+            Auditlog::create([
+                'user_id' => auth()->id(),
+                'action' => 'Updated project',
+                'description' => 'Project ID: '.$this->projectIdToEdit,
+                'ip_address' => request()->ip(),
+            ])->save();
             flash()->addSuccess('Project updated successfully!');
         } else {
             // Create new project
@@ -167,6 +175,13 @@ class Projects extends Component
             return;
         }
         $project->delete();
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Deleted project',
+            'description' => 'Project ID: '.$projectId,
+            'ip_address' => request()->ip(),
+        ])->save();
         flash()->addSuccess('Project deleted successfully!');
     }
 

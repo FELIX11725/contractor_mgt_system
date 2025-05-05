@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\Staff; 
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Contract;
-use App\Models\Staff; 
 use App\Models\ContractType;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class Contracts extends Component
 {
@@ -161,6 +162,13 @@ class Contracts extends Component
                 ]);
             }
         }
+        // Log the action
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = $this->modalType === 'edit' ? 'Updated contract' : 'Created contract';
+        $auditlog->description = $this->modalType === 'edit' ? 'Updated contract: ' . $this->description : 'Created contract: ' . $this->description;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
 
         flash()->addSuccess($message);
         $this->resetInputFields();
@@ -171,6 +179,15 @@ class Contracts extends Component
     {
         $contract = Contract::with(['project', 'contractor.user', 'contractType'])->findOrFail($contractId);
         $pdf = Pdf::loadView('livewire.components.template', compact('contract'));
+
+        // Log the action
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'Generated contract PDF';
+        $auditlog->description = 'Generated contract PDF: ' . $contract->description;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
+        flash()->addSuccess('Contract PDF generated successfully!');
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
@@ -198,6 +215,13 @@ class Contracts extends Component
         $this->contract_type_id = $contractType->id;
         $this->showContractTypeModal = false;
         $this->new_contract_type = ''; 
+        // Log the action
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'Added contract type';
+        $auditlog->description = 'Added contract type: ' . $this->new_contract_type;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
         flash()->addSuccess('Contract type added successfully!');
     }
 
@@ -241,6 +265,14 @@ class Contracts extends Component
         }
         
         $contract->delete();
+        // Log the action
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'Deleted contract';
+        $auditlog->description = 'Deleted contract: ' . $contract->description;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
+        
         flash()->addSuccess('Contract deleted successfully!');
     }
 

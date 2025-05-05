@@ -1,4 +1,30 @@
 <div>
+    {{-- if no project has been created display an alert instead --}}
+     
+@if($projects->isEmpty())
+        <div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 max-w-md mx-auto">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <div class="ml-4">
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">No Projects Found</h2>
+                        <p class="mt-2 text-gray-600 dark:text-gray-400">Please create a project to manage budgets.</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                   {{-- link to project creation --}}
+                    <a href="{{ route('addproject') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                        Create Project
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    @else
     <section class="container px-4 mx-auto">
         <!-- Enhanced Header Section with Gradient Background -->
         <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg mb-8">
@@ -624,4 +650,5 @@
     </x-card>
 </x-modals>
     </section>
+    @endif
 </div>

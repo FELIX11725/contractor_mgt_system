@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\staff;
 use App\Models\branch;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\business;
 use App\Models\Permission;
 use App\Models\UsersRoles;
@@ -133,6 +134,13 @@ class AddNewBusinessFormComponent extends Component
                 'login_url' => route('login'),
             ]));
         });
+        
+        // Log the action
+        Auditlog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Created business',
+            'description' => 'Business name: ' . $this->business_name,
+        ])->save();
 
         flash()->addSuccess('Business created successfully with default branch and staff account. Welcome email sent.');
 

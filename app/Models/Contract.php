@@ -12,7 +12,7 @@ class Contract extends Model
     use SoftDeletes;
 
     protected $table = 'contracts';
-    protected $fillable = ['project_id', 'contractor_id', 'start_date', 'end_date', 'total_amount', 'contract_status', 'contract_type_id','description'];
+    protected $fillable = ['project_id', 'contractor_id', 'start_date', 'end_date', 'total_amount', 'contract_status', 'contract_type_id','description','business_id', 'branch_id'];
 
     //one contract given to one contractor
     public function contractor()
@@ -30,6 +30,15 @@ class Contract extends Model
         return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
 
+    //business and branches
+    public function business()
+    {
+        return $this->belongsTo(Business::class, 'business_id');
+    }
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 
 
     

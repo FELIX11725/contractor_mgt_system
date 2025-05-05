@@ -6,6 +6,7 @@ use App\Livewire\Budget\BudgetDetailsComponent;
 use App\Livewire\Expenses\ExpenseCategoriesComponent;
 use App\Livewire\Business\AddNewBusinessFormComponent;
 use App\Livewire\Preojects\ViewProjectDetailsComponent;
+use App\Http\Controllers\ManageLogs\AuditLogsController;
 use App\Http\Controllers\ManagePlans\ViewplansController;
 use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
 use App\Http\Controllers\BudgetManagement\BudgetController;
@@ -16,11 +17,11 @@ use App\Http\Controllers\ManageContracts\ContractsController;
 use App\Http\Controllers\ManageExpenses\AddExpenseController;
 use App\Http\Controllers\ManageExpenses\ExpensetypeController;
 use App\Http\Controllers\ManageExpenses\ViewExpenseController;
+
 use App\Http\Controllers\ManageMilestones\MilestoneController;
-
 use App\Http\Controllers\ProjectManagement\ProjectsController;
-use App\Http\Controllers\BudgetManagement\ViewbudgetController;
 
+use App\Http\Controllers\BudgetManagement\ViewbudgetController;
 use App\Http\Controllers\ManageContracts\AddContractController;
 use App\Http\Controllers\ProjectManagement\AddProjectController;
 use App\Http\Controllers\ManageContractors\ContractorsController;
@@ -85,5 +86,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/budgets/{budget}/details', BudgetDetailsComponent::class )->name('budgets.details');
     });
 
-    Route::get('/businees/create', AddNewBusinessFormComponent::class)->name('businsess.new');
+    Route::get('/business/create', AddNewBusinessFormComponent::class)->name('business.new');
+    //auditlogs
+    Route::get('/auditlogs', [AuditLogsController::class, 'index'])->name('auditlogs');
 });

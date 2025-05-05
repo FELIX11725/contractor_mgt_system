@@ -3,6 +3,7 @@
 namespace App\Livewire\Components;
 
 use Livewire\Component;
+use App\Models\Auditlog;
 use Livewire\WithPagination;
 use App\Models\ExpenseCategory;
 use App\Models\ExpenseCategoryItem;
@@ -89,6 +90,13 @@ class ExpenseTypes extends Component
             'has_quantity' => $this->has_quantity,
             'user_id' => auth()->id(),
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new expense item',
+            'description' => 'Expense Item: '.$this->name,
+            'ip_address' => request()->ip(),
+        ])->save();
 
         $this->resetInputFields();
         $this->showNewCategoryItemModal = false;

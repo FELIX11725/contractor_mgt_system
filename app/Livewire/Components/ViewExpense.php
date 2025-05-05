@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Components;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Expense;
-use App\Models\ExpenseCategoryItem;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ExpensesExport;
+use Livewire\Component;
+use App\Models\Auditlog;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Url;
+use Livewire\WithPagination;
+use App\Exports\ExpensesExport;
+use App\Models\ExpenseCategoryItem;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ViewExpense extends Component
 {
@@ -145,7 +146,14 @@ public function updatedSelectAll($value)
             ->orderBy($this->sort_by, $this->sort_dir)
             ->get();
 
-        return Excel::download(new ExpensesExport($expenses), 'expenses_' . Str::slug(date('Y-m-d H:i:s')) . '.xlsx');
+    // Log the action
+    $auditLog = new Auditlog();
+    $auditLog->action = 'export expenses';
+    $auditLog->user_id = auth()->user()->id;
+    $auditLog->description = 'Exported expenses from ' . $this->from_date . ' to ' . $this->to_date;
+    $auditLog->save();
+
+    return Excel::download(new ExpensesExport($expenses), 'expenses_' . Str::slug(date('Y-m-d H:i:s')) . '.xlsx');
     }
 
     public function render()

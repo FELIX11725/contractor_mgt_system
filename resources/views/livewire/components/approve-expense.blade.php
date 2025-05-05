@@ -190,7 +190,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-semibold {{ $expense->amount_paid > 1000 ? 'text-red-600' : 'text-gray-900' }}">
-                                                ${{ number_format($expense->amount_paid, 2) }}
+                                                shs.{{ number_format($expense->amount_paid, 2) }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">

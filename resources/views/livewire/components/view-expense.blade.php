@@ -152,7 +152,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-semibold text-gray-900">
-                                            <span class="font-mono">{{ number_format($expense->amount_paid, 2) }}</span>
+                                            <span class="font-mono">shs.{{ number_format($expense->amount_paid, 2) }}</span>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">

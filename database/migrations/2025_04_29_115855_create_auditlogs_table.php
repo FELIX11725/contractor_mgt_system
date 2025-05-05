@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('auditlogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('contractor_id')->references('id')->on('contractors');
-            $table->string('action');
-            $table->timestamp('date')->useCurrent();
+            $table->string('action'); 
+            $table->text('description')->nullable(); 
             $table->foreignId('user_id')->references('id')->on('users');
+            $table->ipAddress('ip_address')->nullable();
             $table->timestamps();
         });
     }

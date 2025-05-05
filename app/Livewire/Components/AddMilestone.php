@@ -4,6 +4,7 @@ namespace App\Livewire\Components;
 
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Milestone;
 use Flasher\Prime\FlasherInterface;
 
@@ -20,7 +21,7 @@ class AddMilestone extends Component
         $projects = Project::all();
         return view('livewire.components.add-milestone',compact('milestones', 'projects'));
     }
-    public function save(FlasherInterface $flasher)
+    public function save()
     {
         $this->validate([
             'milestone_name' => 'required',
@@ -36,6 +37,16 @@ class AddMilestone extends Component
             'description' => strip_tags($this->description),
             'milestone_status' => 'pending', 
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new milestone',
+            'description' => 'Milestone: '.$this->milestone_name,
+            'ip_address' => request()->ip(),
+        ])->save();
+        // Clear the form fields
+        $this->reset(['milestone_name', 'project_id', 'due_date', 'description']);
+       
 
         flash()->addSuccess('Milestone created successfully!');
 
