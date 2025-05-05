@@ -6,6 +6,7 @@ use App\Models\Phase;
 use App\Models\Budget;
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Milestone;
 use App\Models\Projectmilestone;
 
@@ -25,6 +26,51 @@ class ViewProjectDetailsComponent extends Component
     public $newBudgetModal_isOpen = false;
     public $showMilestoneForm = false;
     public $phase_id;
+    public $showStatusModal = false;
+    public $currentMilestoneId;
+    public $currentMilestoneStatus;
+    public $newStatus = 'pending';
+    public $completionDate;
+
+    public function openStatusModal($milestoneId)
+{
+    $this->currentMilestoneId = $milestoneId;
+    $milestone = Milestone::find($milestoneId);
+    $this->currentMilestoneStatus = $milestone->status;
+    $this->newStatus = $milestone->status;
+    $this->showStatusModal = true;
+}
+public function closeStatusModal()
+{
+    $this->showStatusModal = false;
+    $this->reset(['currentMilestoneId', 'currentMilestoneStatus', 'newStatus', 'completionDate']);
+}
+public function updateMilestoneStatus()
+{
+    $validated = $this->validate([
+        'newStatus' => 'required|in:pending,active,50_complete,80_complete,95_complete,completed',
+        'completionDate' => 'nullable|date|required_if:newStatus,50_complete,80_complete,95_complete,completed',
+    ]);
+    
+    $milestone = Milestone::find($this->currentMilestoneId);
+    
+    $milestone->update([
+        'status' => $this->newStatus,
+        'completion_date' => in_array($this->newStatus, ['50_complete', '80_complete', '95_complete', 'completed']) 
+            ? $this->completionDate 
+            : null,
+    ]);
+    
+    $this->closeStatusModal();
+    // Log the action
+    Auditlog::create([
+        'user_id' => auth()->id(),
+        'action' => 'Updated milestone status',
+        'description' => 'Milestone ID: '.$this->currentMilestoneId,
+        'ip_address' => request()->ip(),
+    ])->save();
+    flash()->addSuccess('Milestone status updated successfully!');
+}
 
     public function mount($project)
 {
@@ -53,6 +99,13 @@ class ViewProjectDetailsComponent extends Component
             'description' => $this->budgetDescription ?? null,
             'phase_id' => $this->budgetPhaseId,
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Created budget',
+            'description' => 'Budget ID: ' . $this->budgetId,
+            'ip_address' => request()->ip(),
+        ])->save();
     
         // Show success message
         flash()->addSuccess("Budget saved");
@@ -161,6 +214,13 @@ public function createPhase()
             'milestone_status' => 'pending',
         ]);
     }
+    // Log the action
+    Auditlog::create([
+        'user_id' => auth()->id(),
+        'action' => 'Created a new phase',
+        'description' => 'Phase: '.$this->phase_name,
+        'ip_address' => request()->ip(),
+    ])->save();
 
     $this->closePhaseModal(); // Close the modal after saving
     flash()->addSuccess('Phase created successfully!');
@@ -184,6 +244,14 @@ public function createPhase()
         ]);
     
         $this->closeMilestoneModal();
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new milestone',
+            'description' => 'Milestone: '.$this->milestone_name,
+            'ip_address' => request()->ip(),
+        ])->save();
+        
         flash()->addSuccess('Milestone created successfully!');
     }
 

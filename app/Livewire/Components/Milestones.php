@@ -4,6 +4,7 @@ namespace App\Livewire\Components;
 
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Milestone;
 use Livewire\WithPagination;
 use Flasher\Prime\FlasherInterface;
@@ -92,10 +93,17 @@ public $selectAll = false;
             'description' => $this->description,
             'milestone_status' => 'pending',
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new milestone',
+            'description' => 'Milestone: '.$this->milestone_name,
+            'ip_address' => request()->ip(),
+        ])->save();
 
         $this->resetInputFields();
         $this->showModal = false;
-        $flasher->addSuccess('Milestone created successfully!');
+        flash()->addSuccess('Milestone created successfully!');
     }
 
     public function openEditModal($milestoneId)
@@ -127,9 +135,16 @@ public $selectAll = false;
             'due_date' => $this->due_date,
             'description' => $this->description,
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Updated a milestone',
+            'description' => 'Milestone: '.$this->milestone_name,
+            'ip_address' => request()->ip(),
+        ])->save();
         $this->resetInputFields();
         $this->showModal = false;
-        $flasher->addSuccess('Milestone updated successfully!');
+        flash()->addSuccess('Milestone updated successfully!');
     }
 
     public function openStatusModal($milestoneId)
@@ -142,7 +157,7 @@ public $selectAll = false;
         }
     }
 
-    public function updateStatus(FlasherInterface $flasher)
+    public function updateStatus()
     {
         $this->validate([
             'updatedStatus' => 'required|in:pending,overdue,completed',
@@ -152,15 +167,29 @@ public $selectAll = false;
         $milestone->update([
             'milestone_status' => $this->updatedStatus,
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Updated milestone status',
+            'description' => 'Milestone ID: '.$this->milestoneIdToUpdateStatus.' Status: '.$this->updatedStatus,
+            'ip_address' => request()->ip(),
+        ])->save();
 
         $this->showStatusModal = false;
-        $flasher->addSuccess('Milestone status updated successfully!');
+        flash()->addSuccess('Milestone status updated successfully!');
     }
 
     public function delete($milestoneId, FlasherInterface $flasher)
     {
         Milestone::destroy($milestoneId);
-        $flasher->addSuccess('Milestone deleted successfully!');
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Deleted a milestone',
+            'description' => 'Milestone ID: '.$milestoneId,
+            'ip_address' => request()->ip(),
+        ])->save();
+        flash()->addSuccess('Milestone deleted successfully!');
     }
 
     private function resetInputFields()

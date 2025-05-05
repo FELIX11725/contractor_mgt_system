@@ -4,6 +4,7 @@ namespace App\Livewire\Components;
 
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Milestone;
 use App\Models\ProjectType;
 use Flasher\Prime\FlasherInterface;
@@ -69,6 +70,13 @@ class AddProject extends Component
             'description' => 'Final phase of the project',
             'milestone_status' => 'pending',
         ]);
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->id(),
+            'action' => 'Created a new project',
+            'description' => 'Project: '.$this->project_name,
+            'ip_address' => request()->ip(),
+        ])->save();
     
         // Flash success message
         flash()->addSuccess('Project created successfully with default milestones!');

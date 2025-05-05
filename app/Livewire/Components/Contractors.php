@@ -5,6 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\User;
 use App\Models\staff;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Contractor;
 use Illuminate\Support\Str;
 use App\Mail\WelcomeNewUser;
@@ -112,7 +113,14 @@ class Contractors extends Component
             return;
         }
 
-       
+
+       //log the action
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'reactivate user account';
+        $auditlog->description = 'User account reactivated for staff ID: ' . $staffId;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
 
         // Here you would typically send a welcome email with the password
     }
