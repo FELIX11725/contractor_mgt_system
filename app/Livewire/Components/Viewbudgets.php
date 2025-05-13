@@ -5,6 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\Budget;
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use Livewire\WithPagination;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Flasher\Prime\FlasherInterface;
@@ -70,6 +71,13 @@ class ViewBudgets extends Component
         }
     
         $budget->delete();
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Deleted budget',
+            'description' => 'Budget ID: ' . $this->budgetId,
+            'ip_address' => request()->ip(),
+        ])->save();
         $this->showDeleteModal = false;
         flash()->addSuccess('Budget deleted successfully!');
     }
@@ -77,6 +85,13 @@ class ViewBudgets extends Component
 {
     $budget = Budget::findOrFail($id);
     $budget->update(['approved' => true]);
+    //log the action
+    Auditlog::create([
+        'user_id' => auth()->user()->id,
+        'action' => 'Approved budget',
+        'description' => 'Budget ID: ' . $id,
+        'ip_address' => request()->ip(),
+    ])->save();
     
     flash()->addSuccess('Budget approved successfully!');
 }
@@ -85,6 +100,13 @@ public function rejectBudget($id)
 {
     $budget = Budget::findOrFail($id);
     // We don't need to update the 'approved' field since we're just showing status in modal
+    //log the action
+    Auditlog::create([
+        'user_id' => auth()->user()->id,
+        'action' => 'Rejected budget',
+        'description' => 'Budget ID: ' . $id,
+        'ip_address' => request()->ip(),
+    ])->save();
     flash()->addWarning('Budget rejected!');
 }
 
@@ -105,6 +127,13 @@ public function rejectBudget($id)
         $this->selectedBudget->estimated_amount = $validated['selectedBudget']['estimated_amount'];
         
         $this->showEditModal = false;
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Updated budget',
+            'description' => 'Budget ID: ' . $this->selectedBudget->id,
+            'ip_address' => request()->ip(),
+        ])->save();
         flash()->addSuccess('Budget updated successfully!');
     }
 
@@ -135,6 +164,15 @@ public function rejectBudget($id)
             'currentProject' => $this->currentProject,
         ]);
 
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Downloaded budget report',
+            'description' => 'Budget report downloaded',
+            'ip_address' => request()->ip(),
+        ])->save();
+        flash()->addSuccess('Budget report downloaded successfully!');
+
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'budget-report.pdf');
@@ -156,6 +194,13 @@ public function rejectBudget($id)
             // Add estimated_amount if it exists in your form
             'phase_id' => $this->budgetPhaseId, // This should be the selected phase ID, not the project ID
         ]);
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Created budget',
+            'description' => 'Budget ID: ' . $budget->id,
+            'ip_address' => request()->ip(),
+        ])->save();
         
         // Show success message
         flash()->addSuccess('Budget created successfully!');

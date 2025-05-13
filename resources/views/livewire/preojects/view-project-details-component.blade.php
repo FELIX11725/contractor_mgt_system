@@ -338,7 +338,7 @@
                                     {{ $phase->status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
                                        ($phase->status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
                                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300') }}">
-                                    {{ ucfirst(str_replace('_', ' ', $phase->status)) }}
+                                    {{ ucfirst(str_replace('_', ' ', $phase->phase_status)) }}
                                 </span>
                             </div>
                         </div>
@@ -353,7 +353,7 @@
                                     <div class="p-5 bg-gray-50 border border-gray-200 rounded-lg transition-all hover:shadow-md dark:bg-gray-700 dark:border-gray-600">
                                         <div class="flex justify-between items-center flex-wrap md:flex-nowrap gap-2">
                                             <h5 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                                                {{ $milestone->name }}
+                                                {{ $milestone->milestone_name }}
                                                 <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-green-900 dark:text-green-300">Milestone</span>
                                             </h5>
                                             <div class="flex items-center gap-3">
@@ -364,10 +364,10 @@
                                                     Due: {{ \Carbon\Carbon::parse($milestone->due_date)->format('M d, Y') }}
                                                 </span>
                                                 <span class="text-xs font-medium px-2.5 py-1 rounded-full 
-                                                    {{ $milestone->status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                                       ($milestone->status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                                    {{ $milestone->milestone_status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                                                       ($milestone->milestone_status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
                                                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300') }}">
-                                                    {{ ucfirst(str_replace('_', ' ', $milestone->status)) }}
+                                                    {{ ucfirst(str_replace('_', ' ', $milestone->milestone_status)) }}
                                                 </span>
                                             </div>
                                         </div>
@@ -404,7 +404,7 @@
                                 <div class="p-5 bg-gray-50 border border-gray-200 rounded-lg transition-all hover:shadow-md dark:bg-gray-700 dark:border-gray-600">
                                     <div class="flex justify-between items-center flex-wrap md:flex-nowrap gap-2">
                                         <h5 class="text-lg font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                                            {{ $milestone->name }}
+                                            {{ $milestone->milestone_name }}
                                             <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full dark:bg-green-900 dark:text-green-300">Milestone</span>
                                         </h5>
                                         <div class="flex items-center gap-3">
@@ -414,11 +414,72 @@
                                                 </svg>
                                                 Due: {{ \Carbon\Carbon::parse($milestone->due_date)->format('M d, Y') }}
                                             </span>
-                                            <span class="text-xs font-medium px-2.5 py-1 rounded-full 
-                                                {{ $milestone->status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                                                   ($milestone->status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                            
+                                            <!-- Status Update Button -->
+                                            <button wire:click="openStatusModal({{ $milestone->id }})" 
+                                                class="text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1
+                                                {{ $milestone->milestone_status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                                                   ($milestone->milestone_status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
                                                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300') }}">
-                                                {{ ucfirst(str_replace('_', ' ', $milestone->status)) }}
+                                                {{ ucfirst(str_replace('_', ' ', $milestone->milestone_status)) }}
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                                update status
+                                            </button>
+                                            
+                                            <!-- Status Update Modal -->
+                                            <x-dialog-modal wire:model="showStatusModal">
+                                                <x-slot name="title">Update Milestone Status</x-slot>
+                                                <x-slot name="content">
+                                                    <div class="space-y-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Status</label>
+                                                            <div class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                                                                <span class="{{ 
+                                                                    $currentMilestoneStatus === 'completed' ? 'text-green-600 dark:text-green-400' : 
+                                                                    ($currentMilestoneStatus === 'in_progress' ? 'text-yellow-600 dark:text-yellow-400' : 
+                                                                    'text-gray-600 dark:text-gray-400') }}">
+                                                                    {{ ucfirst(str_replace('_', ' ', $currentMilestoneStatus)) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Status</label>
+                                                            <select wire:model="newStatus" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                                                <option value="pending">Pending</option>
+                                                                <option value="active">Active</option>
+                                                                <option value="50_complete">50% Complete</option>
+                                                                <option value="80_complete">80% Complete</option>
+                                                                <option value="95_complete">95% Complete</option>
+                                                                <option value="completed">Completed (100%)</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        @if(in_array($newStatus, ['50_complete', '80_complete', '95_complete', 'completed']))
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Completion Date</label>
+                                                            <input type="date" wire:model="completionDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </x-slot>
+                                                <x-slot name="footer">
+                                                    <button wire:click="closeStatusModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500">
+                                                        Cancel
+                                                    </button>
+                                                    <button wire:click="updateMilestoneStatus" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                                                        Update Status
+                                                    </button>
+                                                </x-slot>
+                                            </x-dialog-modal>
+
+                                            <span class="text-xs font-medium px-2.5 py-1 rounded-full 
+                                                {{ $milestone->milestone_status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
+                                                   ($milestone->milestone_status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
+                                                   'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300') }}">
+                                                {{ ucfirst(str_replace('_', ' ', $milestone->milestone_status)) }}
                                             </span>
                                         </div>
                                     </div>
@@ -538,99 +599,365 @@
 </div> --}}
 @elseif ($activeTab == 'ProjectProgressTab')
 <div>
-<div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        Project Progress
-    </h2>
+    <div class="p-6 bg-white rounded-xl shadow-lg dark:bg-gray-800">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Project Progress Tracking
+        </h2>
 
-    <div class="space-y-6">
-        @foreach ($milestones as $milestone)
-            <!-- Milestone Progress Card -->
-            <div class="p-5 border border-gray-200 rounded-xl bg-gray-50 shadow-sm transition-all hover:shadow-md dark:bg-gray-700 dark:border-gray-600">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-semibold text-lg text-gray-800 dark:text-gray-200">{{ $milestone['name'] }}</h3>
-                    <div class="py-1 px-3 bg-blue-100 text-blue-700 text-sm font-medium rounded-full dark:bg-blue-800/40 dark:text-blue-400">
-                        {{ $milestone['progress'] }}% Complete
+        <!-- Progress Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Total Milestones -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Milestones</p>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $totalMilestones }}</h3>
+                    </div>
+                    <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
                     </div>
                 </div>
+            </div>
 
-                <!-- Progress Bar -->
-                <div class="relative pt-1">
-                    <div class="flex items-center justify-between mb-2">
-                        <div>
-                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full 
-                                {{ $milestone['progress'] < 30 ? 'text-red-600 bg-red-200 dark:bg-red-900/30 dark:text-red-400' : 
-                                ($milestone['progress'] < 70 ? 'text-yellow-600 bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400' : 
-                                'text-green-600 bg-green-200 dark:bg-green-900/30 dark:text-green-400') }}">
-                                {{ $milestone['progress'] < 30 ? 'Starting' : ($milestone['progress'] < 70 ? 'In Progress' : 'Near Complete') }}
-                            </span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-semibold inline-block text-blue-600 dark:text-blue-400">
-                                Due: {{ \Carbon\Carbon::parse($milestone['due_date'])->format('M d, Y') }}
-                            </span>
-                        </div>
+            <!-- Completed Milestones -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Completed</p>
+                        <h3 class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $completedMilestones }}</h3>
                     </div>
-                    <div class="overflow-hidden h-3 mb-4 text-xs flex rounded-full bg-gray-200 dark:bg-gray-600">
-                        <div style="width: {{ $milestone['progress'] }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center 
-                            {{ $milestone['progress'] < 30 ? 'bg-red-500' : 
-                            ($milestone['progress'] < 70 ? 'bg-yellow-500' : 
-                            'bg-green-500') }}">
-                        </div>
+                    <div class="p-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
                     </div>
                 </div>
             </div>
-            <!-- End Milestone Progress Card -->
-        @endforeach
 
-        <!-- Overall Project Progress -->
-        <div class="mt-10 p-6 border-2 border-blue-200 rounded-xl bg-blue-50 shadow-lg dark:bg-blue-900/20 dark:border-blue-800">
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Overall Project Progress
-            </h3>
-            
-            <div class="mb-2 flex justify-between items-center">
-                <div class="font-medium text-gray-700 dark:text-gray-300">Project Completion</div>
-                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $overallProgress }}%</div>
-            </div>
-            
-            <div class="relative pt-1">
-                <div class="overflow-hidden h-6 mb-4 text-xs flex rounded-full bg-gray-200 dark:bg-gray-600">
-                    <div style="width: {{ $overallProgress }}%" class="shadow-md flex flex-col text-center whitespace-nowrap text-white justify-center rounded-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-500">
-                        <span class="font-bold text-xs">{{ $overallProgress }}%</span>
+            <!-- In Progress Milestones -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">In Progress</p>
+                        <h3 class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ $inProgressMilestones }}</h3>
+                    </div>
+                    <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
                 </div>
             </div>
-            
-            <div class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 mt-2">
-                <div>Started</div>
-                <div>In Progress</div>
-                <div>Complete</div>
-            </div>
-            <div class="grid grid-cols-3 gap-2 mt-4">
-                <div class="text-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-                    {{-- <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ count(array_filter($milestones, function($m) { return $m['progress'] > 0; })) }}</div> --}}
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Tasks Started</div>
-                </div>
-                <div class="text-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-                    {{-- <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ count(array_filter($milestones, function($m) { return $m['progress'] > 0 && $m['progress'] < 100; })) }}</div> --}}
-                    <div class="text-xs text-gray-500 dark:text-gray-400">In Progress</div>
-                </div>
-                <div class="text-center p-3 bg-white rounded-lg border border-gray-200 shadow-sm dark:bg-gray-700 dark:border-gray-600">
-                    {{-- <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ count(array_filter($milestones, function($m) { return $m['progress'] == 100; })) }}</div> --}}
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Completed</div>
+
+            <!-- Pending Milestones -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-600">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
+                        <h3 class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ $pendingMilestones }}</h3>
+                    </div>
+                    <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Progress Chart -->
+        <div class="mb-8 p-6 bg-white dark:bg-gray-700 rounded-xl shadow border border-gray-200 dark:border-gray-600">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Milestone Completion</h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Filter:</span>
+                    <select wire:model="progressFilter" class="text-sm border-gray-300 rounded-md shadow-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300">
+                        <option value="all">All Milestones</option>
+                        <option value="completed">Completed Only</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="h-64">
+                <canvas 
+                    id="progressChart" 
+                    wire:ignore
+                    x-data="{
+                        chart: null,
+                        init() {
+                            const ctx = this.$el.getContext('2d');
+                            this.chart = new Chart(ctx, {
+                                type: 'bar',
+                                data: @js($chartData),
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            ticks: {
+                                                precision: 0
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+            
+                            // Listen for Livewire events to update the chart
+                            Livewire.on('milestoneUpdated', () => {
+                                this.chart.data.datasets[0].data = @js($chartData['datasets'][0]['data']);
+                                this.chart.update();
+                            });
+                        }
+                    }"
+                ></canvas>
+            </div>
+        </div>
+
+        <!-- Milestone Progress Table -->
+        <div class="overflow-hidden rounded-lg shadow border border-gray-200 dark:border-gray-600">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Milestone</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Progress</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Due Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+                    @foreach($filteredMilestones as $milestone)
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="font-medium text-gray-900 dark:text-white">{{ $milestone->milestone_name }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $milestone->phase ? $milestone->phase->name : 'Project Level' }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $statusColor = match($milestone->milestone_status) {
+                                    'completed' => 'green',
+                                    'in_progress' => 'yellow',
+                                    default => 'gray'
+                                };
+                            @endphp
+                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-800 dark:bg-{{ $statusColor }}-900/30 dark:text-{{ $statusColor }}-400">
+                                {{ ucfirst(str_replace('_', ' ', $milestone->milestone_status)) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $progress = match($milestone->milestone_status) {
+                                    'pending' => 0,
+                                    'active' => 10,
+                                    '50_complete' => 50,
+                                    '80_complete' => 80,
+                                    '95_complete' => 95,
+                                    'completed' => 100,
+                                    default => 0
+                                };
+                            @endphp
+                            <div class="flex items-center">
+                                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 mr-2">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $progress }}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">{{ $progress }}%</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {{ \Carbon\Carbon::parse($milestone->due_date)->format('M d, Y') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button wire:click="openStatusModal({{ $milestone->id }})" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
+                                Update Status
+                            </button>
+                            {{-- <button wire:click="openDetailsModal({{ $milestone->id }})" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
+                                Details
+                            </button> --}}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Overall Project Progress -->
+       <!-- Overall Project Progress Section -->
+<div class="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl shadow border border-blue-200 dark:border-blue-800">
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
+    
+    <!-- Progress Bar Section -->
+<div class="mb-4">
+    <div class="flex justify-between items-center mb-1">
+        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Completion</span>
+        <!-- Dynamic Percentage (Updates when milestones change) -->
+        <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
+            {{ $overallProgress }}%
+        </span>
+    </div>
+    <!-- Progress Bar (Width adjusts automatically) -->
+    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4">
+        <div 
+            class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-300" 
+            style="width: {{ $overallProgress }}%"
+            wire:ignore 
+            x-data
+            x-init="setTimeout(() => {
+                $el.style.width = '{{ $overallProgress }}%';
+            }, 1000)" 
+        ></div>
     </div>
 </div>
+    
+    <!-- Project status badge -->
+   <!-- Project Status Badge -->
+<div class="mt-4">
+    <span class="px-3 py-1 text-sm font-semibold rounded-full 
+        {{ $project->project_status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 
+           ($project->project_status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+           'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400') }}">
+        {{ ucfirst(str_replace('_', ' ', $project->project_status)) }}
+    </span>
+</div>
+</div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <x-dialog-modal wire:model="showStatusModal">
+        <x-slot name="title">Update Milestone Status</x-slot>
+        <x-slot name="content">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Milestone</label>
+                    <div class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md font-medium">
+                        {{ $currentMilestoneName ?? '' }}
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Status</label>
+                    <div class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                        <span class="{{ 
+                            $currentMilestoneStatus === 'completed' ? 'text-green-600 dark:text-green-400' : 
+                            ($currentMilestoneStatus === 'in_progress' ? 'text-yellow-600 dark:text-yellow-400' : 
+                            'text-gray-600 dark:text-gray-400') }}">
+                            {{ ucfirst(str_replace('_', ' ', $currentMilestoneStatus ?? '')) }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Update Status To</label>
+                    <select wire:model="newStatus" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                        <option value="pending">Pending</option>
+                        <option value="active">Active</option>
+                        <option value="50_complete">50% Complete</option>
+                        <option value="80_complete">80% Complete</option>
+                        <option value="95_complete">95% Complete</option>
+                        <option value="completed">Completed (100%)</option>
+                    </select>
+                </div>
+                
+                @if(in_array($newStatus, ['50_complete', '80_complete', '95_complete', 'completed']))
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Completion Date</label>
+                    <input type="date" wire:model="completionDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                </div>
+                @endif
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                    <textarea wire:model="statusNotes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"></textarea>
+                </div>
+            </div>
+        </x-slot>
+        <x-slot name="footer">
+            <button wire:click="closeStatusModal" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 mr-4 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500">
+                Cancel
+            </button>
+            <button wire:click="updateMilestoneStatus" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+                Update Status
+            </button>
+        </x-slot>
+    </x-dialog-modal>
 </div>
 @endif
 </div>
 </div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('livewire:load', function() {
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const progressChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Active', '50% Complete', '80% Complete', '95% Complete', 'Completed'],
+                datasets: [{
+                    label: 'Milestones',
+                    data: [
+                        @this.pendingMilestones,
+                        @this.project.milestones->where('milestone_status', 'active')->count(),
+                        @this.project.milestones->where('milestone_status', '50_complete')->count(),
+                        @this.project.milestones->where('milestone_status', '80_complete')->count(),
+                        @this.project.milestones->where('milestone_status', '95_complete')->count(),
+                        @this.completedMilestones
+                    ],
+                    backgroundColor: [
+                        '#6B7280',
+                        '#F59E0B',
+                        '#3B82F6',
+                        '#3B82F6',
+                        '#3B82F6',
+                        '#10B981'
+                    ],
+                    borderColor: [
+                        '#6B7280',
+                        '#F59E0B',
+                        '#3B82F6',
+                        '#3B82F6',
+                        '#3B82F6',
+                        '#10B981'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        Livewire.on('milestoneUpdated', () => {
+            progressChart.data.datasets[0].data = [
+                @this.pendingMilestones,
+                @this.project.milestones->where('milestone_status', 'active')->count(),
+                @this.project.milestones->where('milestone_status', '50_complete')->count(),
+                @this.project.milestones->where('milestone_status', '80_complete')->count(),
+                @this.project.milestones->where('milestone_status', '95_complete')->count(),
+                @this.completedMilestones
+            ];
+            progressChart.update();
+        });
+    });
+</script>
+@endpush
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+@endpush

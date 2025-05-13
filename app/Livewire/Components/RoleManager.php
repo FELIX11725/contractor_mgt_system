@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\Auditlog;
 use App\Models\Role;
 use Livewire\Component;
 use App\Models\Permission;
@@ -85,6 +86,12 @@ class RoleManager extends Component
         $this->modalTitle = 'Edit Role: ' . $role->name;
         $this->editMode = true;
         $this->showModal = true;
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'edit_role',
+            'description' => 'Edited role: ' . $role->name,
+        ]);
         flash()->addInfo('Editing role: ' . $role->name);
     }
 
@@ -106,6 +113,12 @@ class RoleManager extends Component
         }
 
         $role->delete();
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'delete_role',
+            'description' => 'Deleted role: ' . $role->name,
+        ]);
         flash()->addSuccess( 'Role deleted successfully!');
         $this->confirmingDelete = false;
     }
@@ -144,6 +157,12 @@ class RoleManager extends Component
 
         $this->showModal = false;
         $this->resetForm();
+        //log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => $this->editMode ? 'update_role' : 'create_role',
+            'description' => $this->editMode ? 'Updated role: ' . $role->name : 'Created role: ' . $role->name,
+        ]);
         
         flash()->addSuccess( $this->editMode ? 'Role updated successfully!' : 'Role created successfully!');
     }

@@ -5,6 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\Expense;
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\BudgetItem;
 use Illuminate\Support\Facades\DB;
 use App\Models\ExpenseCategoryItem;
@@ -98,6 +99,15 @@ class AddExpense extends Component
         $this->reset(['expenses', 'project', 'budget']);
 
         $this->date_of_pay = date("Y-m-d");
+
+        //update audit log dont use dispatchbrowserevent
+        $auditLog = new Auditlog();
+        $auditLog->action = 'create expense';
+        $auditLog->description = 'Created a new expense';
+        $auditLog->user_id = auth()->id();
+        $auditLog->ip_address = request()->ip();
+        $auditLog->save();
+        // Optionally, you can also use the Auditlog model to log the action
         // Show a success message
         flash()->addSuccess('Expenses saved successfully!');
     }

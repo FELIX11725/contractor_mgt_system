@@ -5,6 +5,7 @@ namespace App\Livewire\Components;
 use App\Models\User;
 use App\Models\Staff;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Contractor;
 use Illuminate\Support\Str;
 use App\Mail\WelcomeNewUser;
@@ -108,6 +109,13 @@ class AddContractor extends Component
         }
 
         $this->reset();
+        //update audit log
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'create contractor';
+        $auditlog->description = 'Created a new contractor: ' . $this->first_name . ' ' . $this->last_name;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
 
         flash()->addSuccess('Staff member added successfully.');
         return redirect()->route('contractors');

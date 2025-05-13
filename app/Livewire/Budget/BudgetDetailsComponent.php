@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Budget;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Budget;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\BudgetItem;
 use Livewire\WithPagination;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\ExpenseCategoryItem;
 
 class BudgetDetailsComponent extends Component
@@ -112,7 +113,12 @@ class BudgetDetailsComponent extends Component
             'quantity' => $this->editCategoryQuantity,
             'estimated_amount' => $this->editCategoryAmount,
         ]);
-        //flash message
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Updated budget item',
+            'description' => 'Budget Item ID: ' . $this->editBudgetItemId,
+        ])->save();
 
 
 
@@ -139,6 +145,14 @@ class BudgetDetailsComponent extends Component
         'budget' => $budget,
         'budgetItems' => $budgetItems
     ])->setPaper('a4', 'portrait');
+    
+    //log the action
+    Auditlog::create([
+        'user_id' => auth()->user()->id,
+        'action' => 'Exported budget details to PDF',
+        'description' => 'Budget ID: ' . $this->budget->id,
+    ])->save();
+
 
     return response()->streamDownload(
         fn () => print($pdf->output()),
@@ -195,6 +209,12 @@ class BudgetDetailsComponent extends Component
         ]);
 
         $this->closeNewBudgetItemModal();
+        // Log the action
+        Auditlog::create([
+            'user_id' => auth()->user()->id,
+            'action' => 'Created budget item',
+            'description' => 'Budget Item ID: ' . $this->budget->id,
+        ])->save();
 
         flash()->addSuccess('Budget Item Added');
     }

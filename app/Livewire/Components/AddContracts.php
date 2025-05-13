@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\Staff; 
 use App\Models\Project;
 use Livewire\Component;
+use App\Models\Auditlog;
 use App\Models\Contract;
-use App\Models\Staff; 
 use App\Models\ContractType;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Flasher\Prime\FlasherInterface;
+use Illuminate\Support\Facades\Storage;
 
 class AddContracts extends Component
 {
@@ -110,6 +111,13 @@ class AddContracts extends Component
                 // ]);
             }
         }
+        //update audit log
+        $auditlog = new Auditlog();
+        $auditlog->user_id = auth()->id();
+        $auditlog->action = 'create contract';
+        $auditlog->description = 'Created a new contract: ' . $this->description;
+        $auditlog->ip_address = request()->ip();
+        $auditlog->save();
 
         flash()->addSuccess('Contract created successfully.');
         return redirect()->route('contracts');

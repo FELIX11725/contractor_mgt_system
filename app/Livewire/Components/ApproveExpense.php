@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Components;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Expense;
-use App\Models\ExpenseCategoryItem;
+use Livewire\Component;
+use App\Models\Auditlog;
+use Livewire\Attributes\Url;
+use Livewire\WithPagination;
 use App\Models\PaymentMethod;
 use App\Models\ExpenseApproval;
-use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Url;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ExpenseCategoryItem;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ApproveExpense extends Component
@@ -113,6 +114,13 @@ class ApproveExpense extends Component
         Storage::disk('public')->put($filename, $pdf->output());
         
         $this->currentInvoiceUrl = Storage::url($filename);
+        //log the action
+        Auditlog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Generated invoice for expense',
+            'description' => 'Invoice URL: ' . $this->currentInvoiceUrl,
+            'ip_address' => request()->ip(),
+        ])->save();
     }
 
     public function approveExpense($expenseId)
@@ -136,6 +144,13 @@ class ApproveExpense extends Component
             'comment' => 'Approved by ' . Auth::user()->name,
         ]
     );
+    //log the action
+    Auditlog::create([
+        'user_id' => Auth::id(),
+        'action' => 'Approved expense',
+        'description' => 'Expense ID: ' . $expenseId,
+        'ip_address' => request()->ip(),
+    ])->save();
 
     flash()->addInfo('Expense approved successfully.');
 }
@@ -154,6 +169,7 @@ class ApproveExpense extends Component
         fn () => print($pdf->output()),
         "invoice_{$expense->id}_" . now()->format('Ymd') . ".pdf"
     );
+    
 }
 
     public function declineExpense($expenseId)
@@ -177,6 +193,13 @@ class ApproveExpense extends Component
                 'comment' => 'Declined by ' . Auth::user()->name,
             ]
         );
+        //log the action
+        Auditlog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Declined expense',
+            'description' => 'Expense ID: ' . $expenseId,
+            'ip_address' => request()->ip(),
+        ])->save();
 
         flash()->addInfo('Expense declined successfully.');
     }

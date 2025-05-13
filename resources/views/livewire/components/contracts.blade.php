@@ -195,7 +195,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-semibold text-gray-900">
-                                                ${{ number_format($contract->total_amount, 2) }}
+                                                shs.{{ number_format($contract->total_amount, 2) }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">

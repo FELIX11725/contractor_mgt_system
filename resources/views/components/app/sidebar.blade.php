@@ -253,6 +253,7 @@
                                             class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Make Budget</span>
                                     </a>
                                 </li> --}}
+                               
                                 <li class="mb-1 last:mb-0">
                                     <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('viewbudgets')) {{ '!text-indigo-500' }} @endif"
                                         href="{{ route('viewbudgets') }}">
@@ -341,9 +342,9 @@
 
                     {{-- busineess mgt --}}
                     @if (Auth::user()->is_admin)
-                        <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if (in_array(Request::segment(1), ['businsess'])) {{ 'bg-slate-900' }} @endif"
-                            x-data="{ open: {{ in_array(Request::segment(1), ['businsess']) ? 1 : 0 }} }">
-                            <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if (in_array(Request::segment(1), ['businsess'])) {{ 'hover:text-slate-200' }} @endif"
+                        <li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if (in_array(Request::segment(1), ['business'])) {{ 'bg-slate-900' }} @endif"
+                            x-data="{ open: {{ in_array(Request::segment(1), ['business']) ? 1 : 0 }} }">
+                            <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if (in_array(Request::segment(1), ['business'])) {{ 'hover:text-slate-200' }} @endif"
                                 href="#0"
                                 @click.prevent="sidebarExpanded ? open = !open : sidebarExpanded = true">
                                 <div class="flex items-center justify-between">
@@ -355,7 +356,7 @@
                                     <!-- Icon -->
                                     <div
                                         class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
-                                        <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if (in_array(Request::segment(1), ['businsess'])) {{ 'rotate-180' }} @endif"
+                                        <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if (in_array(Request::segment(1), ['business'])) {{ 'rotate-180' }} @endif"
                                             :class="open ? 'rotate-180' : 'rotate-0'" viewBox="0 0 12 12">
                                             <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
                                         </svg>
@@ -363,11 +364,11 @@
                                 </div>
                             </a>
                             <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
-                                <ul class="pl-9 mt-1 @if (!in_array(Request::segment(1), ['businsess'])) {{ 'hidden' }} @endif"
+                                <ul class="pl-9 mt-1 @if (!in_array(Request::segment(1), ['business'])) {{ 'hidden' }} @endif"
                                     :class="open ? '!block' : 'hidden'">
                                     <li class="mb-1 last:mb-0">
-                                        <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('businsess.new')) {{ '!text-indigo-500' }} @endif"
-                                            href="{{ route('businsess.new') }}">
+                                        <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('business.new')) {{ '!text-indigo-500' }} @endif"
+                                            href="{{ route('business.new') }}">
                                             <span
                                                 class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">New Business</span>
                                         </a>
@@ -377,6 +378,66 @@
                             </div>
                         </li>
                     @endif
+                    <!-- Audit Logs -->
+<li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if (in_array(Request::segment(1), ['auditlogs'])) {{ 'bg-slate-900' }} @endif"
+x-data="{ open: {{ in_array(Request::segment(1), ['auditlogs']) ? 1 : 0 }} }">
+<a class="block text-slate-200 hover:text-white truncate transition duration-150 @if (in_array(Request::segment(1), ['auditlogs'])) {{ 'hover:text-slate-200' }} @endif"
+    href="#0" @click.prevent="sidebarExpanded ? open = !open : sidebarExpanded = true">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                fill="currentColor" class="bi bi-journal-check" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M10.854 6.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 8.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+            </svg>
+            <span
+                class="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Audit Logs</span>
+        </div>
+        <!-- Icon -->
+        <div
+            class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+            <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if (in_array(Request::segment(1), ['auditlogs'])) {{ 'rotate-180' }} @endif"
+                :class="open ? 'rotate-180' : 'rotate-0'" viewBox="0 0 12 12">
+                <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
+            </svg>
+        </div>
+    </div>
+</a>
+<div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
+    <ul class="pl-9 mt-1 @if (!in_array(Request::segment(1), ['auditlogs'])) {{ 'hidden' }} @endif"
+        :class="open ? '!block' : 'hidden'">
+        <li class="mb-1 last:mb-0">
+            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('auditlogs')) {{ '!text-indigo-500' }} @endif"
+                href="{{ route('auditlogs') }}">
+                <span
+                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">System Logs</span>
+            </a>
+        </li>
+        {{-- <li class="mb-1 last:mb-0">
+            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('user-activity')) {{ '!text-indigo-500' }} @endif"
+                href="{{ route('user-activity') }}">
+                <span
+                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">User Activity</span>
+            </a>
+        </li> --}}
+        {{-- <li class="mb-1 last:mb-0">
+            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('login-history')) {{ '!text-indigo-500' }} @endif"
+                href="{{ route('login-history') }}">
+                <span
+                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Login History</span>
+            </a>
+        </li> --}}
+        {{-- <li class="mb-1 last:mb-0">
+            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('security-alerts')) {{ '!text-indigo-500' }} @endif"
+                href="{{ route('security-alerts') }}">
+                <span
+                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Security Alerts</span>
+            </a>
+        </li> --}}
+    </ul>
+</div>
+</li>
                 </ul>
             </div>
         </div>
