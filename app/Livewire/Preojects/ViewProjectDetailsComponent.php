@@ -31,51 +31,190 @@ class ViewProjectDetailsComponent extends Component
     public $currentMilestoneStatus;
     public $newStatus = 'pending';
     public $completionDate;
+    public $currentMilestoneName;
+    public $statusNotes;
+    public $progressFilter = 'all';
+    protected $chartData = [];
 
-    public function openStatusModal($milestoneId)
+//     public function openStatusModal($milestoneId)
+// {
+//     $this->currentMilestoneId = $milestoneId;
+//     $milestone = Milestone::find($milestoneId);
+//     $this->currentMilestoneStatus = $milestone->milestone_status;
+//     $this->newStatus = $milestone->milestone_status;
+//     $this->showStatusModal = true;
+// }
+// public function closeStatusModal()
+// {
+//     $this->showStatusModal = false;
+//     $this->reset(['currentMilestoneId', 'currentMilestoneStatus', 'newStatus', 'completionDate']);
+// }
+public function getTotalMilestonesProperty()
 {
+    return $this->project->milestones->count();
+}
+
+public function getCompletedMilestonesProperty()
+{
+    return $this->project->milestones->where('milestone_status', 'completed')->count();
+}
+
+public function getInProgressMilestonesProperty()
+{
+    return $this->project->milestones->whereIn('milestone_status', ['active', '50_complete', '80_complete', '95_complete'])->count();
+}
+public function getPendingMilestonesProperty()
+{
+    return $this->project->milestones->where('milestone_status', 'pending')->count();
+}
+public function getFilteredMilestonesProperty()
+{
+    return $this->project->milestones
+        ->when($this->progressFilter === 'completed', fn($query) => $query->where('milestone_status', 'completed'))
+        ->when($this->progressFilter === 'in_progress', fn($query) => $query->whereIn('milestone_status', ['active', '50_complete', '80_complete', '95_complete']))
+        ->when($this->progressFilter === 'pending', fn($query) => $query->where('milestone_status', 'pending'));
+}
+// Computed property: Updates automatically when milestones change
+public function getOverallProgressProperty()
+{
+    if ($this->project->milestones->isEmpty()) {
+        return 0;
+    }
+
+    $totalWeight = $this->project->milestones->sum('weight');
+    $completedWeight = $this->project->milestones->sum(function ($milestone) {
+        return $this->getMilestoneProgress($milestone) * ($milestone->weight ?? 1);
+    });
+
+    $progress = ($totalWeight > 0) 
+        ? round(($completedWeight / $totalWeight) * 100) 
+        : 0;
+
+    // Ensure 100% if project is marked completed (even if milestones are not fully tracked)
+    return ($this->project->project_status === 'completed') ? 100 : $progress;
+}
+
+// Helper: Maps milestone status to a progress %
+protected function getMilestoneProgress($milestone)
+{
+    return match ($milestone->milestone_status) {
+        'pending'    => 0,
+        'active'     => 10,
+        '50_complete' => 50,
+        '80_complete' => 80,
+        '95_complete' => 95,
+        'completed'  => 100,
+        default      => 0,
+    };
+}
+public function openStatusModal($milestoneId)
+{
+    $milestone = Milestone::findOrFail($milestoneId);
     $this->currentMilestoneId = $milestoneId;
-    $milestone = Milestone::find($milestoneId);
-    $this->currentMilestoneStatus = $milestone->status;
-    $this->newStatus = $milestone->status;
+    $this->currentMilestoneName = $milestone->milestone_name;
+    $this->currentMilestoneStatus = $milestone->milestone_status;
+    $this->newStatus = $milestone->milestone_status;
+    $this->completionDate = $milestone->completion_date ?? now()->format('Y-m-d');
     $this->showStatusModal = true;
 }
 public function closeStatusModal()
 {
-    $this->showStatusModal = false;
-    $this->reset(['currentMilestoneId', 'currentMilestoneStatus', 'newStatus', 'completionDate']);
+    $this->reset([
+        'showStatusModal',
+        'currentMilestoneId',
+        'currentMilestoneName',
+        'currentMilestoneStatus',
+        'newStatus',
+        'completionDate',
+        'statusNotes'
+    ]);
 }
+
 public function updateMilestoneStatus()
 {
-    $validated = $this->validate([
+    // Validate input
+    $this->validate([
         'newStatus' => 'required|in:pending,active,50_complete,80_complete,95_complete,completed',
         'completionDate' => 'nullable|date|required_if:newStatus,50_complete,80_complete,95_complete,completed',
+        'statusNotes' => 'nullable|string|max:500',
     ]);
-    
-    $milestone = Milestone::find($this->currentMilestoneId);
-    
+
+    // Update the milestone
+    $milestone = Milestone::findOrFail($this->currentMilestoneId);
     $milestone->update([
-        'status' => $this->newStatus,
+        'milestone_status' => $this->newStatus,
         'completion_date' => in_array($this->newStatus, ['50_complete', '80_complete', '95_complete', 'completed']) 
             ? $this->completionDate 
             : null,
+        'notes' => $this->statusNotes,
     ]);
-    
-    $this->closeStatusModal();
+
+    // Refresh project data
+    $this->project = $this->project->fresh();
+
+    // Determine the new project status based on milestones
+    $milestones = $this->project->milestones;
+    $newProjectStatus = $this->calculateProjectStatus($milestones);
+
+    // Update the project status if it changed
+    if ($this->project->project_status !== $newProjectStatus) {
+        $this->project->update(['project_status' => $newProjectStatus]);
+        $this->project = $this->project->fresh(); // Refresh again
+    }
+
     // Log the action
     Auditlog::create([
         'user_id' => auth()->id(),
         'action' => 'Updated milestone status',
-        'description' => 'Milestone ID: '.$this->currentMilestoneId,
+        'description' => "Updated milestone '{$milestone->milestone_name}' to '{$this->newStatus}'",
         'ip_address' => request()->ip(),
-    ])->save();
-    flash()->addSuccess('Milestone status updated successfully!');
+    ]);
+
+    // Close modal and notify
+    $this->closeStatusModal();
+    flash()->addSuccess('message', 'Milestone status updated successfully!');
+
+    
 }
+
+/**
+ * Calculate the project status based on milestone statuses.
+ */
+protected function calculateProjectStatus($milestones)
+{
+    if ($milestones->isEmpty()) {
+        return 'pending'; // Default if no milestones exist
+    }
+
+    // Check if ALL milestones are completed
+    $allCompleted = $milestones->every(function ($milestone) {
+        return $milestone->milestone_status === 'completed';
+    });
+
+    if ($allCompleted) {
+        return 'completed';
+    }
+
+    // Check if ANY milestone is in progress (or partially complete)
+    $anyInProgress = $milestones->contains(function ($milestone) {
+        return in_array($milestone->milestone_status, ['active', '50_complete', '80_complete', '95_complete']);
+    });
+
+    if ($anyInProgress) {
+        return 'in_progress';
+    }
+
+    // Default: all pending
+    return 'pending';
+}
+
+
 
     public function mount($project)
 {
     $this->project = Project::findOrFail($project);
     $this->budgets = $this->fetchBudgets(); 
+    $this->generateChartData();
 }
 
     public function closeNewBudgetModal()
@@ -300,9 +439,38 @@ public function calculateOverallProgress()
 
     return $totalMilestones > 0 ? round(($completedMilestones / $totalMilestones) * 100) : 0;
 }
+protected function generateChartData()
+{
+    $this->chartData = [
+        'labels' => ['Pending', 'Active', '50% Complete', '80% Complete', '95% Complete', 'Completed'],
+        'datasets' => [
+            [
+                'label' => 'Milestones',
+                'data' => [
+                    $this->pendingMilestones,
+                    $this->project->milestones()->where('milestone_status', 'active')->count(),
+                    $this->project->milestones()->where('milestone_status', '50_complete')->count(),
+                    $this->project->milestones()->where('milestone_status', '80_complete')->count(),
+                    $this->project->milestones()->where('milestone_status', '95_complete')->count(),
+                    $this->completedMilestones
+                ],
+                'backgroundColor' => [
+                    '#6B7280', // gray
+                    '#F59E0B', // yellow
+                    '#3B82F6', // blue
+                    '#3B82F6', // blue
+                    '#3B82F6', // blue
+                    '#10B981'  // green
+                ],
+            ]
+        ]
+    ];
+}
+
 
 public function render()
 {
+    $this->generateChartData();
     // Fetch budgets
     $this->budgets = $this->fetchBudgets();
 
@@ -329,9 +497,15 @@ public function render()
 
     return view('livewire.preojects.view-project-details-component', [
         'timelineItems' => $timelineItems,
+        'totalMilestones' => $this->totalMilestones,
+        'completedMilestones' => $this->completedMilestones,
+        'inProgressMilestones' => $this->inProgressMilestones,
+        'pendingMilestones' => $this->pendingMilestones,
+        'filteredMilestones' => $this->filteredMilestones,
         'overallProgress' => $overallProgress,
         'budgets' => $this->budgets,
-        'milestones' => $milestones, // Add this line
+        'milestones' => $milestones,
+        'chartData' => $this->chartData,
     ]);
 }
 }

@@ -20,6 +20,8 @@ class Milestone extends Model
         'due_date',
         'description',
         'milestone_status',
+        'completion_date',
+        'notes'
     ];
 
     protected static function boot()
