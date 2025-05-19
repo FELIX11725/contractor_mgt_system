@@ -256,11 +256,13 @@
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
               <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                 <div>
-                  <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Project: {{ $projects->name }}</h3>
+
+                  <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Project: {{ $projects->project_name }}</h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">Started: {{ $projects->start_date }}</p>
                 </div>
                 <div class="flex items-center gap-3">
-                  <span class="px-3 py-1 text-xs font-medium text-white bg-{{ $projects->status_color }}-600 rounded-full">{{ $projects->status }}</span>
+                  <span class="px-3 py-1 text-xs font-medium text-white bg-{{ $projects->status_color }}-600 rounded-full">{{ $projects->project_status }}</span>
+
                   <span class="px-3 py-1 text-xs font-medium {{ $projects->is_on_schedule ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' }} rounded-full">{{ $projects->is_on_schedule ? 'On Schedule' : 'Delayed' }}</span>
                 </div>
               </div>
@@ -321,7 +323,9 @@
                       <div id="project{{ $projects->id }}Chart" class="h-full"></div>
                       <span
                         class="absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full {{ $projects->progress_trend > 0 ? 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500' : 'bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-500' }} px-3 py-1 text-xs font-medium"
-                        >{{ $projects->progress_trend > 0 ? '+' : '' }}{{ $projects->progress_trend }}%</span>
+
+                        >{{ $projects->progress_trend > 0 ? '+' : '' }}{{ $projects->progress_trend }} %</span>
+
                     </div>
                     <p
                       class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base"
@@ -479,11 +483,13 @@
                   <div class="flex items-start">
                     <div class="flex-shrink-0 h-12 w-12 rounded-full bg-{{ $milestone->status_color }}-100 dark:bg-{{ $milestone->status_color }}-900/50 flex items-center justify-center shadow-md">
                       <svg class="h-6 w-6 text-{{ $milestone->status_color }}-600 dark:text-{{ $milestone->status_color }}-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        @if($milestone->status === 'Completed')
+
+                        @if($milestone->milestone_status === 'Completed')
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        @elseif($milestone->status === 'In Progress')
+                        @elseif($milestone->milestone_status === 'In Progress')
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        @elseif($milestone->status === 'Delayed')
+                        @elseif($milestone->milestone_status === 'Delayed')
+
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         @else
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
