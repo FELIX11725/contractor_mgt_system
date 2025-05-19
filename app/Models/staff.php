@@ -16,4 +16,13 @@ class staff extends Model
     public function user(){
         return $this->hasOne(User::class, 'staff_id')->withTrashed();
     }
+   
+     public function documents()
+     {
+         return $this->hasMany(Document::class);
+     }
+        public function contractor()
+        {
+            return $this->hasOne(Contractor::class, 'staff_id');
+        }
 }

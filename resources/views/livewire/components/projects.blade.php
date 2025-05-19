@@ -211,6 +211,10 @@
                                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                                     Pending
                                                 </span>
+                                            @elseif($project->project_status === 'in_progress')
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                    Progress
+                                                </span>
                                             @else
                                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                                     Completed

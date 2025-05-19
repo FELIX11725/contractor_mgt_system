@@ -414,30 +414,48 @@ x-data="{ open: {{ in_array(Request::segment(1), ['auditlogs']) ? 1 : 0 }} }">
                     class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">System Logs</span>
             </a>
         </li>
-        {{-- <li class="mb-1 last:mb-0">
-            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('user-activity')) {{ '!text-indigo-500' }} @endif"
-                href="{{ route('user-activity') }}">
-                <span
-                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">User Activity</span>
-            </a>
-        </li> --}}
-        {{-- <li class="mb-1 last:mb-0">
-            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('login-history')) {{ '!text-indigo-500' }} @endif"
-                href="{{ route('login-history') }}">
-                <span
-                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Login History</span>
-            </a>
-        </li> --}}
-        {{-- <li class="mb-1 last:mb-0">
-            <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('security-alerts')) {{ '!text-indigo-500' }} @endif"
-                href="{{ route('security-alerts') }}">
-                <span
-                    class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Security Alerts</span>
-            </a>
-        </li> --}}
     </ul>
 </div>
 </li>
+{{-- income receipts --}}
+
+<li class="px-3 py-2 rounded-sm mb-0.5 last:mb-0 @if (in_array(Request::segment(1), ['receipts'])) {{ 'bg-slate-900' }} @endif" x-data="{ open: {{ in_array(Request::segment(1), ['receipts']) ? 1 : 0 }} }">
+    <a class="block text-slate-200 hover:text-white truncate transition duration-150 @if (in_array(Request::segment(1), ['receipts'])) {{ 'hover:text-slate-200' }} @endif"
+        href="#0" @click.prevent="sidebarExpanded ? open = !open : sidebarExpanded = true">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                    fill="currentColor" class="bi bi-receipt" viewBox="0 0 16 16">
+                    <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .801.13l.5 1A.5.5 0 0 1 15 2v12a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .053-.224l.5-1a.5.5 0 0 1 .367-.27zm.217 1.338L2 2.118v11.382h12V2.118l-.137.274-.51.51-.353.353-.354.354-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.353-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.353-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.353-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.353-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354-.354.353-.354.354-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.353-.354.354-.353.354-.354.354-.354.354-.353.353-.354.354-.354.354-.354.353-.353.354-.354.354-.354.354-.353.354z"/>
+                </svg>
+                <span
+                    class="text-sm font-medium ml-3 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Income Receipts</span>
+            </div>
+            <!-- Icon -->
+            <div
+                class="flex shrink-0 ml-2 lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">
+                <svg class="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400 @if (in_array(Request::segment(1), ['receipts'])) {{ 'rotate-180' }} @endif"
+                    :class="open ? 'rotate-180' : 'rotate-0'" viewBox="0 0 12 12">
+                    <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
+                </svg>
+            </div>
+        </div>
+    </a>
+    <div class="lg:hidden lg:sidebar-expanded:block 2xl:block">
+        <ul class="pl-9 mt-1 @if (!in_array(Request::segment(1), ['receipts'])) {{ 'hidden' }} @endif"
+            :class="open ? '!block' : 'hidden'">
+            <li class="mb-1 last:mb-0">
+                <a class="block text-slate-400 hover:text-slate-200 transition duration-150 truncate @if (Route::is('receipts')) {{ '!text-indigo-500' }} @endif"
+                    href="{{ route('receipts') }}">
+                    <span
+                        class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">Receipts</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+
                 </ul>
             </div>
         </div>

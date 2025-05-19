@@ -793,26 +793,33 @@
 <div class="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl shadow border border-blue-200 dark:border-blue-800">
     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
     
-    <!-- Progress Bar Section -->
+
+<!-- Progress Bar Section -->
 <div class="mb-4">
     <div class="flex justify-between items-center mb-1">
         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Completion</span>
-        <!-- Dynamic Percentage (Updates when milestones change) -->
         <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
             {{ $overallProgress }}%
         </span>
     </div>
-    <!-- Progress Bar (Width adjusts automatically) -->
-    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4">
+    <!-- Animated Progress Bar -->
+    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4"
+         x-data="{ progress: {{ $overallProgress }} }"
+         x-init="
+            Livewire.on('milestoneUpdated', () => {
+                // Force Livewire to recompute overallProgress
+                Livewire.emit('syncProgress');
+                // Small delay to ensure Livewire has updated
+                setTimeout(() => {
+                    progress = @this.overallProgress;
+                }, 100);
+            });
+         "
+         wire:ignore>
         <div 
-            class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-300" 
-            style="width: {{ $overallProgress }}%"
-            wire:ignore 
-            x-data
-            x-init="setTimeout(() => {
-                $el.style.width = '{{ $overallProgress }}%';
-            }, 1000)" 
-        ></div>
+            class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-1000 ease-out"
+            x-bind:style="'width: ' + progress + '%'">
+        </div>
     </div>
 </div>
     

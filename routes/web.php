@@ -11,16 +11,17 @@ use App\Http\Controllers\ManagePlans\ViewplansController;
 use App\Livewire\Expenses\ExpenseCategoryDetailsComponent;
 use App\Http\Controllers\BudgetManagement\BudgetController;
 use App\Http\Controllers\ManageExpenses\ExpensesController;
+use App\Http\Controllers\ManageExpenses\ReceiptsController;
 use App\Http\Controllers\ManageStaff\RoleManagerController;
 use App\Http\Controllers\ManagePlans\ProjectplansController;
 use App\Http\Controllers\ManageContracts\ContractsController;
 use App\Http\Controllers\ManageExpenses\AddExpenseController;
 use App\Http\Controllers\ManageExpenses\ExpensetypeController;
+
 use App\Http\Controllers\ManageExpenses\ViewExpenseController;
-
 use App\Http\Controllers\ManageMilestones\MilestoneController;
-use App\Http\Controllers\ProjectManagement\ProjectsController;
 
+use App\Http\Controllers\ProjectManagement\ProjectsController;
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
 use App\Http\Controllers\ManageContracts\AddContractController;
 use App\Http\Controllers\ProjectManagement\AddProjectController;
@@ -59,7 +60,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/addcontractor',[AddContractorController::class, 'index'])->name('addcontractor');
         Route::get('/compliance-records', [ComplianceRecordsController::class, 'index'])->name('compliance-records');
         Route::get('/{staff}/profile', [ContractorsController::class, 'showProfile'])->name('contractors.profile');
-        // Route::get('/{staff}/profile/edit', [AddContractorController::class, 'edit'])->name('contractors.profile.edit');
+         Route::put('/{staff}/update', [ContractorsController::class, 'updateProfile'])->name('contractors.update-profile');
+    Route::post('/{staff}/documents', [ContractorsController::class, 'uploadDocument'])->name('contractors.upload-document');
+    Route::get('/documents/{document}/download', [ContractorsController::class, 'downloadDocument'])->name('contractors.download-document');
+    Route::delete('/documents/{document}', [ContractorsController::class, 'deleteDocument'])->name('contractors.delete-document');
        
         Route::get('/role-manager', [RoleManagerController::class, 'index'])->name('role-manager');
     });
@@ -78,6 +82,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/add-expense', [AddExpenseController::class, 'index'])->name('add-expense');
         Route::get('/view-expense', [ViewExpenseController::class, 'index'])->name('view-expense');
         Route::get('/approve-expense', [ApproveExpenseController::class, 'index'])->name('approve-expense');
+        
     });
     //budgets
     Route::prefix('budgets')->group(function (){
@@ -85,6 +90,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/viewbudgets',[ViewbudgetController::class, 'index'])->name('viewbudgets');
         Route::get('/budgets/{budget}/details', BudgetDetailsComponent::class )->name('budgets.details');
     });
+    Route::get('/receipts', [ReceiptsController::class, 'index'])->name('receipts');
 
     Route::get('/business/create', AddNewBusinessFormComponent::class)->name('business.new');
     //auditlogs

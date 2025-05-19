@@ -36,19 +36,7 @@ class ViewProjectDetailsComponent extends Component
     public $progressFilter = 'all';
     protected $chartData = [];
 
-//     public function openStatusModal($milestoneId)
-// {
-//     $this->currentMilestoneId = $milestoneId;
-//     $milestone = Milestone::find($milestoneId);
-//     $this->currentMilestoneStatus = $milestone->milestone_status;
-//     $this->newStatus = $milestone->milestone_status;
-//     $this->showStatusModal = true;
-// }
-// public function closeStatusModal()
-// {
-//     $this->showStatusModal = false;
-//     $this->reset(['currentMilestoneId', 'currentMilestoneStatus', 'newStatus', 'completionDate']);
-// }
+protected $listeners = ['milestoneUpdated', 'syncProgress' => '$refresh'];
 public function getTotalMilestonesProperty()
 {
     return $this->project->milestones->count();
@@ -81,7 +69,7 @@ public function getOverallProgressProperty()
         return 0;
     }
 
-    $totalWeight = $this->project->milestones->sum('weight');
+    $totalWeight = $this->project->milestones->sum('weight') ?: $this->project->milestones->count();
     $completedWeight = $this->project->milestones->sum(function ($milestone) {
         return $this->getMilestoneProgress($milestone) * ($milestone->weight ?? 1);
     });
@@ -91,10 +79,9 @@ public function getOverallProgressProperty()
         : 0;
 
     // Ensure 100% if project is marked completed (even if milestones are not fully tracked)
-    return ($this->project->project_status === 'completed') ? 100 : $progress;
+    return ($this->project->project_status === 'completed') ? 100 : min($progress, 100);
 }
 
-// Helper: Maps milestone status to a progress %
 protected function getMilestoneProgress($milestone)
 {
     return match ($milestone->milestone_status) {
@@ -107,6 +94,8 @@ protected function getMilestoneProgress($milestone)
         default      => 0,
     };
 }
+
+
 public function openStatusModal($milestoneId)
 {
     $milestone = Milestone::findOrFail($milestoneId);
@@ -171,7 +160,9 @@ public function updateMilestoneStatus()
     ]);
 
     // Close modal and notify
+    // $this->emitSelf('syncProgress');
     $this->closeStatusModal();
+    $this->dispatch('milestoneUpdated');
     flash()->addSuccess('message', 'Milestone status updated successfully!');
 
     

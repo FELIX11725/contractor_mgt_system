@@ -42,6 +42,12 @@
                         
                         <!-- Action Buttons -->
                         <div class="flex space-x-3">
+                            <button x-data @click="$dispatch('open-modal', 'edit-profile')" class="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center rounded-lg px-3 py-1.5 text-sm transition-colors shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                Edit Profile
+                            </button>
                             <a href="{{ route('contractors') }}" class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 flex items-center rounded-lg px-3 py-1.5 text-sm transition-colors shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -191,47 +197,42 @@
                         </div>
                         <div class="px-6 py-4">
                             <div class="space-y-3">
-                                <div class="flex items-center justify-between">
+                                @forelse($staff->documents as $document)
+                                <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 p-2 rounded">
                                     <div class="flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
-                                        <span class="text-slate-700 dark:text-slate-300">Contract.pdf</span>
+                                        <div>
+                                            <span class="text-slate-700 dark:text-slate-300 block">{{ $document->name }}</span>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">
+                                                Issued: {{ $document->issue_date->format('M d, Y') }} | 
+                                                @if($document->expiry_date)
+                                                    Expires: {{ $document->expiry_date->format('M d, Y') }}
+                                                @else
+                                                    No expiry
+                                                @endif
+                                            </span>
+                                        </div>
                                     </div>
-                                    <button class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        <span class="text-slate-700 dark:text-slate-300">ID_Card.pdf</span>
+                                    <div class="flex space-x-2">
+                                        <a href="{{ route('contractors.download-document', $document) }}" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        </a>
+                                        <button @click="$dispatch('open-modal', { id: 'confirm-document-delete', documentId: {{ $document->id }} })" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <button class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                    </button>
                                 </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                        <span class="text-slate-700 dark:text-slate-300">Certification.pdf</span>
-                                    </div>
-                                    <button class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                        </svg>
-                                    </button>
-                                </div>
+                                @empty
+                                <p class="text-slate-500 dark:text-slate-400 text-center py-4">No documents uploaded yet</p>
+                                @endforelse
                             </div>
-                            <button class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition">
+                            <button @click="$dispatch('open-modal', 'upload-document')" class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
@@ -244,12 +245,163 @@
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <x-dialog-modals wire:model="editProfileModal" id="edit-profile" maxWidth="7xl">
+        <x-slot name="title">Edit Profile</x-slot>
+        
+        <x-slot name="content">
+            <form id="editProfileForm" method="POST" action="{{ route('contractors.update-profile', $staff) }}">
+                @csrf
+                @method('PUT')
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" id="first_name" value="{{ $staff->first_name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" id="last_name" value="{{ $staff->last_name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" id="email" value="{{ $staff->email }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone <span class="text-red-500">*</span></label>
+                        <input type="text" name="phone" id="phone" value="{{ $staff->phone }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="position" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Position <span class="text-red-500">*</span></label>
+                        <input type="text" name="position" id="position" value="{{ $staff->position }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address <span class="text-red-500">*</span></label>
+                        <input type="text" name="address" id="address" value="{{ $staff->address }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="emergency_contact" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Emergency Contact</label>
+                        <input type="text" name="emergency_contact" id="emergency_contact" value="{{ $staff->emergency_contact }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="tax_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tax ID</label>
+                        <input type="text" name="tax_id" id="tax_id" value="{{ $staff->tax_id }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="bank_account" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bank Account</label>
+                        <input type="text" name="bank_account" id="bank_account" value="{{ $staff->bank_account }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                </div>
+            </form>
+        </x-slot>
+        
+      <x-slot name="footer">
+    <div class="flex justify-end gap-4">
+        <button type="button" 
+            @click="$dispatch('close-modal', 'edit-profile')" 
+            class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-white dark:border-gray-600">
+            Cancel
+        </button>
+        <button type="submit" form="editProfileForm" 
+            class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Save Changes
+        </button>
+    </div>
+</x-slot>
+
+    </x-dialog-modals>
+
+    <!-- Upload Document Modal -->
+   <x-dialog-modals wire:model="uploadDocumentModal" id="upload-document" maxWidth="7xl">
+    <x-slot name="title">Upload Document</x-slot>
+    
+    <x-slot name="content">
+        <form id="uploadDocumentForm" method="POST" action="{{ route('contractors.upload-document', $staff) }}" enctype="multipart/form-data">
+            @csrf
+            <div class="space-y-4">
+                <div>
+                    <label for="document_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Document Type <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="document_type" id="document_type" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+                <div>
+                    <label for="document" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Document File <span class="text-red-500">*</span>
+                    </label>
+                    <input type="file" name="document" id="document" required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-gray-600 dark:file:text-white">
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">PDF, DOC, DOCX, JPG, PNG (Max: 2MB)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="issue_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Issue Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="issue_date" id="issue_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="expiry_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Expiry Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="date" name="expiry_date" id="expiry_date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </x-slot>
+    
+    <x-slot name="footer">
+        <div class="flex justify-end gap-4">
+            <button type="button" 
+                @click="$dispatch('close-modal', 'upload-document')" 
+                class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-white dark:border-gray-600">
+                Cancel
+            </button>
+            <button type="submit" form="uploadDocumentForm" 
+                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Upload Document
+            </button>
+        </div>
+    </x-slot>
+
+</x-dialog-modals>
+
+
+    <!-- Delete Document Confirmation Modal -->
+   <x-dialog-modals wire:model="confirmDocumentDeletion" id="confirm-document-delete">
+    <x-slot name="title">Delete Document</x-slot>
+    
+    <x-slot name="content">
+        <p class="text-gray-600 dark:text-gray-400">Are you sure you want to delete this document?</p>
+        <form id="deleteDocumentForm" method="POST" action="">
+            @csrf
+            @method('DELETE')
+        </form>
+    </x-slot>
+    
+    <x-slot name="footer">
+        <button type="button" @click="$dispatch('close-modal', 'confirm-document-delete')" class="mr-2 inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-600 dark:text-white dark:border-gray-600">
+            Cancel
+        </button>
+        <button type="submit" form="deleteDocumentForm" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+            Delete Document
+        </button>
+    </x-slot>
+</x-dialog-modals>
+
     @push('scripts')
         <script>
-            document.addEventListener('livewire:initialized', () => {
-                Livewire.on('staffUpdated', () => {
-                    window.location.reload();
+            document.addEventListener('DOMContentLoaded', function() {
+                // Handle document deletion confirmation
+                Livewire.on('open-modal', (event) => {
+                    if (event.id === 'confirm-document-delete') {
+                        const form = document.getElementById('deleteDocumentForm');
+                        form.action = `/contractors/documents/${event.documentId}`;
+                    }
                 });
+
+                // Set today as default issue date
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('issue_date').value = today;
             });
         </script>
     @endpush
