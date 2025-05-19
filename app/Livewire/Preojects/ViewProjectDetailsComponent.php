@@ -36,7 +36,9 @@ class ViewProjectDetailsComponent extends Component
     public $progressFilter = 'all';
     protected $chartData = [];
 
+
 protected $listeners = ['milestoneUpdated', 'syncProgress' => '$refresh'];
+
 public function getTotalMilestonesProperty()
 {
     return $this->project->milestones->count();
@@ -69,7 +71,9 @@ public function getOverallProgressProperty()
         return 0;
     }
 
+
     $totalWeight = $this->project->milestones->sum('weight') ?: $this->project->milestones->count();
+
     $completedWeight = $this->project->milestones->sum(function ($milestone) {
         return $this->getMilestoneProgress($milestone) * ($milestone->weight ?? 1);
     });
@@ -79,8 +83,10 @@ public function getOverallProgressProperty()
         : 0;
 
     // Ensure 100% if project is marked completed (even if milestones are not fully tracked)
+
     return ($this->project->project_status === 'completed') ? 100 : min($progress, 100);
 }
+
 
 protected function getMilestoneProgress($milestone)
 {
@@ -94,7 +100,6 @@ protected function getMilestoneProgress($milestone)
         default      => 0,
     };
 }
-
 
 public function openStatusModal($milestoneId)
 {
@@ -160,9 +165,11 @@ public function updateMilestoneStatus()
     ]);
 
     // Close modal and notify
+
     // $this->emitSelf('syncProgress');
     $this->closeStatusModal();
     $this->dispatch('milestoneUpdated');
+
     flash()->addSuccess('message', 'Milestone status updated successfully!');
 
     

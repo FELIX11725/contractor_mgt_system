@@ -19,8 +19,8 @@ use App\Http\Controllers\ManageExpenses\AddExpenseController;
 use App\Http\Controllers\ManageExpenses\ExpensetypeController;
 
 use App\Http\Controllers\ManageExpenses\ViewExpenseController;
-use App\Http\Controllers\ManageMilestones\MilestoneController;
 
+use App\Http\Controllers\ManageMilestones\MilestoneController;
 use App\Http\Controllers\ProjectManagement\ProjectsController;
 use App\Http\Controllers\BudgetManagement\ViewbudgetController;
 use App\Http\Controllers\ManageContracts\AddContractController;

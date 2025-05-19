@@ -660,12 +660,35 @@
                     <div>
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
                         <h3 class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ $pendingMilestones }}</h3>
+
+                    </div>
+                    <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+
                     </div>
                     <div class="p-3 rounded-full bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Chart -->
+        <div class="mb-8 p-6 bg-white dark:bg-gray-700 rounded-xl shadow border border-gray-200 dark:border-gray-600">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Milestone Completion</h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Filter:</span>
+                    <select wire:model="progressFilter" class="text-sm border-gray-300 rounded-md shadow-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300">
+                        <option value="all">All Milestones</option>
+                        <option value="completed">Completed Only</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="pending">Pending</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -710,6 +733,7 @@
                                 }
                             });
             
+
                             // Listen for Livewire events to update the chart
                             Livewire.on('milestoneUpdated', () => {
                                 this.chart.data.datasets[0].data = @js($chartData['datasets'][0]['data']);
@@ -794,6 +818,7 @@
     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Overall Project Progress</h3>
     
 
+
 <!-- Progress Bar Section -->
 <div class="mb-4">
     <div class="flex justify-between items-center mb-1">
@@ -802,6 +827,7 @@
             {{ $overallProgress }}%
         </span>
     </div>
+
     <!-- Animated Progress Bar -->
     <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-4"
          x-data="{ progress: {{ $overallProgress }} }"
@@ -820,6 +846,7 @@
             class="bg-gradient-to-r from-blue-500 to-green-500 h-4 rounded-full transition-all duration-1000 ease-out"
             x-bind:style="'width: ' + progress + '%'">
         </div>
+
     </div>
 </div>
     

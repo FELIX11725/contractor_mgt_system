@@ -414,6 +414,7 @@ x-data="{ open: {{ in_array(Request::segment(1), ['auditlogs']) ? 1 : 0 }} }">
                     class="text-sm font-medium lg:opacity-0 lg:sidebar-expanded:opacity-100 2xl:opacity-100 duration-200">System Logs</span>
             </a>
         </li>
+
     </ul>
 </div>
 </li>
@@ -454,6 +455,7 @@ x-data="{ open: {{ in_array(Request::segment(1), ['auditlogs']) ? 1 : 0 }} }">
         </ul>
     </div>
 </li>
+
 
 
                 </ul>
